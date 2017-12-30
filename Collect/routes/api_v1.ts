@@ -1,5 +1,5 @@
 ﻿/*
- * GET users listing.
+ * API v1
  */
 import express = require('express');
 const router = express.Router();

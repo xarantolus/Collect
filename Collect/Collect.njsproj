@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="tools\download.ts" />
     <TypeScriptCompile Include="routes\views.ts" />
     <TypeScriptCompile Include="routes\api_v1.ts" />
     <Content Include="tsconfig.json" />
@@ -45,6 +46,7 @@
     <Content Include="views\error.pug" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="tools\" />
     <Folder Include="public\" />
     <Folder Include="public\images\" />
     <Folder Include="public\javascripts\" />

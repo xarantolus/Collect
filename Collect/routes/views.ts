@@ -1,5 +1,5 @@
 ﻿/*
- * GET home page.
+ * Home page
  */
 import express = require('express');
 const router = express.Router();
