@@ -1,11 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const debug = require("debug");
 const express = require("express");
 const path = require("path");
+var bodyParser = require('body-parser');
+var app = express();
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
 const views_1 = require("./routes/views");
 const api_v1_1 = require("./routes/api_v1");
-var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -44,8 +48,7 @@ app.use((err, req, res, next) => {
         error: {}
     });
 });
-app.set('port', process.env.PORT || 3000);
-var server = app.listen(app.get('port'), function () {
-    debug('Express server listening on port ' + server.address().port);
-});
+var server = app.listen(app.get('port') || 3000);
+var io = require('socket.io')(server);
+app.set('socketio', io);
 //# sourceMappingURL=app.js.map

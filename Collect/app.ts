@@ -1,11 +1,19 @@
 ﻿import debug = require('debug');
 import express = require('express');
 import path = require('path');
+import io = require('socket.io');
+
+var bodyParser = require('body-parser')
+var app = express()
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 
 import views from './routes/views';
 import api from './routes/api_v1';
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -15,6 +23,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', views);
 app.use('/api/v1/', api);
+
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -50,8 +60,8 @@ app.use((err: any, req, res, next) => {
     });
 });
 
-app.set('port', process.env.PORT || 3000);
 
-var server = app.listen(app.get('port'), function () {
-    debug('Express server listening on port ' + server.address().port);
-});
+var server = app.listen(app.get('port') || 3000);
+var io = require('socket.io')(server);
+
+app.set('socketio', io);

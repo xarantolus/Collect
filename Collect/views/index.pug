@@ -3,3 +3,8 @@
 block content
   h1= title
   p Welcome to #{title}
+  script. 
+    var socket = io();
+    socket.on('url', function (data) {
+       console.log(JSON.stringify(data));
+    });
