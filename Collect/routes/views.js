@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /*
- * GET home page.
+ * Home page
  */
 const express = require("express");
 const router = express.Router();

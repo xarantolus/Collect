@@ -164,6 +164,6 @@ class ContentDescription {
         });
     }
 }
-ContentDescription.CONTENT_FILE = "data/content.json";
+ContentDescription.CONTENT_FILE = "public/content.json";
 exports.ContentDescription = ContentDescription;
 //# sourceMappingURL=download.js.map
