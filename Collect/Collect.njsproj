@@ -34,8 +34,8 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="routes\index.ts" />
-    <TypeScriptCompile Include="routes\user.ts" />
+    <TypeScriptCompile Include="routes\views.ts" />
+    <TypeScriptCompile Include="routes\api_v1.ts" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="public\stylesheets\main.css" />

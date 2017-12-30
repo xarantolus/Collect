@@ -7,7 +7,7 @@
   },
   "description": "Collect",
   "author": {
-    "name": "aio"
+    "name": "xarantolus"
   },
   "main": "app.js",
   "dependencies": {
