@@ -50,6 +50,7 @@
     <Content Include="views\error.pug" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="public\img\" />
     <Folder Include="tools\" />
     <Folder Include="public\" />
     <Folder Include="public\js\" />

@@ -10,7 +10,7 @@ function setNotifications() {
         c_e.style.backgroundColor = "green";
         s_e.style.visibility = "hidden";
     } else {
-        c_e.style.backgroundColor = "yellow";
+        c_e.style.backgroundColor = "orange";
         s_e.style.visibility = "visible";
     }
 }

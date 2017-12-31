@@ -60,8 +60,9 @@ app.use((err: any, req, res, next) => {
     });
 });
 
-
-var server = app.listen(app.get('port') || 3000);
+var port = app.get('port') || 3000;
+console.log("Server listening on port " + port);
+var server = app.listen(port);
 var io = require('socket.io')(server);
 
 app.set('socketio', io);
