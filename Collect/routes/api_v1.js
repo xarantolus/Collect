@@ -52,11 +52,15 @@ router.post('/site/add', (req, res, next) => {
     }
     res.status(202)
         .json({ "message": "Processing started", "target": posted_url });
+    console.log("Processing url " + posted_url);
     req.app.get('socketio').emit('url', { "message": "Started processing url", "step": 0, "url": posted_url, "result": null });
     download.website(posted_url, function (err, result, fromCache) {
         if (err) {
+            console.log("Error while processing url " + posted_url + ":\n" + err.stack);
+            req.app.get('socketio').emit('url', { "message": "Error while processing url", "step": 4, "url": posted_url, "result": null });
             return console.log(err);
         }
+        console.log("Finished url " + posted_url);
         req.app.get('socketio').emit('url', { "message": "Finished processing url", "step": 2, "url": posted_url, "result": result });
     });
 });

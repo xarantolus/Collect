@@ -37,9 +37,13 @@
     <TypeScriptCompile Include="tools\download.ts" />
     <TypeScriptCompile Include="routes\views.ts" />
     <TypeScriptCompile Include="routes\api_v1.ts" />
+    <Content Include="public\css\uikit-rtl.css" />
+    <Content Include="public\css\uikit-rtl.min.css" />
+    <Content Include="public\css\uikit.css" />
+    <Content Include="public\css\uikit.min.css" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
-    <Content Include="public\stylesheets\main.css" />
+    <Content Include="public\css\main.css" />
     <Content Include="README.md" />
     <Content Include="views\index.pug" />
     <Content Include="views\layout.pug" />
@@ -49,12 +53,17 @@
     <Folder Include="tools\" />
     <Folder Include="public\" />
     <Folder Include="public\js\" />
-    <Folder Include="public\stylesheets\" />
+    <Folder Include="public\css\" />
     <Folder Include="routes\" />
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="public\js\browser.js" />
     <Compile Include="public\js\socket.io.js" />
+    <Compile Include="public\js\uikit-icons.js" />
+    <Compile Include="public\js\uikit-icons.min.js" />
+    <Compile Include="public\js\uikit.js" />
+    <Compile Include="public\js\uikit.min.js" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

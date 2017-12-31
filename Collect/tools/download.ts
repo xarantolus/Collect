@@ -42,7 +42,7 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
                     var indexPath = mpath.join(dir,
                         result.filename);
 
-                    fs.readFile(indexPath, function (err, content) {
+                    fs.readFile(mpath.join('public', indexPath), function (err, content) {
                         var parser: any;
                         try {
                             parser = extractor.lazy(content, 'en');
@@ -50,7 +50,7 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
 
                         var title: string = "No title";
                         try {
-                            title = parser.softTitle();
+                            title = parser.title();
                         } catch{ }
 
                         var favicon: string = "";

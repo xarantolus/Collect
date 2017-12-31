@@ -2,10 +2,16 @@
  * Home page
  */
 import express = require('express');
+import download = require('../tools/download');
 const router = express.Router();
 
 router.get('/', (req: express.Request, res: express.Response) => {
-    res.render('index', { title: 'Express' });
+    download.ContentDescription.getSaved(function (err, result) {
+        if (err) {
+            return res.render('error', { error: err });
+        }
+        res.render('index', { title: 'Express', list: result });
+    });
 });
 
 export default router;

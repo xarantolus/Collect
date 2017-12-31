@@ -1,10 +1,19 @@
 ﻿extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  script. 
-    var socket = io();
-    socket.on('url', function (data) {
-       console.log(JSON.stringify(data));
-    });
+  - if(list.length > 0)
+      table(class='uk-table uk-table-striped uk-table-hover')
+        thead
+          tr
+            th Title
+            th Date
+            th Domain
+        tbody
+          each val in list
+            tr
+              td=val.title
+              td=val.saved
+              td=val.domain
+  - else
+      div(class='uk-placeholder uk-text-center')
+       | Es sind zurzeit keine Seiten archiviert

@@ -35,7 +35,7 @@ function website(url, callback) {
                         return callback(null, item, true);
                     }
                     var indexPath = mpath.join(dir, result.filename);
-                    fs.readFile(indexPath, function (err, content) {
+                    fs.readFile(mpath.join('public', indexPath), function (err, content) {
                         var parser;
                         try {
                             parser = extractor.lazy(content, 'en');
@@ -43,7 +43,7 @@ function website(url, callback) {
                         catch (_a) { }
                         var title = "No title";
                         try {
-                            title = parser.softTitle();
+                            title = parser.title();
                         }
                         catch (_b) { }
                         var favicon = "";
