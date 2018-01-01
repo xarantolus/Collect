@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\img\" />
+    <Folder Include="public\s\" />
     <Folder Include="tools\" />
     <Folder Include="public\" />
     <Folder Include="public\js\" />

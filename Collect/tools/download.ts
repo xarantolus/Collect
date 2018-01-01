@@ -19,7 +19,7 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
-                directory: mpath.join("public", dir)
+                directory: mpath.join("public", "s", dir)
             };
 
             scrape(options, function (error, results) {
@@ -113,7 +113,7 @@ function findValidDir(url: string, callback: (path: string) => void) {
     // 25 bytes => 50 chars
     crypto.randomBytes(25, function (err, buffer) {
         var path = murl.parse(url, false).host + "-" + buffer.toString('hex');
-        fs.exists(mpath.join("public", path), function (exists: boolean) {
+        fs.exists(mpath.join("public", "s", path), function (exists: boolean) {
             if (exists) {
                 findValidDir(url, callback);
             } else {
@@ -142,7 +142,7 @@ export class ContentDescription {
         this.faviconpath = _faviconpath || "";
     }
 
-    static readonly CONTENT_FILE = "public/content.json";
+    static readonly CONTENT_FILE = mpath.join("public", "s", "content.json");
 
     private static loadFile(callback: (err: Error, result: Array<ContentDescription>) => void): void {
         fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
