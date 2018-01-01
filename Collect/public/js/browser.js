@@ -9,7 +9,9 @@ function setNotifications() {
 }
 setNotifications();
 
+var current_domain = domain(document.location);
 function UpdateTable(domain = "") {
+    current_domain = domain;
     var date_start = Date.now();
     var spinner = document.getElementById("notif_spinner");
     spinner.style.visibility = "visible";
@@ -126,8 +128,18 @@ socket.on('url', function (data) {
         }
     }
     setNotifications();
-    UpdateTable();
+    UpdateTable(current_domain);
 });
+
+function domain(str) {
+    var domain = "";
+    var url = new URL(str);
+    if (url.pathname != "/") {
+        var split = url.pathname.split("/");
+        domain = split[split.length - 1]
+    }
+    return domain;
+}
 
 function setEventListeners() {
     var str_start = location.protocol + '//' + location.host + '/site/';
@@ -135,12 +147,7 @@ function setEventListeners() {
     for (var i = 0; i < elements.length; i++) {
         if (elements[i].href.startsWith(str_start) || elements[i].href === location.protocol + '//' + location.host + '/') {
             elements[i].onclick = function () {
-                var domain = "";
-                var url = new URL(this.href);
-                if (url.pathname != "/") {
-                    var split = url.pathname.split("/");
-                    domain = split[split.length - 1]
-                }
+                var domain = domain(this.href);
                 UpdateTable(domain);
                 return false;
             }

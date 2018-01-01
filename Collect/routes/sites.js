@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /*
- * Home page
+ * Site page
  */
 const express = require("express");
 const download = require("../tools/download");
