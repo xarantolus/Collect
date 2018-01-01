@@ -8,11 +8,11 @@ block content
             th Title
             th Date
             th Domain
-        tbody(id='sites_list')
+        tbody
           each val in list
             tr
               td
-                a(href=val.pagepath)=val.title
+                a(href='/s/' + val.pagepath)=val.title
               td=val.saved
               td=val.domain
   - else

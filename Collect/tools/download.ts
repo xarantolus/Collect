@@ -3,7 +3,7 @@ import crypto = require('crypto');
 import fs = require('fs');
 import murl = require('url');
 import mpath = require('path')
-import extractor = require('unfluff');
+import metascraper = require('metascraper');
 
 export function website(url: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
@@ -43,19 +43,10 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
                         result.filename);
 
                     fs.readFile(mpath.join('public', indexPath), function (err, content) {
-                        var parser: any;
-                        try {
-                            parser = extractor.lazy(content, 'en');
-                        } catch{ }
-
-                        var title: string = "No title";
-                        try {
-                            title = parser.title();
-                        } catch{ }
-
+                        var title: string = "";
                         var favicon: string = "";
                         try {
-                            favicon = parser.favicon();
+                            var metadata: any = metascraper({ html: content.toString(), url: result.url })
                         } catch{ }
 
                         var cd = new ContentDescription(result.url,

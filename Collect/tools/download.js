@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const murl = require("url");
 const mpath = require("path");
-const extractor = require("unfluff");
+const metascraper = require("metascraper");
 function website(url, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -19,7 +19,7 @@ function website(url, callback) {
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
-                directory: mpath.join("public", dir)
+                directory: mpath.join("public", "s", dir)
             };
             scrape(options, function (error, results) {
                 if (error) {
@@ -36,9 +36,8 @@ function website(url, callback) {
                     }
                     var indexPath = mpath.join(dir, result.filename);
                     fs.readFile(mpath.join('public', indexPath), function (err, content) {
-                        var parser;
                         try {
-                            parser = extractor.lazy(content, 'en');
+                            var metadata = metascraper({ content, result: .url });
                         }
                         catch (_a) { }
                         var title = "No title";
@@ -93,7 +92,7 @@ function findValidDir(url, callback) {
     // 25 bytes => 50 chars
     crypto.randomBytes(25, function (err, buffer) {
         var path = murl.parse(url, false).host + "-" + buffer.toString('hex');
-        fs.exists(mpath.join("public", path), function (exists) {
+        fs.exists(mpath.join("public", "s", path), function (exists) {
             if (exists) {
                 findValidDir(url, callback);
             }
@@ -164,6 +163,6 @@ class ContentDescription {
         });
     }
 }
-ContentDescription.CONTENT_FILE = "public/content.json";
+ContentDescription.CONTENT_FILE = mpath.join("public", "s", "content.json");
 exports.ContentDescription = ContentDescription;
 //# sourceMappingURL=download.js.map

@@ -20,15 +20,37 @@ function UpdateTable(domain = "") {
         method: 'get'
     }).then(function (response) {
         response.json().then(function (sites) {
-            var table = document.getElementById("sites_list");
-            table.innerHTML = "";
+            var content = document.getElementById("content");
             if (sites.length > 0) {
+                // Create table
+                var table = document.createElement("table");
+                table.className = "uk-table uk-table-striped uk-table-hover";
+
+                // Create thead
+                var thead = document.createElement("thead");
+                var tr = document.createElement("tr");
+                tr.appendChild(tableElement("th", "Titel"));
+                tr.appendChild(tableElement("th", "Datum"));
+                tr.appendChild(tableElement("th", "Domain"));
+
+                thead.appendChild(tr);
+                table.appendChild(thead);
+
+                //Create tbody
+                var tbody = document.createElement("tbody");
+
+                //Add sites
                 for (var index in sites) {
-                    table.appendChild(createRow(sites[index]));
+                    tbody.appendChild(createRow(sites[index]));
                 }
+                table.appendChild(tbody);
+                content.innerHTML = "";
+                content.appendChild(table);
             } else {
-                table.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
+                content.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
             }
+
+            document.getElementById("title").innerText = "Collect" + (domain === "" ? "" : domain);
         });
     }).catch(function (err) {
         console.log(err);
@@ -39,7 +61,7 @@ const fields = ["title", "saved", "domain"];
 function createRow(site) {
     var container = document.createElement("tr");
     for (var i in fields) {
-        container.appendChild(tableElement("td", fields[i] === "title" ? '<a href="' + site["pagepath"] + '">' + site["title"] + '</a>' : site[fields[i]]));
+        container.appendChild(tableElement("td", fields[i] === "title" ? '<a href="/s/' + site["pagepath"] + '">' + site["title"] + '</a>' : site[fields[i]]));
     }
     return container;
 }
