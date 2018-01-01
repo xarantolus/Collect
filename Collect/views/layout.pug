@@ -34,10 +34,11 @@ html
     div(uk-sticky='sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky', class='header')
       nav(class='uk-navbar-container', uk-navbar, uk-sticky)
          div(class='uk-navbar-left')
-           img(src='/img/icon.svg', alt='Logo', class='header-logo')
+           a(href='/')
+             img(src='/img/icon.svg', alt='Logo', class='header-logo')
          div(class='uk-navbar-center')
-           div(id='title')
-             | Collect
+             a(id='title', href='/')
+              | Collect
          div(class='uk-navbar-right uk-container-center notif_con')
            div(id='notif_spinner', uk-spinner, style='visibility:hidden')
            span(id='notif_count', class='uk-badge', style='background-color:orange')

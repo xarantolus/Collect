@@ -50,7 +50,7 @@ function UpdateTable(domain = "") {
                 content.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
             }
 
-            document.getElementById("title").innerText = "Collect" + (domain === "" ? "" : domain);
+            document.getElementById("title").innerText = "Collect" + (domain === "" ? "" : " - " + domain);
         });
     }).catch(function (err) {
         console.log(err);

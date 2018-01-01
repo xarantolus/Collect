@@ -36,20 +36,12 @@ function website(url, callback) {
                     }
                     var indexPath = mpath.join(dir, result.filename);
                     fs.readFile(mpath.join('public', indexPath), function (err, content) {
-                        try {
-                            var metadata = metascraper({ content, result: .url });
-                        }
-                        catch (_a) { }
-                        var title = "No title";
-                        try {
-                            title = parser.title();
-                        }
-                        catch (_b) { }
+                        var title = "";
                         var favicon = "";
                         try {
-                            favicon = parser.favicon();
+                            var metadata = metascraper({ html: content.toString(), url: result.url });
                         }
-                        catch (_c) { }
+                        catch (_a) { }
                         var cd = new ContentDescription(result.url, indexPath, murl.parse(result.url, false).hostname, new Date(), title, favicon);
                         // Save to index file
                         ContentDescription.addContent(cd, function (err) {
