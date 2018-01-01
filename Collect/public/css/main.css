@@ -1,8 +1,24 @@
-﻿body {
-    padding: 50px;
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+﻿#tab-banner a {
+    text-decoration: none;
+    color: #666666;
 }
 
-a {
-    color: #00B7FF;
+#content {
+    padding-right: 1vw;
+    padding-left: 1vw;
+    padding-top: 5vh;
+}
+
+th {
+    font-weight: bold !important;
+}
+
+.title {
+    font-weight: bold;
+    color: #000000;
+    font-size:2em;
+}
+
+.header-logo {
+    height: 5vh;
 }

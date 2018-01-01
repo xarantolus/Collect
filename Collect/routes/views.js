@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
         if (err) {
             return res.render('error', { error: err });
         }
-        res.render('index', { title: 'Express', list: result });
+        res.render('table', { title: "Collect", list: result });
     });
 });
 exports.default = router;
