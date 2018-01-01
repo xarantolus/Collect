@@ -21,4 +21,9 @@ th {
 
 .header-logo {
     height: 5vh;
+    padding-left: 1vw;
+}
+
+.notif_con {
+    padding-right: 1vw;
 }
