@@ -24,7 +24,7 @@ function UpdateTable(domain = "") {
             if (sites.length > 0) {
                 // Create table
                 var table = document.createElement("table");
-                table.className = "uk-table uk-table-striped uk-table-hover";
+                table.className = "uk-table uk-table-striped uk-table-hover uk-table-responsive";
 
                 // Create thead
                 var thead = document.createElement("thead");
