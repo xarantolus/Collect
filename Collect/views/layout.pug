@@ -37,8 +37,7 @@ html
            a(href='/')
              img(src='/img/icon.svg', alt='Logo', class='header-logo')
          div(class='uk-navbar-center')
-             a(id='title', href='/')
-              | Collect
+            a(id='title', href='/') #{title}
          div(class='uk-navbar-right uk-container-center notif_con')
            div(id='notif_spinner', uk-spinner, style='visibility:hidden')
            span(id='notif_count', class='uk-badge', style='background-color:orange')

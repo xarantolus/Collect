@@ -6,14 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const download = require("../tools/download");
 const router = express.Router();
-//Show all archived domains
-router.get('/', (req, res) => {
+//Show all archived pages of one domain
+router.get('/:domain?', (req, res, next) => {
+    var domain = req.params.domain;
     download.ContentDescription.getSaved(function (err, result) {
         if (err) {
             return res.render('error', { error: err });
         }
-        res.render('table', { title: "Collect", list: result });
+        if (domain) {
+            result = result.filter(item => item.domain === domain);
+        }
+        var title = "Collect" + (domain === "" ? "" : " - " + domain);
+        res.render('table', { title: title, list: result });
     });
 });
 exports.default = router;
-//# sourceMappingURL=views.js.map
+//# sourceMappingURL=sites.js.map

@@ -14,6 +14,7 @@ app.use(bodyParser.json())
 
 import views from './routes/views';
 import api from './routes/api_v1';
+import site from './routes/sites';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +22,7 @@ app.set('view engine', 'pug');
 
 
 app.use('/', views);
+app.use('/site/', site);
 app.use('/api/v1/', api);
 
 app.use(express.static(path.join(__dirname, 'public')));

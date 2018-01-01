@@ -14,7 +14,8 @@ block content
               td
                 a(href='/s/' + val.pagepath)=val.title
               td=val.saved
-              td=val.domain
+              td
+                a(href='/site/' + val.domain)=val.domain
   - else
       div(class='uk-placeholder uk-text-center')
        | Es sind zurzeit keine Seiten archiviert

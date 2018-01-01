@@ -3,19 +3,16 @@ var socket = io();
 var notification_count = 0;
 function setNotifications() {
     var c_e = document.getElementById("notif_count");
-    var s_e = document.getElementById("notif_spinner");
     c_e.innerHTML = notification_count;
-    if (notification_count === 0) {
-        c_e.style.backgroundColor = "green";
-        s_e.style.visibility = "hidden";
-    } else {
-        c_e.style.backgroundColor = "orange";
-        s_e.style.visibility = "visible";
-    }
+    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+
 }
 setNotifications();
 
 function UpdateTable(domain = "") {
+    var date_start = Date.now();
+    var spinner = document.getElementById("notif_spinner");
+    spinner.style.visibility = "visible";
     fetch('/api/v1/sites/' + domain, {
         method: 'get'
     }).then(function (response) {
@@ -50,7 +47,18 @@ function UpdateTable(domain = "") {
                 content.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
             }
 
-            document.getElementById("title").innerText = "Collect" + (domain === "" ? "" : " - " + domain);
+            // Have the spinner displayed at least one second
+            setTimeout(function () {
+                spinner.style.visibility = "hidden";
+            }, Math.max(1000, Date.now() - date_start))
+
+            var title = "Collect" + (domain === "" ? "" : " - " + domain);
+            document.title = title;
+            document.getElementById("title").innerText = title;
+            window.history.pushState(domain, title, (domain === "" ? "/" : "/site/" + domain));
+
+            //Re-enable event listeners            
+            setEventListeners();
         });
     }).catch(function (err) {
         console.log(err);
@@ -61,7 +69,17 @@ const fields = ["title", "saved", "domain"];
 function createRow(site) {
     var container = document.createElement("tr");
     for (var i in fields) {
-        container.appendChild(tableElement("td", fields[i] === "title" ? '<a href="/s/' + site["pagepath"] + '">' + site["title"] + '</a>' : site[fields[i]]));
+        var html = "";
+        if (fields[i] === "title") {
+            html = '<a href="/s/' + site["pagepath"] + '">' + site["title"] + '</a>';
+        }
+        else if (fields[i] === "domain") {
+            html = '<a href="/site/' + site["domain"] + '">' + site["domain"] + '</a>';
+        }
+        else {
+            html = site[fields[i]];
+        }
+        container.appendChild(tableElement("td", html));
     }
     return container;
 }
@@ -110,3 +128,28 @@ socket.on('url', function (data) {
     setNotifications();
     UpdateTable();
 });
+
+function setEventListeners() {
+    var str_start = location.protocol + '//' + location.host + '/site/';
+    var elements = document.getElementsByTagName('a');
+    for (var i = 0; i < elements.length; i++) {
+        if (elements[i].href.startsWith(str_start) || elements[i].href === location.protocol + '//' + location.host + '/') {
+            elements[i].onclick = function () {
+                var domain = "";
+                var url = new URL(this.href);
+                if (url.pathname != "/") {
+                    var split = url.pathname.split("/");
+                    domain = split[split.length - 1]
+                }
+                UpdateTable(domain);
+                return false;
+            }
+        }
+    }
+}
+setEventListeners();
+
+window.onpopstate = function (event) {
+    // event.state contains the domain we had before
+    UpdateTable(event.state || "");
+}

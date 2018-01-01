@@ -10,12 +10,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const views_1 = require("./routes/views");
 const api_v1_1 = require("./routes/api_v1");
+const sites_1 = require("./routes/sites");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', views_1.default);
+app.use('/site/', sites_1.default);
 app.use('/api/v1/', api_v1_1.default);
+app.use(express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
