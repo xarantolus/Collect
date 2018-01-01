@@ -9,7 +9,7 @@ function setNotifications() {
 }
 setNotifications();
 
-var current_domain = domain(document.location);
+var current_domain = getDomain(document.location);
 function UpdateTable(domain = "") {
     current_domain = domain;
     var date_start = Date.now();
@@ -131,7 +131,7 @@ socket.on('url', function (data) {
     UpdateTable(current_domain);
 });
 
-function domain(str) {
+function getDomain(str) {
     var domain = "";
     var url = new URL(str);
     if (url.pathname != "/") {
@@ -147,7 +147,7 @@ function setEventListeners() {
     for (var i = 0; i < elements.length; i++) {
         if (elements[i].href.startsWith(str_start) || elements[i].href === location.protocol + '//' + location.host + '/') {
             elements[i].onclick = function () {
-                var domain = domain(this.href);
+                var domain = getDomain(this.href);
                 UpdateTable(domain);
                 return false;
             }
