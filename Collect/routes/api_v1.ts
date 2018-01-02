@@ -76,6 +76,23 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
         return next(err);
     }
 
+    var depth: number = 0;
+    try {
+        depth = parseInt(req.body.depth || "0");
+        if (isNaN(depth)) {
+            throw new Error("Malformed parameter \"depth\"");
+        }
+        if (depth > 5) {
+            throw new Error("Parameter \"depth\" is too big");
+        }
+    } catch (errr) {
+        var err = new Error();
+        err['status'] = 412;
+        err['api'] = true;
+        err.message = errr.message
+        delete err.stack;
+        return next(err);
+    }
 
     var parsed: url.Url;
     try {
@@ -95,7 +112,7 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
     notif.increaseNotificationCount();
     req.app.get('socketio').emit('url', { "message": "Started processing url", "step": 0, "url": posted_url, "result": null });
 
-    download.website(posted_url, function (err, result, fromCache) {
+    download.website(posted_url, depth, function (err, result, fromCache) {
         notif.decreaseNotificationCount();
         if (err) {
             console.log("Error while processing url " + posted_url + ":\n" + err.stack);
