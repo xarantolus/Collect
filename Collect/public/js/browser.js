@@ -2,7 +2,7 @@
 var socket = io();
 socket.on('url', function (data) {
     var url = new URL(data.url);
-    var parsedurl = url.hostname + (url.pathname == "/" ? "" : url.pathname);
+    var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
     switch (data.step) {
         case 0: {
             UIkit.notification({
@@ -119,7 +119,6 @@ function LoadTable(domain = "", replace = false) {
                     content.innerHTML = '<div class="uk-placeholder uk-text-center">There are no archived sites.<br><a href="/new">Add a new site to your archive</a></div>';
                 }
             } else {
-                var content = document.getElementById("content");
                 var message = "An unknown error occurred.";
                 if (sites.message) {
                     message = "Error: " + sites.message;
@@ -128,10 +127,10 @@ function LoadTable(domain = "", replace = false) {
             }
 
             setLoading(false);
-            var dm = (domain === "" ? "All Sites" : domain);
+            var dm = domain === "" ? "All Sites" : domain;
             document.title = dm + " - Collect";
             document.getElementById("title").innerText = dm;
-            setState(domain, document.title, (location.protocol + "//" + location.host) + (domain === "" ? "/" : "/site/" + domain), replace);
+            setState(domain, document.title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
 
             //Re-enable event listeners
             setEventListeners();
@@ -140,7 +139,7 @@ function LoadTable(domain = "", replace = false) {
 
     }).catch(function (err) {
         var content = document.getElementById("content");
-        var message = "An unknown error occurred."
+        var message = "An unknown error occurred.";
         if (err.message) {
             message = err.message;
         }
@@ -149,7 +148,7 @@ function LoadTable(domain = "", replace = false) {
         var title = "Collect" + (domain === "" ? "" : " - " + domain);
         document.title = title;
         document.getElementById("title").innerText = title;
-        setState(domain, title, (location.protocol + "//" + location.host) + (domain === "" ? "/" : "/site/" + domain), replace);
+        setState(domain, title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
 
         setLoading(false);
         setEventListeners();
@@ -197,7 +196,7 @@ function LoadDetails(id, replace = false) {
 
                     container.appendChild(input_con);
 
-                    var input = document.createElement("input")
+                    var input = document.createElement("input");
                     input.classList = "uk-input";
                     input.name = f;
                     input.type = "text";
@@ -205,7 +204,7 @@ function LoadDetails(id, replace = false) {
                     input.value = f === "saved" ?
                         (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
                         : f === "size" ? humanFileSize(item["size"], true) : item[f];
-                    if (f != "title") {
+                    if (f !== "title") {
                         input.disabled = true;
                     }
 
@@ -228,7 +227,7 @@ function LoadDetails(id, replace = false) {
             document.title = "Details - Collect";
             document.getElementById("title").innerText = "Details";
 
-            setState("-" + id, document.title, (location.protocol + "//" + location.host) + "/details/" + id, replace);
+            setState("-" + id, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
             //Re-enable event listeners
             setEventListeners();
             scrollToTop();
@@ -236,7 +235,7 @@ function LoadDetails(id, replace = false) {
 
     }).catch(function (err) {
         var content = document.getElementById("content");
-        var message = "An unknown error occurred."
+        var message = "An unknown error occurred.";
         if (err.message) {
             message = err.message;
         }
@@ -246,7 +245,7 @@ function LoadDetails(id, replace = false) {
 
         document.title = "Details - Collect";
         document.getElementById("title").innerText = "Details";
-        setState(current_domain, document.title, (location.protocol + "//" + location.host) + "/details/" + id, replace);
+        setState(current_domain, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
 
         //Re-enable event listeners
         setEventListeners();
@@ -281,7 +280,7 @@ function LoadNew(replace = false) {
 
     document.title = "New Entry - Collect";
     document.getElementById("title").innerText = "New Entry";
-    setState(current_domain, document.title, (location.protocol + "//" + location.host) + "/new", replace);
+    setState(current_domain, document.title, location.protocol + "//" + location.host + "/new", replace);
 
     //Re-enable event listeners
     setEventListeners();
@@ -339,9 +338,9 @@ function tableElement(tag, html) {
 function getLastUrlElement(str) {
     var elem = "";
     var url = new URL(str);
-    if (url.pathname != "/") {
+    if (url.pathname !== "/") {
         var split = url.pathname.split("/");
-        elem = split[split.length - 1]
+        elem = split[split.length - 1];
     }
     return elem;
 }
@@ -358,7 +357,7 @@ function setEventListeners() {
                 var domain = getLastUrlElement(this.href);
                 LoadTable(domain);
                 return false;
-            }
+            };
         }
 
         // Update details for details urls
@@ -367,7 +366,7 @@ function setEventListeners() {
                 var id = getLastUrlElement(this.href);
                 LoadDetails(id);
                 return false;
-            }
+            };
         }
 
         // New Page
@@ -375,7 +374,7 @@ function setEventListeners() {
             elements[i].onclick = function () {
                 LoadNew();
                 return false;
-            }
+            };
         }
     }
 
@@ -403,35 +402,34 @@ function setEventListeners() {
                             e_f.innerHTML = '<p class="uk-text-center">' + data.message + '</p>';
                             e_f.style.visibility = "visible";
                         }
-                    })
-                })
-                .catch(function () {
-                    var e_f = document.getElementById("error_field");
-                    e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
-                    e_f.style.visibility = "visible";
-                    setLoading(false);
-                    setEventListeners();
+                    }).catch(function () {
+                        var e_f = document.getElementById("error_field");
+                        e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
+                        e_f.style.visibility = "visible";
+                        setLoading(false);
+                        setEventListeners();
+                    });
+                    return false;
                 });
-            return false;
         };
-    } catch{ }
+    } catch (err) { }
 }
 
 window.onpopstate = function (event) {
     //If we have no event, we go to the root page
-    current_domain = event === null ? "" : (event.state || "");
+    current_domain = event === null ? "" : event.state || "";
     if (current_domain.startsWith("-")) {
         // current_domain contains the details id
-        LoadDetails(current_domain.substr(1, current_domain.length - 1), true)
+        LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
     }
     else if (current_domain.startsWith("+")) {
         //The /new page
-        LoadNew(true)
+        LoadNew(true);
     }
     else {
         // current_domain contains the domain we had before
         LoadTable(current_domain || "", true);
     }
-}
+};
 
 setEventListeners();
