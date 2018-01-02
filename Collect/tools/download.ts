@@ -56,6 +56,7 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
                         // Save to index file
                         var cd = new ContentDescription(result.url,
                             indexPath,
+                            dir,
                             murl.parse(result.url, false).hostname,
                             new Date(),
                             title
@@ -120,12 +121,14 @@ function findValidDir(url: string, callback: (path: string) => void) {
 export class ContentDescription {
     public url: string;
     public title: string;
+    public id: string;
     public pagepath: string;
     public domain: string;
     public saved: Date;
-    constructor(_url: string, _path: string, _domain: string, _date: Date, _title: string) {
+    constructor(_url: string, _pagepath: string, _id: string, _domain: string, _date: Date, _title: string) {
         this.url = _url;
-        this.pagepath = _path || "";
+        this.pagepath = _pagepath || "";
+        this.id = _id;
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
         if (_domain.startsWith("www."))
             _domain = _domain.substr(4, _domain.length - 4);

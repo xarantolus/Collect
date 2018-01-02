@@ -47,7 +47,7 @@ function website(url, callback) {
                         }
                         catch (_b) { }
                         // Save to index file
-                        var cd = new ContentDescription(result.url, indexPath, murl.parse(result.url, false).hostname, new Date(), title);
+                        var cd = new ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title);
                         ContentDescription.addContent(cd, function (err) {
                             if (err) {
                                 return callback(err, null, false);
@@ -99,9 +99,10 @@ function findValidDir(url, callback) {
     });
 }
 class ContentDescription {
-    constructor(_url, _path, _domain, _date, _title) {
+    constructor(_url, _pagepath, _id, _domain, _date, _title) {
         this.url = _url;
-        this.pagepath = _path || "";
+        this.pagepath = _pagepath || "";
+        this.id = _id;
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
         if (_domain.startsWith("www."))
             _domain = _domain.substr(4, _domain.length - 4);
