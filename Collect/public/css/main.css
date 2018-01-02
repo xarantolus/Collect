@@ -44,6 +44,16 @@ form {
     padding-left: 10vw;
 }
 
+.button-submit {
+    float: left;
+    width: 55vw;
+}
+
+.button-reset {
+    float: right;
+    width: 20vw;
+}
+
 
 /* Adjustments for small screens */
 @media screen and (max-width: 1024px) {

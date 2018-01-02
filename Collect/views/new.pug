@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  form(class='uk-form-horizontal uk-margin-large', method='POST', action='/new')
+    // Url
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Url"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="url" name="url" placeholder="Url" value="")
+    // Depth
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Depth"
+      div(class="uk-form-controls")
+        input(class="uk-input", type="number", step="1", min="0", max="5", name="depth", placeholder="Depth", value="0")
+    div(class="uk-margin")
+         button(class="uk-button uk-button-primary button-submit", type="submit")
+          | Submit
+         button(class="uk-button uk-button-default button-reset", type="reset")
+          | Reset

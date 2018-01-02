@@ -77,6 +77,7 @@
     <Content Include="views\details.pug">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="views\new.pug" />
     <Content Include="views\table.pug" />
     <Content Include="views\layout.pug" />
     <Content Include="views\error.pug" />

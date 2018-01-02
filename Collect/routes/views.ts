@@ -15,4 +15,9 @@ router.get('/', (req: express.Request, res: express.Response) => {
     });
 });
 
+router.get('/new', (req: express.Request, res: express.Response) => {
+    res.render('new', { title: "New Entry" });
+});
+
+
 export default router;
