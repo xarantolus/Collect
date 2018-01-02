@@ -4,6 +4,7 @@ import fs = require('fs');
 import murl = require('url');
 import mpath = require('path')
 import extractor = require('unfluff');
+import getFolderSize = require('get-folder-size');
 
 export function website(url: string, depth: number = 0, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
@@ -20,6 +21,7 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                     { url: url, filename: getFileName(url) }
                 ],
                 directory: mpath.join("public", "s", dir),
+                maxRecursiveDepth: 1,
                 recursive: depth !== 0,
                 maxDepth: depth > 1 ? depth : null
             };
@@ -40,35 +42,41 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                     if (err == null && contains) {
                         return callback(null, item, true);
                     }
+                    getFolderSize(mpath.join("public", "s", dir), function (err, size) {
+                        if (err) {
+                            return callback(err, null, null);
+                        }
 
-                    var indexPath = mpath.join(dir,
-                        result.filename);
+                        var indexPath = mpath.join(dir,
+                            result.filename);
 
-                    fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-                        var parser: any;
-                        try {
-                            parser = extractor.lazy(content, 'en');
-                        } catch{ }
+                        fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
+                            var parser: any;
+                            try {
+                                parser = extractor.lazy(content, 'en');
+                            } catch{ }
 
-                        var title: string = "No title";
-                        try {
-                            title = parser.title();
-                        } catch{ }
+                            var title: string = "No title";
+                            try {
+                                title = parser.title();
+                            } catch{ }
 
-                        // Save to index file
-                        var cd = new ContentDescription(result.url,
-                            indexPath,
-                            dir,
-                            murl.parse(result.url, false).hostname,
-                            new Date(),
-                            title
-                        );
+                            // Save to index file
+                            var cd = new ContentDescription(result.url,
+                                indexPath,
+                                dir,
+                                murl.parse(result.url, false).hostname,
+                                new Date(),
+                                title,
+                                size
+                            );
 
-                        ContentDescription.addContent(cd, function (err) {
-                            if (err) {
-                                return callback(err, null, false);
-                            }
-                            return callback(null, cd, false);
+                            ContentDescription.addContent(cd, function (err) {
+                                if (err) {
+                                    return callback(err, null, false);
+                                }
+                                return callback(null, cd, false);
+                            });
                         });
                     });
                 });
@@ -122,6 +130,23 @@ function findValidDir(url: string, callback: (path: string) => void) {
     });
 }
 
+// Source: https://stackoverflow.com/a/14919494/5728357
+export function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if (Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1) + ' ' + units[u];
+}
+
 export class ContentDescription {
     public url: string;
     public title: string;
@@ -129,7 +154,8 @@ export class ContentDescription {
     public pagepath: string;
     public domain: string;
     public saved: Date;
-    constructor(_url: string, _pagepath: string, _id: string, _domain: string, _date: Date, _title: string) {
+    public size: number;
+    constructor(_url: string, _pagepath: string, _id: string, _domain: string, _date: Date, _title: string, _size: number) {
         this.url = _url;
         this.pagepath = _pagepath || "";
         this.id = _id;
@@ -139,6 +165,7 @@ export class ContentDescription {
         this.domain = _domain;
         this.saved = _date || new Date();
         this.title = _title || "No title";
+        this.size = _size;
     }
 
     static readonly CONTENT_FILE = mpath.join("public", "s", "content.json");

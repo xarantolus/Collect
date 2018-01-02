@@ -27,7 +27,7 @@ router.get('/:id?', (req, res, next) => {
             return next(err);
         }
         var item = result[index];
-        res.render('details', { title: "Details", item: item });
+        res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
     });
 });
 exports.default = router;

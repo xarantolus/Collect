@@ -32,7 +32,7 @@ router.get('/:id?', (req: express.Request, res: express.Response, next: express.
 
         var item = result[index];
 
-        res.render('details', { title: "Details", item: item });
+        res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
     });
 
 });

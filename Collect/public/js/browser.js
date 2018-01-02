@@ -62,6 +62,23 @@ function scrollToTop() {
 
 var current_domain = getLastUrlElement(document.location);
 
+// Source: https://stackoverflow.com/a/14919494/5728357
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if (Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1) + ' ' + units[u];
+}
+
 function LoadTable(domain = "", replace = false) {
     current_domain = domain;
     var date_start = Date.now();
@@ -159,7 +176,7 @@ function LoadDetails(id, replace = false) {
                 var form = document.createElement("form");
                 form.className = "uk-form-horizontal uk-margin-large";
 
-                var fields = ["Url", "Path", "Id", "Domain", "Saved", "Title"];
+                var fields = ["Url", "Path", "Size", "Id", "Domain", "Saved", "Title"];
 
                 for (var i = 0; i < fields.length; i++) {
                     var f = fields[i] === "Path" ? "pagepath" : fields[i].toLowerCase();
@@ -185,7 +202,9 @@ function LoadDetails(id, replace = false) {
                     input.name = f;
                     input.type = "text";
                     input.placeholder = fields[i];
-                    input.value = f === "saved" ? (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3') : item[f];
+                    input.value = f === "saved" ?
+                        (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
+                        : f === "size" ? humanFileSize(item["size"], true) : item[f];
                     if (f != "title") {
                         input.disabled = true;
                     }
@@ -368,7 +387,7 @@ function setEventListeners() {
             var data = new URLSearchParams();
             data.append("url", url);
             data.append("depth", depth);
-            
+
             fetch("/api/v1/site/add",
                 {
                     method: "POST",

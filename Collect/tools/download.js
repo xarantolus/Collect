@@ -6,6 +6,7 @@ const fs = require("fs");
 const murl = require("url");
 const mpath = require("path");
 const extractor = require("unfluff");
+const getFolderSize = require("get-folder-size");
 function website(url, depth = 0, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -20,6 +21,7 @@ function website(url, depth = 0, callback) {
                     { url: url, filename: getFileName(url) }
                 ],
                 directory: mpath.join("public", "s", dir),
+                maxRecursiveDepth: 1,
                 recursive: depth !== 0,
                 maxDepth: depth > 1 ? depth : null
             };
@@ -36,25 +38,30 @@ function website(url, depth = 0, callback) {
                     if (err == null && contains) {
                         return callback(null, item, true);
                     }
-                    var indexPath = mpath.join(dir, result.filename);
-                    fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-                        var parser;
-                        try {
-                            parser = extractor.lazy(content, 'en');
+                    getFolderSize(mpath.join("public", "s", dir), function (err, size) {
+                        if (err) {
+                            return callback(err, null, null);
                         }
-                        catch (_a) { }
-                        var title = "No title";
-                        try {
-                            title = parser.title();
-                        }
-                        catch (_b) { }
-                        // Save to index file
-                        var cd = new ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title);
-                        ContentDescription.addContent(cd, function (err) {
-                            if (err) {
-                                return callback(err, null, false);
+                        var indexPath = mpath.join(dir, result.filename);
+                        fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
+                            var parser;
+                            try {
+                                parser = extractor.lazy(content, 'en');
                             }
-                            return callback(null, cd, false);
+                            catch (_a) { }
+                            var title = "No title";
+                            try {
+                                title = parser.title();
+                            }
+                            catch (_b) { }
+                            // Save to index file
+                            var cd = new ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title, size);
+                            ContentDescription.addContent(cd, function (err) {
+                                if (err) {
+                                    return callback(err, null, false);
+                                }
+                                return callback(null, cd, false);
+                            });
                         });
                     });
                 });
@@ -102,8 +109,25 @@ function findValidDir(url, callback) {
         });
     });
 }
+// Source: https://stackoverflow.com/a/14919494/5728357
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if (Math.abs(bytes) < thresh) {
+        return bytes + ' B';
+    }
+    var units = si
+        ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1) + ' ' + units[u];
+}
+exports.humanFileSize = humanFileSize;
 class ContentDescription {
-    constructor(_url, _pagepath, _id, _domain, _date, _title) {
+    constructor(_url, _pagepath, _id, _domain, _date, _title, _size) {
         this.url = _url;
         this.pagepath = _pagepath || "";
         this.id = _id;
@@ -113,6 +137,7 @@ class ContentDescription {
         this.domain = _domain;
         this.saved = _date || new Date();
         this.title = _title || "No title";
+        this.size = _size;
     }
     static loadFile(callback) {
         fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
