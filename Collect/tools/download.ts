@@ -76,7 +76,7 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
 }
 
 //We assume that urls with these extensinos return html
-const html_exts = ["asp", "php", ".html"]
+const html_exts = [".asp", ".php", ".html", ".jsp"]
 
 function getFileName(url: string): string {
     // /path/asdf.jpg
@@ -88,8 +88,7 @@ function getFileName(url: string): string {
     if (base != "" && base != null) {
         // .jpg
         var ext = mpath.extname(base);
-
-        if (ext === null || ext === "" || html_exts.some(item => ext === ("." + item))) {
+        if (ext === null || ext === "" || html_exts.some(item => ext == item)) {
             ext = "html";
         } else {
             ext = ext.substr(1, ext.length);
