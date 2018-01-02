@@ -1,7 +1,12 @@
 extends layout
 
 block content
-  form(class='uk-form-horizontal uk-margin-large', method='POST', action='/new')
+  form(class='uk-form-horizontal uk-margin-large', id='new_form', method='POST', action='/new') 
+    -if (error_message)
+      div(class="uk-alert-danger", uk-alert, id="error_field")
+        p(class="uk-text-center")=error_message
+    -else
+      div(class="uk-alert-danger", uk-alert, id="error_field", style="visibility:hidden")
     // Url
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Url"
@@ -13,7 +18,7 @@ block content
       div(class="uk-form-controls")
         input(class="uk-input", id="depth", type="number", step="1", min="0", max="5", name="depth", placeholder="Depth", value="0")
     div(class="uk-margin")
-         button(class="uk-button uk-button-primary button-submit", type="submit", id="")
+         button(class="uk-button uk-button-primary button-submit", type="submit")
           | Submit
          button(class="uk-button uk-button-default button-reset", type="reset")
           | Reset

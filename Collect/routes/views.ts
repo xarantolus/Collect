@@ -29,12 +29,7 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
             throw new Error();
         }
     } catch (err) {
-        var err = new Error();
-        err['status'] = 412;
-        err['api'] = false;
-        err.message = "Missing parameter \"url\"";
-        delete err.stack;
-        return next(err);
+        return res.render('new', { title: "New Entry", error_message: err.message });
     }
 
     var depth: number = 0;
@@ -47,23 +42,14 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
             throw new Error("Parameter \"depth\" is too big");
         }
     } catch (errr) {
-        var err = new Error();
-        err['status'] = 412;
-        err['api'] = false;
-        err.message = errr.message
-        delete err.stack;
-        return next(err);
+        return res.render('new', { title: "New Entry", error_message: errr.message });
     }
 
     var parsed: url.Url;
     try {
         parsed = url.parse(posted_url);
     } catch (err) {
-        err['status'] = 422;
-        err['api'] = false;
-        err.message = "Malformed parameter \"url\"";
-        delete err.stack;
-        return next(err);
+        return res.render('new', { title: "New Entry", error_message: "Parameter \"url\" is not an url" });
     }
 
     res.redirect('/');

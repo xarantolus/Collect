@@ -237,19 +237,20 @@ function LoadDetails(id, replace = false) {
 
 function LoadNew(replace = false) {
     current_domain = "+";
-    document.getElementById("content").innerHTML = `<form class="uk-form-horizontal uk-margin-large" method="POST" action="/new">
+    document.getElementById("content").innerHTML = `<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new"> 
+        <div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div>
         <!-- Url-->
         <div class="uk-margin">
           <label class="uk-form-label" for="form-horizontal-text">Url</label>
           <div class="uk-form-controls">
-            <input class="uk-input" type="url" name="url" placeholder="Url" value="">
+            <input class="uk-input" id="url" type="url" name="url" placeholder="Url" value="">
           </div>
         </div>
         <!-- Depth-->
         <div class="uk-margin">
           <label class="uk-form-label" for="form-horizontal-text">Depth</label>
           <div class="uk-form-controls">
-            <input class="uk-input" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">
+            <input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">
           </div>
         </div>
         <div class="uk-margin">
@@ -257,6 +258,7 @@ function LoadNew(replace = false) {
           <button class="uk-button uk-button-default button-reset" type="reset">Reset</button>
         </div>
       </form>`;
+
 
     document.title = "New Entry - Collect";
     document.getElementById("title").innerText = "New Entry";
@@ -326,7 +328,6 @@ function getLastUrlElement(str) {
 }
 
 function setEventListeners() {
-
     var str_site = location.protocol + '//' + location.host + '/site/';
     var str_details = location.protocol + '//' + location.host + '/details/';
     var str_new = location.protocol + '//' + location.host + '/new';
@@ -358,6 +359,40 @@ function setEventListeners() {
             }
         }
     }
+
+    try {
+        document.getElementById("new_form").onsubmit = function (event) {
+            var url = document.getElementById("url").value;
+            var depth = document.getElementById("depth").value;
+
+            var data = new URLSearchParams();
+            data.append("url", url);
+            data.append("depth", depth);
+
+            setLoading(true);
+
+            fetch("/api/v1/site/add",
+                {
+                    method: "POST",
+                    body: data
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    var e_f = document.getElementById("error_field");
+                    if (data.status === 202) {
+                        console.log("Loading table");
+                        e_f.style.visibility = "hidden";
+                        LoadTable("", false);
+                    } else {
+                        var e_f = document.getElementById("error_field");
+                        e_f.innerHTML = '<a class="uk-alert-close" uk-close></a><p class="uk-text-center">' + data.message + '</p>';
+                        e_f.style.visibility = "visible";
+                    }
+                    setLoading(false);
+                });
+            return false;
+        };
+    } catch{ }
 }
 
 window.onpopstate = function (event) {

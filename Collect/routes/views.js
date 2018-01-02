@@ -29,12 +29,7 @@ router.post('/new', (req, res, next) => {
         }
     }
     catch (err) {
-        var err = new Error();
-        err['status'] = 412;
-        err['api'] = false;
-        err.message = "Missing parameter \"url\"";
-        delete err.stack;
-        return next(err);
+        return res.render('new', { title: "New Entry", error_message: err.message });
     }
     var depth = 0;
     try {
@@ -47,23 +42,14 @@ router.post('/new', (req, res, next) => {
         }
     }
     catch (errr) {
-        var err = new Error();
-        err['status'] = 412;
-        err['api'] = false;
-        err.message = errr.message;
-        delete err.stack;
-        return next(err);
+        return res.render('new', { title: "New Entry", error_message: errr.message });
     }
     var parsed;
     try {
         parsed = url.parse(posted_url);
     }
     catch (err) {
-        err['status'] = 422;
-        err['api'] = false;
-        err.message = "Malformed parameter \"url\"";
-        delete err.stack;
-        return next(err);
+        return res.render('new', { title: "New Entry", error_message: "Parameter \"url\" is not an url" });
     }
     res.redirect('/');
     console.log("Processing url " + posted_url);
