@@ -368,32 +368,31 @@ function setEventListeners() {
             var data = new URLSearchParams();
             data.append("url", url);
             data.append("depth", depth);
-
-            var e_f = document.getElementById("error_field");
+            
             fetch("/api/v1/site/add",
                 {
                     method: "POST",
                     body: data
                 })
-                .then(function (res) {
-                    res.json().then(function (data) {
-                        if (res.status === 202) {
+                .then(function (response) {
+                    response.json().then(function (data) {
+                        var e_f = document.getElementById("error_field");
+                        if (response.status === 202) {
                             e_f.style.visibility = "hidden";
-                            LoadTable("", false);
+                            return LoadTable();
                         } else {
-                            var e_f = document.getElementById("error_field");
                             e_f.innerHTML = '<p class="uk-text-center">' + data.message + '</p>';
                             e_f.style.visibility = "visible";
                         }
                     })
                 })
                 .catch(function () {
+                    var e_f = document.getElementById("error_field");
                     e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
                     e_f.style.visibility = "visible";
                     setLoading(false);
                     setEventListeners();
                 });
-
             return false;
         };
     } catch{ }
