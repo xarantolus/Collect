@@ -2,6 +2,7 @@
 import express = require('express');
 import path = require('path');
 import io = require('socket.io');
+import favicon = require('serve-favicon')
 
 var bodyParser = require('body-parser')
 var app = express()
@@ -20,10 +21,11 @@ import site from './routes/sites';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-
+app.use(favicon(path.join(__dirname, 'public', 'img', 'favicon.ico')))
 app.use('/', views);
 app.use('/site/', site);
 app.use('/api/v1/', api);
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 

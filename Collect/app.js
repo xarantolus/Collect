@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const path = require("path");
+const favicon = require("serve-favicon");
 var bodyParser = require('body-parser');
 var app = express();
 // parse application/x-www-form-urlencoded
@@ -14,6 +15,7 @@ const sites_1 = require("./routes/sites");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.use(favicon(path.join(__dirname, 'public', 'img', 'favicon.ico')));
 app.use('/', views_1.default);
 app.use('/site/', sites_1.default);
 app.use('/api/v1/', api_v1_1.default);

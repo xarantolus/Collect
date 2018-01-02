@@ -55,7 +55,7 @@ function UpdateTable(domain = "") {
                     content.innerHTML = "";
                     content.appendChild(table);
                 } else {
-                    content.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
+                    content.innerHTML = '<div class="uk-placeholder uk-text-center">There are no archived sites.<br><a href="/new">Add a new site to your archive</a></div>';
                 }
 
                 // Have the spinner displayed at least one second
@@ -74,18 +74,21 @@ function UpdateTable(domain = "") {
                 scrollToTop();
             } else {
                 var content = document.getElementById("content");
-                var message = "Ein unbekannter Fehler ist aufgetreten.";
+                var message = "An unknown error occurred.";
                 if (sites.message) {
-                    message = "Fehler: " sites.message;
+                    message = "Error: " + sites.message;
                 }
-                content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Erneut versuchen</a></div>';
-
+                content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Try again</a></div>';
             }
         });
 
     }).catch(function (err) {
         var content = document.getElementById("content");
-        content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">Die Anfrage ist fehlgeschlagen.<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Erneut versuchen</a></div>';
+        var message = "An unknown error occurred."
+        if (err.message) {
+            message = err.message;
+        }
+        content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Try again</a></div>';
 
         var title = "Collect" + (domain === "" ? "" : " - " + domain);
         document.title = title;

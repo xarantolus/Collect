@@ -3,7 +3,7 @@ import crypto = require('crypto');
 import fs = require('fs');
 import murl = require('url');
 import mpath = require('path')
-import metascraper = require('metascraper');
+import extractor = require('unfluff');
 
 export function website(url: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
@@ -42,22 +42,25 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
                     var indexPath = mpath.join(dir,
                         result.filename);
 
-                    fs.readFile(mpath.join('public', indexPath), function (err, content) {
-                        var title: string = "";
-                        var favicon: string = "";
+                    fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
+                        var parser: any;
                         try {
-                            var metadata: any = metascraper({ html: content.toString(), url: result.url })
+                            parser = extractor.lazy(content, 'en');
                         } catch{ }
 
+                        var title: string = "No title";
+                        try {
+                            title = parser.title();
+                        } catch{ }
+
+                        // Save to index file
                         var cd = new ContentDescription(result.url,
                             indexPath,
                             murl.parse(result.url, false).hostname,
                             new Date(),
-                            title,
-                            favicon
+                            title
                         );
 
-                        // Save to index file
                         ContentDescription.addContent(cd, function (err) {
                             if (err) {
                                 return callback(err, null, false);
@@ -116,12 +119,11 @@ function findValidDir(url: string, callback: (path: string) => void) {
 
 export class ContentDescription {
     public url: string;
-    public faviconpath: string;
     public title: string;
     public pagepath: string;
     public domain: string;
     public saved: Date;
-    constructor(_url: string, _path: string, _domain: string, _date: Date, _title: string, _faviconpath: string) {
+    constructor(_url: string, _path: string, _domain: string, _date: Date, _title: string) {
         this.url = _url;
         this.pagepath = _path || "";
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
@@ -130,7 +132,6 @@ export class ContentDescription {
         this.domain = _domain;
         this.saved = _date || new Date();
         this.title = _title || "No title";
-        this.faviconpath = _faviconpath || "";
     }
 
     static readonly CONTENT_FILE = mpath.join("public", "s", "content.json");

@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const murl = require("url");
 const mpath = require("path");
-const metascraper = require("metascraper");
+const extractor = require("unfluff");
 function website(url, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -35,15 +35,19 @@ function website(url, callback) {
                         return callback(null, item, true);
                     }
                     var indexPath = mpath.join(dir, result.filename);
-                    fs.readFile(mpath.join('public', indexPath), function (err, content) {
-                        var title = "";
-                        var favicon = "";
+                    fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
+                        var parser;
                         try {
-                            var metadata = metascraper({ html: content.toString(), url: result.url });
+                            parser = extractor.lazy(content, 'en');
                         }
                         catch (_a) { }
-                        var cd = new ContentDescription(result.url, indexPath, murl.parse(result.url, false).hostname, new Date(), title, favicon);
+                        var title = "No title";
+                        try {
+                            title = parser.title();
+                        }
+                        catch (_b) { }
                         // Save to index file
+                        var cd = new ContentDescription(result.url, indexPath, murl.parse(result.url, false).hostname, new Date(), title);
                         ContentDescription.addContent(cd, function (err) {
                             if (err) {
                                 return callback(err, null, false);
@@ -95,7 +99,7 @@ function findValidDir(url, callback) {
     });
 }
 class ContentDescription {
-    constructor(_url, _path, _domain, _date, _title, _faviconpath) {
+    constructor(_url, _path, _domain, _date, _title) {
         this.url = _url;
         this.pagepath = _path || "";
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
@@ -104,7 +108,6 @@ class ContentDescription {
         this.domain = _domain;
         this.saved = _date || new Date();
         this.title = _title || "No title";
-        this.faviconpath = _faviconpath || "";
     }
     static loadFile(callback) {
         fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
