@@ -18,6 +18,7 @@ th {
     font-weight: bold;
     color: #000000;
     font-size: 4vh;
+    white-space: nowrap;
 }
 
 .header-logo {

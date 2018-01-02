@@ -64,6 +64,7 @@ function UpdateTable(domain = "") {
         });
     }).catch(function (err) {
         console.log(err);
+        spinner.style.visibility = "hidden";
     });
 }
 
@@ -108,7 +109,7 @@ socket.on('url', function (data) {
         }
         case 2: {
             UIkit.notification({
-                message: '<a style="color:#32d296" href="/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
+                message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
                 status: 'success',
                 pos: 'bottom-right',
                 timeout: 3000
