@@ -80,8 +80,8 @@ function LoadTable(domain = "", replace = false) {
                     // Create thead
                     var thead = document.createElement("thead");
                     var tr = document.createElement("tr");
-                    tr.appendChild(tableElement("th", "Titel"));
-                    tr.appendChild(tableElement("th", "Datum"));
+                    tr.appendChild(tableElement("th", "Title"));
+                    tr.appendChild(tableElement("th", "Date"));
                     tr.appendChild(tableElement("th", "Domain"));
                     tr.appendChild(tableElement("th", "Details"));
 
