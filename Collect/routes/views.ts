@@ -31,7 +31,7 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
     } catch (err) {
         var err = new Error();
         err['status'] = 412;
-        err['api'] = true;
+        err['api'] = false;
         err.message = "Missing parameter \"url\"";
         delete err.stack;
         return next(err);
@@ -49,7 +49,7 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
     } catch (errr) {
         var err = new Error();
         err['status'] = 412;
-        err['api'] = true;
+        err['api'] = false;
         err.message = errr.message
         delete err.stack;
         return next(err);
@@ -60,7 +60,7 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
         parsed = url.parse(posted_url);
     } catch (err) {
         err['status'] = 422;
-        err['api'] = true;
+        err['api'] = false;
         err.message = "Malformed parameter \"url\"";
         delete err.stack;
         return next(err);
