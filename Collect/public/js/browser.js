@@ -182,12 +182,15 @@ function LoadDetails(id, replace = false) {
 
                     var input = document.createElement("input")
                     input.classList = "uk-input";
+                    input.name = f;
                     input.type = "text";
                     input.placeholder = fields[i];
-                    input.value = item[f];
+                    input.value = f === "saved" ? (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3') : item[f];
                     if (f != "title") {
                         input.disabled = true;
                     }
+                    
+
                     input_con.appendChild(input);
                     form.appendChild(container);
                 }
@@ -246,8 +249,8 @@ function createRow(site) {
         else if (fields[i] === "details") {
             html = '<a href="/details/' + site["id"] + '">Details</a>';
         }
-        else {
-            html = site[fields[i]];
+        else if(fields[i] === "saved") {
+            html = (new Date(site["saved"])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3');
         }
         container.appendChild(tableElement("td", html));
     }

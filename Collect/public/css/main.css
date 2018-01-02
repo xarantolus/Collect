@@ -39,9 +39,32 @@ th {
     padding-right: 1vw;
 }
 
-
-
 form {
     padding-right: 10vw;
     padding-left: 10vw;
+}
+
+
+/* Adjustments for small screens */
+@media screen and (max-width: 1024px) {
+    form {
+        padding-right: 1vw;
+        padding-left: 1vw;
+    }
+
+    .header {
+        height: 10vh;
+    }
+
+    #content {
+        padding-top: 10vh;
+    }
+
+    .header-logo * {
+        height: 10vh;
+    }
+
+    #load_spinner {
+        height: 10vh;
+    }
 }

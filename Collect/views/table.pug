@@ -14,7 +14,7 @@ block content
             tr
               td
                 a(href='/s/' + val.pagepath)=val.title
-              td=val.saved
+              td=(new Date(val.saved)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/,'$2. $1 $3')
               td
                 a(href='/site/' + val.domain)=val.domain
               td
