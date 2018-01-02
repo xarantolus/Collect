@@ -369,27 +369,31 @@ function setEventListeners() {
             data.append("url", url);
             data.append("depth", depth);
 
-            setLoading(true);
-
+            var e_f = document.getElementById("error_field");
             fetch("/api/v1/site/add",
                 {
                     method: "POST",
                     body: data
                 })
-                .then(function (res) { return res.json(); })
-                .then(function (data) {
-                    var e_f = document.getElementById("error_field");
-                    if (data.status === 202) {
-                        console.log("Loading table");
-                        e_f.style.visibility = "hidden";
-                        LoadTable("", false);
-                    } else {
-                        var e_f = document.getElementById("error_field");
-                        e_f.innerHTML = '<a class="uk-alert-close" uk-close></a><p class="uk-text-center">' + data.message + '</p>';
-                        e_f.style.visibility = "visible";
-                    }
+                .then(function (res) {
+                    res.json().then(function (data) {
+                        if (res.status === 202) {
+                            e_f.style.visibility = "hidden";
+                            LoadTable("", false);
+                        } else {
+                            var e_f = document.getElementById("error_field");
+                            e_f.innerHTML = '<p class="uk-text-center">' + data.message + '</p>';
+                            e_f.style.visibility = "visible";
+                        }
+                    })
+                })
+                .catch(function () {
+                    e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
+                    e_f.style.visibility = "visible";
                     setLoading(false);
+                    setEventListeners();
                 });
+
             return false;
         };
     } catch{ }
