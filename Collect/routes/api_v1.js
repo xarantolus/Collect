@@ -28,8 +28,9 @@ router.get('/details/:id', (req, res, next) => {
     var id = req.params.id;
     download.ContentDescription.getSaved(function (err, result) {
         if (err) {
+            err = new Error();
             err['status'] = 500;
-            err['api'] = false;
+            err['api'] = true;
             err.message = "Can't read data file";
             return next(err);
         }
@@ -40,8 +41,9 @@ router.get('/details/:id', (req, res, next) => {
         if (index === -1 || index >= result.length) {
             var err = new Error();
             err['status'] = 404;
-            err['api'] = false;
+            err['api'] = true;
             err.message = "Id not found in saved sites";
+            delete err.stack;
             return next(err);
         }
         var item = result[index];
