@@ -17,13 +17,22 @@ th {
     text-decoration: none;
     font-weight: bold;
     color: #000000;
-    font-size: 4vh;
+    font-size: 3vh;
     white-space: nowrap;
+} 
+
+.header-logo * {
+	padding-left: 1vw;
+	height:5vh;
 }
 
-.header-logo {
-    height: 5vh;
-    padding-left: 1vw;
+#load_spinner {
+	padding-left: 1vw;
+	height: 5vh;
+}
+
+.header {
+	height:5vh;
 }
 
 .notif_con {

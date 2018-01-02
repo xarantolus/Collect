@@ -2,19 +2,28 @@
 var socket = io();
 var notification_count = 0;
 function setNotifications() {
+    notification_count = notification_count < 0 ? 0 : notification_count;
     var c_e = document.getElementById("notif_count");
     c_e.innerHTML = notification_count;
     c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
-
 }
 setNotifications();
+
+function scrollToTop() {
+    if (document.body.scrollTop !== 0 || document.documentElement.scrollTop !== 0) {
+        window.scrollBy(0, -50);
+        requestAnimationFrame(scrollToTop);
+    }
+}
 
 var current_domain = getDomain(document.location);
 function UpdateTable(domain = "") {
     current_domain = domain;
     var date_start = Date.now();
-    var spinner = document.getElementById("notif_spinner");
-    spinner.style.visibility = "visible";
+    var spinner = document.getElementById("load_spinner");
+    var logo = document.getElementById("logo");
+    spinner.style.display = "inline";
+    logo.style.display = "none";
     fetch('/api/v1/sites/' + domain, {
         method: 'get'
     }).then(function (response) {
@@ -51,7 +60,8 @@ function UpdateTable(domain = "") {
 
             // Have the spinner displayed at least one second
             setTimeout(function () {
-                spinner.style.visibility = "hidden";
+                spinner.style.display = "none";
+                logo.style.display = "inline";
             }, Math.max(1000, Date.now() - date_start))
 
             var title = "Collect" + (domain === "" ? "" : " - " + domain);
@@ -61,10 +71,13 @@ function UpdateTable(domain = "") {
 
             //Re-enable event listeners            
             setEventListeners();
+            scrollToTop();
         });
     }).catch(function (err) {
         console.log(err);
-        spinner.style.visibility = "hidden";
+        spinner.style.display = "none";
+        logo.style.display = "inline";
+        scrollToTop();
     });
 }
 
@@ -131,6 +144,13 @@ socket.on('url', function (data) {
     setNotifications();
     UpdateTable(current_domain);
 });
+
+socket.on('notifcount', function (count) {
+    notification_count = count || 0;
+    setNotifications();
+    console.log(count);
+});
+
 
 function getDomain(str) {
     var domain = "";

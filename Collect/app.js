@@ -54,6 +54,12 @@ app.use((err, req, res, next) => {
 var port = app.get('port') || 3000;
 console.log("Server listening on port " + port);
 var server = app.listen(port);
+//Set variables
 var io = require('socket.io')(server);
 app.set('socketio', io);
+global["notif_count"] = 0;
+//Socket.io response
+io.sockets.on('connection', function (socket) {
+    socket.emit('notifcount', global["notif_count"]);
+});
 //# sourceMappingURL=app.js.map
