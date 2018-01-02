@@ -70,6 +70,7 @@
     <Content Include="public\ms-icon-150x150.png" />
     <Content Include="public\ms-icon-310x310.png" />
     <Content Include="public\ms-icon-70x70.png" />
+    <Content Include="start.sh" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="public\css\main.css" />
