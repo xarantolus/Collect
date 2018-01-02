@@ -11,7 +11,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
         if (err) {
             return res.render('error', { error: err });
         }
-        res.render('table', { title: "Collect", list: result });
+        res.render('table', { title: "All Sites", list: result });
     });
 });
 

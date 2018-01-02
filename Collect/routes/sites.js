@@ -16,7 +16,7 @@ router.get('/:domain?', (req, res, next) => {
         if (domain) {
             result = result.filter(item => item.domain === domain);
         }
-        var title = "Collect" + (domain === "" ? "" : " - " + domain);
+        var title = ((domain || "") === "" ? "All Sites" : domain);
         res.render('table', { title: title, list: result });
     });
 });

@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
         if (err) {
             return res.render('error', { error: err });
         }
-        res.render('table', { title: "Collect", list: result });
+        res.render('table', { title: "All Sites", list: result });
     });
 });
 exports.default = router;

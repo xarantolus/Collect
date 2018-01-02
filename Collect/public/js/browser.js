@@ -110,8 +110,8 @@ function LoadTable(domain = "") {
             }
 
             setLoading(false);
-            var dm = "Collect" + (domain === "" ? "" : " - " + domain);
-            document.title = dm;
+            var dm = (domain === "" ? "All Sites" : domain);
+            document.title = dm + " - Collect";
             document.getElementById("title").innerText = dm;
             window.history.pushState(domain, document.title, (domain === "" ? "/" : "/site/" + domain));
 

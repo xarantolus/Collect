@@ -19,7 +19,7 @@ router.get('/:domain?', (req: express.Request, res: express.Response, next: expr
             result = result.filter(item => item.domain === domain);
         }
 
-        var title = (domain || "" === "" ? "All Sites" : domain);
+        var title = ((domain || "") === "" ? "All Sites" : domain);
         res.render('table', { title: title, list: result });
     });
 });
