@@ -6,7 +6,7 @@ const fs = require("fs");
 const murl = require("url");
 const mpath = require("path");
 const extractor = require("unfluff");
-function website(url, callback) {
+function website(url, depth = 0, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
@@ -19,7 +19,9 @@ function website(url, callback) {
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
-                directory: mpath.join("public", "s", dir)
+                directory: mpath.join("public", "s", dir),
+                recursive: depth !== 0,
+                maxDepth: depth > 1 ? depth : null
             };
             scrape(options, function (error, results) {
                 if (error) {

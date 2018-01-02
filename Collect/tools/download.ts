@@ -5,7 +5,7 @@ import murl = require('url');
 import mpath = require('path')
 import extractor = require('unfluff');
 
-export function website(url: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
+export function website(url: string, depth: number = 0, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
@@ -19,7 +19,9 @@ export function website(url: string, callback: (err: Error, result: ContentDescr
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
-                directory: mpath.join("public", "s", dir)
+                directory: mpath.join("public", "s", dir),
+                recursive: depth !== 0,
+                maxDepth: depth > 1 ? depth : null
             };
 
             scrape(options, function (error, results) {
