@@ -27,6 +27,37 @@ router.get('/sites/:domain?', (req: express.Request, res: express.Response, next
     });
 });
 
+router.get('/details/:id', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    var id = req.params.id;
+
+    download.ContentDescription.getSaved(function (err, result) {
+        if (err) {
+            err['status'] = 500;
+            err['api'] = false;
+            err.message = "Can't read data file";
+            return next(err);
+        }
+
+        var index = -1;
+        if (id) {
+            index = result.findIndex(item => item.id === id);
+        }
+
+        if (index === -1 || index >= result.length) {
+            var err = new Error();
+            err['status'] = 404;
+            err['api'] = false;
+            err.message = "Id not found in saved sites";
+            return next(err);
+        }
+
+        var item = result[index];
+
+        res.status(200).json(item);
+    });
+
+});
+
 router.post('/site/add', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var posted_url: string = "";
     try {
