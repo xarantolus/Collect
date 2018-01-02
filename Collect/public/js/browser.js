@@ -62,7 +62,7 @@ function scrollToTop() {
 
 var current_domain = getLastUrlElement(document.location);
 
-function LoadTable(domain = "") {
+function LoadTable(domain = "", replace = false) {
     current_domain = domain;
     var date_start = Date.now();
     setLoading(true);
@@ -83,6 +83,7 @@ function LoadTable(domain = "") {
                     tr.appendChild(tableElement("th", "Titel"));
                     tr.appendChild(tableElement("th", "Datum"));
                     tr.appendChild(tableElement("th", "Domain"));
+                    tr.appendChild(tableElement("th", "Details"));
 
                     thead.appendChild(tr);
                     table.appendChild(thead);
@@ -113,7 +114,7 @@ function LoadTable(domain = "") {
             var dm = (domain === "" ? "All Sites" : domain);
             document.title = dm + " - Collect";
             document.getElementById("title").innerText = dm;
-            window.history.pushState(domain, document.title, (domain === "" ? "/" : "/site/" + domain));
+            setState(domain, document.title, (location.protocol + "//" + location.host) + (domain === "" ? "/" : "/site/" + domain), replace);
 
             //Re-enable event listeners
             setEventListeners();
@@ -131,7 +132,7 @@ function LoadTable(domain = "") {
         var title = "Collect" + (domain === "" ? "" : " - " + domain);
         document.title = title;
         document.getElementById("title").innerText = title;
-        window.history.pushState(domain, title, (domain === "" ? "/" : "/site/" + domain));
+        setState(domain, title, (location.protocol + "//" + location.host) + (domain === "" ? "/" : "/site/" + domain), replace);
 
         setLoading(false);
         setEventListeners();
@@ -139,12 +140,11 @@ function LoadTable(domain = "") {
     });
 }
 
-function LoadDetails(id) {
+function LoadDetails(id, replace = false) {
     //We need an id
     if (id === null || id === "" || id === undefined) {
         throw new ReferenceError("Missing parameter id");
     }
-    console.log("Loading Details for " + id);
     //Details are loading, so domain is -
     current_domain = "-" + id;
     var date_start = Date.now();
@@ -194,20 +194,19 @@ function LoadDetails(id) {
 
                 content.innerHTML = "";
                 content.appendChild(form);
-
             } else {
                 var message = "An unknown error occurred.";
                 if (sites.message) {
                     message = "Error: " + sites.message;
                 }
-                content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Try again</a></div>';
+                content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + id + '">Try again</a></div>';
             }
             setLoading(false);
 
             document.title = "Details - Collect";
             document.getElementById("title").innerText = "Details";
-            window.history.pushState("-" + id, document.title, "/details/" + id);
 
+            setState("-" + id, document.title, (location.protocol + "//" + location.host) + "/details/" + id, replace);
             //Re-enable event listeners
             setEventListeners();
             scrollToTop();
@@ -225,7 +224,7 @@ function LoadDetails(id) {
 
         document.title = "Details - Collect";
         document.getElementById("title").innerText = "Details";
-        window.history.pushState(current_domain, document.title, "/details/" + id);
+        setState(current_domain, document.title, (location.protocol + "//" + location.host) + "/details/" + id, replace);
 
         //Re-enable event listeners
         setEventListeners();
@@ -235,7 +234,7 @@ function LoadDetails(id) {
 
 function createRow(site) {
     var container = document.createElement("tr");
-    const fields = ["title", "saved", "domain"];
+    const fields = ["title", "saved", "domain", "details"];
     for (var i in fields) {
         var html = "";
         if (fields[i] === "title") {
@@ -244,12 +243,23 @@ function createRow(site) {
         else if (fields[i] === "domain") {
             html = '<a href="/site/' + site["domain"] + '">' + site["domain"] + '</a>';
         }
+        else if (fields[i] === "details") {
+            html = '<a href="/details/' + site["id"] + '">Details</a>';
+        }
         else {
             html = site[fields[i]];
         }
         container.appendChild(tableElement("td", html));
     }
     return container;
+}
+
+function setState(data, title, url, replace = false) {
+    if (replace) {
+        window.history.replaceState(data, title, url);
+    } else {
+        window.history.pushState(data, title, url);
+    }
 }
 
 function setLoading(bool) {
@@ -281,6 +291,7 @@ function getLastUrlElement(str) {
 }
 
 function setEventListeners() {
+
     var str_site = location.protocol + '//' + location.host + '/site/';
     var str_details = location.protocol + '//' + location.host + '/details/';
     var elements = document.getElementsByTagName('a');
@@ -306,17 +317,14 @@ function setEventListeners() {
 }
 
 window.onpopstate = function (event) {
-    if (event && event.state) {
-        event.state = event.state || "";
-        event.state = event === null ? "" : event.state;
-        current_domain = event.state;
-        if (event.state.startsWith("-")) {
-            // event.state contains the details id
-            LoadDetails(current_domain.substr(1, current_domain.length - 1))
-        } else {
-            // event.state contains the domain we had before
-            LoadTable(current_domain || "");
-        }
+    //If we have no event, we go to the root page
+    current_domain = event === null ? "" : (event.state || "");
+    if (current_domain.startsWith("-")) {
+        // current_domain contains the details id
+        LoadDetails(current_domain.substr(1, current_domain.length - 1), true)
+    } else {
+        // current_domain contains the domain we had before
+        LoadTable(current_domain || "", true);
     }
 }
 

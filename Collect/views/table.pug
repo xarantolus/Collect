@@ -8,6 +8,7 @@ block content
             th Title
             th Date
             th Domain
+            th Details
         tbody
           each val in list
             tr
@@ -16,6 +17,9 @@ block content
               td=val.saved
               td
                 a(href='/site/' + val.domain)=val.domain
+              td
+                a(href='/details/' + val.id)
+                 | Details
   - else
       div(class='uk-placeholder uk-text-center')
        | There are no archived sites.

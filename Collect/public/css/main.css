@@ -19,22 +19,29 @@ th {
     color: #000000;
     font-size: 3vh;
     white-space: nowrap;
-} 
+}
 
 .header-logo * {
-	padding-left: 1vw;
-	height:5vh;
+    padding-left: 1vw;
+    height: 5vh;
 }
 
 #load_spinner {
-	padding-left: 1vw;
-	height: 5vh;
+    padding-left: 1vw;
+    height: 5vh;
 }
 
 .header {
-	height:5vh;
+    height: 5vh;
 }
 
 .notif_con {
     padding-right: 1vw;
+}
+
+
+
+form {
+    padding-right: 10vw;
+    padding-left: 10vw;
 }
