@@ -11,10 +11,12 @@ app.use(bodyParser.json());
 const views_1 = require("./routes/views");
 const api_v1_1 = require("./routes/api_v1");
 const sites_1 = require("./routes/sites");
+const details_1 = require("./routes/details");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use('/', views_1.default);
+app.use('/details/', details_1.default);
 app.use('/site/', sites_1.default);
 app.use('/api/v1/', api_v1_1.default);
 app.use(express.static(path.join(__dirname, 'public')));

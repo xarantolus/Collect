@@ -1,0 +1,39 @@
+﻿extends layout
+
+block content
+  form(class='uk-form-horizontal uk-margin-large')
+    // Url 
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Url"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="text" placeholder="Url" value=item.url disabled)
+
+    // Path 
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Path"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="text" placeholder="Path" value=item.pagepath disabled)
+    
+    // Id 
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Id"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="text" placeholder="Id" value=item.id disabled)
+
+    // Domain 
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Domain"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="text" placeholder="Domain" value=item.domain disabled)
+
+    // Saved 
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Saved"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="text" placeholder="Saved" value=item.saved disabled)
+
+    // Title 
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Title"
+      div(class="uk-form-controls")
+        input(class="uk-input" type="text" placeholder="Title" value=item.title)   

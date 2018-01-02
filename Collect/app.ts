@@ -15,12 +15,14 @@ app.use(bodyParser.json())
 import views from './routes/views';
 import api from './routes/api_v1';
 import site from './routes/sites';
+import details from './routes/details';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use('/', views);
+app.use('/details/', details);
 app.use('/site/', site);
 app.use('/api/v1/', api);
 

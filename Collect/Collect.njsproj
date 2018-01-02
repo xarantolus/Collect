@@ -74,6 +74,9 @@
     <Content Include="package.json" />
     <Content Include="public\css\main.css" />
     <Content Include="README.md" />
+    <Content Include="views\details.pug">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\table.pug" />
     <Content Include="views\layout.pug" />
     <Content Include="views\error.pug" />
@@ -95,6 +98,9 @@
     <Compile Include="public\js\uikit-icons.min.js" />
     <Compile Include="public\js\uikit.js" />
     <Compile Include="public\js\uikit.min.js" />
+    <Compile Include="routes\details.ts">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
