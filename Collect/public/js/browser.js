@@ -36,7 +36,7 @@ socket.on('url', function (data) {
         }
     }
     setNotifications();
-    if (!current_domain.startsWith("-")) {
+    if (!current_domain.startsWith("-") && !current_domain.startsWith("+")) {
         LoadTable(current_domain);
     }
 });
@@ -189,7 +189,7 @@ function LoadDetails(id, replace = false) {
                     if (f != "title") {
                         input.disabled = true;
                     }
-                    
+
 
                     input_con.appendChild(input);
                     form.appendChild(container);
@@ -235,6 +235,38 @@ function LoadDetails(id, replace = false) {
     });
 }
 
+function LoadNew(replace = false) {
+    current_domain = "+";
+    document.getElementById("content").innerHTML = `<form class="uk-form-horizontal uk-margin-large" method="POST" action="/new">
+        <!-- Url-->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="form-horizontal-text">Url</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" type="url" name="url" placeholder="Url" value="">
+          </div>
+        </div>
+        <!-- Depth-->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="form-horizontal-text">Depth</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">
+          </div>
+        </div>
+        <div class="uk-margin">
+          <button class="uk-button uk-button-primary button-submit" type="submit">Submit</button>
+          <button class="uk-button uk-button-default button-reset" type="reset">Reset</button>
+        </div>
+      </form>`;
+
+    document.title = "New Entry - Collect";
+    document.getElementById("title").innerText = "New Entry";
+    setState(current_domain, document.title, (location.protocol + "//" + location.host) + "/new", replace);
+
+    //Re-enable event listeners
+    setEventListeners();
+    scrollToTop();
+}
+
 function createRow(site) {
     var container = document.createElement("tr");
     const fields = ["title", "saved", "domain", "details"];
@@ -249,7 +281,7 @@ function createRow(site) {
         else if (fields[i] === "details") {
             html = '<a href="/details/' + site["id"] + '">Details</a>';
         }
-        else if(fields[i] === "saved") {
+        else if (fields[i] === "saved") {
             html = (new Date(site["saved"])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3');
         }
         container.appendChild(tableElement("td", html));
@@ -297,6 +329,7 @@ function setEventListeners() {
 
     var str_site = location.protocol + '//' + location.host + '/site/';
     var str_details = location.protocol + '//' + location.host + '/details/';
+    var str_new = location.protocol + '//' + location.host + '/new';
     var elements = document.getElementsByTagName('a');
     for (var i = 0; i < elements.length; i++) {
         // Update table for list urls
@@ -316,6 +349,14 @@ function setEventListeners() {
                 return false;
             }
         }
+
+        // New Page
+        if (elements[i].href.startsWith(str_new)) {
+            elements[i].onclick = function () {
+                LoadNew();
+                return false;
+            }
+        }
     }
 }
 
@@ -325,7 +366,12 @@ window.onpopstate = function (event) {
     if (current_domain.startsWith("-")) {
         // current_domain contains the details id
         LoadDetails(current_domain.substr(1, current_domain.length - 1), true)
-    } else {
+    }
+    else if (current_domain.startsWith("+")) {
+        //The /new page
+        LoadNew(true)
+    }
+    else {
         // current_domain contains the domain we had before
         LoadTable(current_domain || "", true);
     }
