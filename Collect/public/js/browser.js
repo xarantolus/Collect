@@ -7,7 +7,6 @@ function setNotifications() {
     c_e.innerHTML = notification_count;
     c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
 }
-setNotifications();
 
 function scrollToTop() {
     if (document.body.scrollTop !== 0 || document.documentElement.scrollTop !== 0) {
@@ -28,55 +27,74 @@ function UpdateTable(domain = "") {
         method: 'get'
     }).then(function (response) {
         response.json().then(function (sites) {
-            var content = document.getElementById("content");
-            if (sites.length > 0) {
-                // Create table
-                var table = document.createElement("table");
-                table.className = "uk-table uk-table-striped uk-table-hover uk-table-responsive";
+            if (response.status === 200) {
+                var content = document.getElementById("content");
+                if (sites.length > 0) {
+                    // Create table
+                    var table = document.createElement("table");
+                    table.className = "uk-table uk-table-striped uk-table-hover uk-table-responsive";
 
-                // Create thead
-                var thead = document.createElement("thead");
-                var tr = document.createElement("tr");
-                tr.appendChild(tableElement("th", "Titel"));
-                tr.appendChild(tableElement("th", "Datum"));
-                tr.appendChild(tableElement("th", "Domain"));
+                    // Create thead
+                    var thead = document.createElement("thead");
+                    var tr = document.createElement("tr");
+                    tr.appendChild(tableElement("th", "Titel"));
+                    tr.appendChild(tableElement("th", "Datum"));
+                    tr.appendChild(tableElement("th", "Domain"));
 
-                thead.appendChild(tr);
-                table.appendChild(thead);
+                    thead.appendChild(tr);
+                    table.appendChild(thead);
 
-                //Create tbody
-                var tbody = document.createElement("tbody");
+                    //Create tbody
+                    var tbody = document.createElement("tbody");
 
-                //Add sites
-                for (var index in sites) {
-                    tbody.appendChild(createRow(sites[index]));
+                    //Add sites
+                    for (var index in sites) {
+                        tbody.appendChild(createRow(sites[index]));
+                    }
+                    table.appendChild(tbody);
+                    content.innerHTML = "";
+                    content.appendChild(table);
+                } else {
+                    content.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
                 }
-                table.appendChild(tbody);
-                content.innerHTML = "";
-                content.appendChild(table);
+
+                // Have the spinner displayed at least one second
+                setTimeout(function () {
+                    spinner.style.display = "none";
+                    logo.style.display = "inline";
+                }, Math.max(1000, Date.now() - date_start))
+
+                var title = "Collect" + (domain === "" ? "" : " - " + domain);
+                document.title = title;
+                document.getElementById("title").innerText = title;
+                window.history.pushState(domain, title, (domain === "" ? "/" : "/site/" + domain));
+
+                //Re-enable event listeners
+                setEventListeners();
+                scrollToTop();
             } else {
-                content.innerHTML = '<div class="uk-placeholder uk-text-center">Es sind zurzeit keine Seiten archiviert</div>';
+                var content = document.getElementById("content");
+                var message = "Ein unbekannter Fehler ist aufgetreten.";
+                if (sites.message) {
+                    message = "Fehler: " sites.message;
+                }
+                content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Erneut versuchen</a></div>';
+
             }
-
-            // Have the spinner displayed at least one second
-            setTimeout(function () {
-                spinner.style.display = "none";
-                logo.style.display = "inline";
-            }, Math.max(1000, Date.now() - date_start))
-
-            var title = "Collect" + (domain === "" ? "" : " - " + domain);
-            document.title = title;
-            document.getElementById("title").innerText = title;
-            window.history.pushState(domain, title, (domain === "" ? "/" : "/site/" + domain));
-
-            //Re-enable event listeners            
-            setEventListeners();
-            scrollToTop();
         });
+
     }).catch(function (err) {
-        console.log(err);
+        var content = document.getElementById("content");
+        content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">Die Anfrage ist fehlgeschlagen.<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Erneut versuchen</a></div>';
+
+        var title = "Collect" + (domain === "" ? "" : " - " + domain);
+        document.title = title;
+        document.getElementById("title").innerText = title;
+        window.history.pushState(domain, title, (domain === "" ? "/" : "/site/" + domain));
+
         spinner.style.display = "none";
         logo.style.display = "inline";
+        setEventListeners();
         scrollToTop();
     });
 }
@@ -148,7 +166,6 @@ socket.on('url', function (data) {
 socket.on('notifcount', function (count) {
     notification_count = count || 0;
     setNotifications();
-    console.log(count);
 });
 
 
