@@ -3,10 +3,11 @@
  */
 import express = require('express');
 import download = require('../tools/download');
+import auth = require('http-auth');
 const router = express.Router();
 
 
-router.get('/:id?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/:id?', auth.connect(global["basic_auth"]), (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var id = req.params.id;
 
     download.ContentDescription.getSaved(function (err, result) {
@@ -36,7 +37,7 @@ router.get('/:id?', (req: express.Request, res: express.Response, next: express.
     });
 });
 
-router.post('/:id?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.post('/:id?', auth.connect(global["basic_auth"]), (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var id = req.params.id;
     if (id === undefined || id === null || id == "") {
         var err = new Error();

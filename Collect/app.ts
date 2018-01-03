@@ -2,6 +2,9 @@
 import express = require('express');
 import path = require('path');
 import io = require('socket.io');
+import fs = require('fs');
+import auth = require('http-auth');
+const user_file: string = "users.json";
 
 var bodyParser = require('body-parser')
 var app = express()
@@ -11,6 +14,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
+
+var users = JSON.parse(fs.readFileSync(user_file).toString());
+
+var basic = auth.basic({
+    realm: "Web."
+}, function (username, password, callback) { // Custom authentication method.
+    callback(users.some(item => item.username === username && item.password === password));
+});
+
 
 import views from './routes/views';
 import api from './routes/api_v1';

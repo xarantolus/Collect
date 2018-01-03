@@ -77,6 +77,7 @@
     <Content Include="package.json" />
     <Content Include="public\css\main.css" />
     <Content Include="README.md" />
+    <Content Include="users.json" />
     <Content Include="views\details.pug">
       <SubType>Code</SubType>
     </Content>

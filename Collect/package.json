@@ -16,6 +16,7 @@
     "debug": "^2.2.0",
     "express": "^4.14.0",
     "get-folder-size": "^1.0.0",
+    "http-auth": "^3.2.3",
     "pug": "^2.0.0-rc.3",
     "socket.io": "^2.0.4",
     "unfluff": "^3.0.0",
