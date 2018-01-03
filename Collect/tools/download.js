@@ -228,6 +228,24 @@ class ContentDescription {
             });
         });
     }
+    static setTitle(id, newtitle, callback) {
+        ContentDescription.loadFile(function (err, result) {
+            if (err) {
+                return callback(err, null);
+            }
+            var index = result.findIndex(item => item.id === id);
+            if (index === -1) {
+                return callback(new RangeError("Item not found in saved sites"), null);
+            }
+            result[index].title = newtitle;
+            ContentDescription.saveFile(result, function (err) {
+                if (err) {
+                    return callback(err, null);
+                }
+                callback(null, result[index]);
+            });
+        });
+    }
     static contains(url, callback) {
         ContentDescription.loadFile(function (err, result) {
             if (err) {

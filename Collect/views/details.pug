@@ -1,6 +1,11 @@
 ﻿extends layout
 
 block content
+  - if(message)
+    div(class="uk-alert-success", uk-alert)
+      p(class="uk-text-center")=message
+
+  
   form(class='uk-form-horizontal uk-margin-large', id='details_form' action='/details/' + item.id, method="POST")
     // Url 
     div(class="uk-margin")

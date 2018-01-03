@@ -262,6 +262,27 @@ export class ContentDescription {
         });
     }
 
+    public static setTitle(id: string, newtitle: string, callback: (err: Error, item: ContentDescription) => void): void {
+        ContentDescription.loadFile(function (err, result) {
+            if (err) {
+                return callback(err, null);
+            }
+            var index = result.findIndex(item => item.id === id);
+
+            if (index === -1) {
+                return callback(new RangeError("Item not found in saved sites"), null);
+            }
+
+            result[index].title = newtitle;
+            ContentDescription.saveFile(result, function (err) {
+                if (err) {
+                    return callback(err, null);
+                }
+                callback(null, result[index]);
+            });
+        });
+    }
+
     public static contains(url: string, callback: (err: Error, result: boolean, item: ContentDescription) => void): void {
         ContentDescription.loadFile(function (err, result) {
             if (err) {

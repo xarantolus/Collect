@@ -38,6 +38,13 @@ router.get('/:id?', (req: express.Request, res: express.Response, next: express.
 
 router.post('/:id?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var id = req.params.id;
+    if (id === undefined || id === null || id == "") {
+        var err = new Error();
+        err['status'] = 412;
+        err['api'] = false;
+        err.message = "No id specified";
+        return next(err);
+    }
 
     download.ContentDescription.getSaved(function (err, result) {
         if (err) {
@@ -61,16 +68,34 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
         }
 
         if (req.body.submit !== undefined && req.body.submit != null) {
-            console.log("Submit");
+            if (req.body.title) {
+                var item_id = result[index].id;
+                download.ContentDescription.setTitle(item_id, req.body.title, function (err, item) {
+                    if (err) {
+                        console.log(err);
+                        err['status'] = 500;
+                        err['api'] = false;
+                        err.message = "Couldn't change title";
+                        return next(err);
+                    }
+                    res.render('details', { item: item, message: "Title changed successfully" });
+                });
+            }
         }
+
         if (req.body.delete !== undefined && req.body.delete != null) {
-            console.log("Delete");
+            download.ContentDescription.removeContent(id, function (err) {
+                if (err) {
+                    err['status'] = 500;
+                    err['api'] = false;
+                    err.message = "Error while deleting entry";
+                    return next(err);
+                }
+                res.redirect("/");
+            });
         }
 
-
-        var item = result[index];
-
-        res.status(200).json({ body: req.body, item: item });
+        next();
     });
 });
 
