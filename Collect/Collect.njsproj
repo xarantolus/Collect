@@ -65,6 +65,8 @@
     <Content Include="public\favicon-96x96.png" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\icon.svg" />
+    <Content Include="public\js\fetch.min.js.map" />
+    <Content Include="public\js\socket.io.js.map" />
     <Content Include="public\manifest.json" />
     <Content Include="public\ms-icon-144x144.png" />
     <Content Include="public\ms-icon-150x150.png" />
@@ -95,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="public\js\browser.js" />
+    <Compile Include="public\js\fetch.min.js" />
     <Compile Include="public\js\socket.io.js" />
     <Compile Include="public\js\uikit-icons.js" />
     <Compile Include="public\js\uikit-icons.min.js" />
