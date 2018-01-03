@@ -4,6 +4,9 @@ import path = require('path');
 import auth = require('./tools/auth');
 import io = require('socket.io');
 import fs = require('fs');
+
+var config = require('./config.json')
+
 const user_file: string = "users.json";
 
 var bodyParser = require('body-parser')
@@ -75,7 +78,7 @@ app.use((err: any, req, res, next) => {
     });
 });
 
-var port = app.get('port') || 3000;
+var port = app.get('port') || config.port;
 console.log("Server listening on port " + port);
 var server = app.listen(port);
 

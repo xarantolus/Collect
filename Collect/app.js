@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const path = require("path");
 const auth = require("./tools/auth");
+var config = require('./config.json');
 const user_file = "users.json";
 var bodyParser = require('body-parser');
 var app = express();
@@ -59,7 +60,7 @@ app.use((err, req, res, next) => {
         error: {}
     });
 });
-var port = app.get('port') || 3000;
+var port = app.get('port') || config.port;
 console.log("Server listening on port " + port);
 var server = app.listen(port);
 //Set variables

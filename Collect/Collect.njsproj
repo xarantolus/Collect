@@ -39,6 +39,7 @@
     <TypeScriptCompile Include="tools\download.ts" />
     <TypeScriptCompile Include="routes\views.ts" />
     <TypeScriptCompile Include="routes\api_v1.ts" />
+    <Content Include="config.json" />
     <Content Include="public\css\uikit-rtl.css" />
     <Content Include="public\css\uikit-rtl.min.css" />
     <Content Include="public\css\uikit.css" />
