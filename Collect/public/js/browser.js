@@ -49,10 +49,15 @@ socket.on('notifcount', function (count) {
 
 var notification_count = 0;
 function setNotifications() {
+    //Elements
     notification_count = notification_count < 0 ? 0 : notification_count;
     var c_e = document.getElementById("notif_count");
     c_e.innerHTML = notification_count;
     c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+}
+
+function setTitle(title) {
+    document.title = notification_count > 0 ? '(' + notification_count + ') ' + title : title;
 }
 
 function scrollToTop() {
@@ -130,7 +135,7 @@ function LoadTable(domain = "", replace = false) {
 
             setLoading(false);
             var dm = domain === "" ? "All Sites" : domain;
-            document.title = dm + " - Collect";
+            setTitle(dm + " - Collect");
             document.getElementById("title").innerText = dm;
             setState(domain, document.title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
 
@@ -148,7 +153,7 @@ function LoadTable(domain = "", replace = false) {
         content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Try again</a></div>';
 
         var title = "Collect" + (domain === "" ? "" : " - " + domain);
-        document.title = title;
+        setTitle(title);
         document.getElementById("title").innerText = title;
         setState(domain, title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
 
@@ -255,7 +260,7 @@ function LoadDetails(id, replace = false) {
             }
             setLoading(false);
 
-            document.title = "Details - Collect";
+            setTitle("Details - Collect");
             document.getElementById("title").innerText = "Details";
 
             setState("-" + id, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
@@ -274,7 +279,7 @@ function LoadDetails(id, replace = false) {
 
         setLoading(false);
 
-        document.title = "Details - Collect";
+        setTitle("Details - Collect");
         document.getElementById("title").innerText = "Details";
         setState(current_domain, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
 
@@ -309,7 +314,7 @@ function LoadNew(replace = false) {
       </form>`;
 
 
-    document.title = "New Entry - Collect";
+    setTitle("New Entry - Collect");
     document.getElementById("title").innerText = "New Entry";
     setState(current_domain, document.title, location.protocol + "//" + location.host + "/new", replace);
 
