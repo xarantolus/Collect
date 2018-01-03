@@ -2,6 +2,7 @@
 var socket = io();
 const n_timeout = 3500;
 const n_pos = "bottom-right"
+var notification_count = 0;
 socket.on('url', function (data) {
     var url = new URL(data.url);
     var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
@@ -52,7 +53,19 @@ socket.on('notifcount', function (count) {
     }
 });
 
-var notification_count = 0;
+socket.on('disconnect', function () {
+    notification_count = 0;
+    var c_e = document.getElementById("notif_count");
+    c_e.innerText = "?";
+    c_e.style.backgroundColor = "red";
+});
+
+socket.on('connect', function () {
+    var c_e = document.getElementById("notif_count");
+    c_e.innerHTML = notification_count;
+    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+
+});
 function setNotifications() {
     //Elements
     notification_count = notification_count < 0 ? 0 : notification_count;
