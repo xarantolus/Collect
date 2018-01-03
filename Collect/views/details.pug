@@ -1,7 +1,7 @@
 ﻿extends layout
 
 block content
-  form(class='uk-form-horizontal uk-margin-large')
+  form(class='uk-form-horizontal uk-margin-large', id='details_form' action='/details/' + item.id, method="POST")
     // Url 
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Url"
@@ -43,4 +43,11 @@ block content
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Title"
       div(class="uk-form-controls")
-        input(class="uk-input" type="text" name="title" placeholder="Title" value=item.title)   
+        input(class="uk-input" type="text" name="title" placeholder="Title" value=item.title)
+ 
+    // Form buttons
+    div(class="uk-margin")
+         button(class="uk-button uk-button-primary button-submit", id="submit", name="submit", type="submit")
+          | Submit
+         button(class="uk-button uk-button-danger button-reset",id="delete", name="delete", type="submit")
+          | Delete

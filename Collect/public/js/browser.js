@@ -173,6 +173,10 @@ function LoadDetails(id, replace = false) {
             if (response.status === 200) {
                 // Create form
                 var form = document.createElement("form");
+                form.id = 'details_form';
+                form.action = '/details/' + item.id;
+                form.method = "POST";
+
                 form.className = "uk-form-horizontal uk-margin-large";
 
                 var fields = ["Url", "Path", "Size", "Id", "Domain", "Saved", "Title"];
@@ -186,7 +190,7 @@ function LoadDetails(id, replace = false) {
                     var label = document.createElement("label");
                     label.className = "uk-form-label";
                     label.htmlFor = "form-horizontal-text";
-                    label.innerText = fields[i];
+                    label.innerText = fields[i] === "Size" ? "Size on disk" : fields[i];
 
                     container.appendChild(label);
 
@@ -212,6 +216,31 @@ function LoadDetails(id, replace = false) {
                     input_con.appendChild(input);
                     form.appendChild(container);
                 }
+
+                var butcon = document.createElement("div");
+                butcon.className = "uk-margin";
+
+                // Submit button
+                var buts = document.createElement("button");
+                buts.innerText = "Submit";
+                buts.name = "submit";
+                buts.className = "uk-button uk-button-primary button-submit";
+                buts.type = "submit";
+                buts.id = "submit";
+
+                butcon.appendChild(buts);
+
+                // Delete button
+                var butd = document.createElement("button");
+                butd.innerText = "Delete";
+                butd.name = "delete";
+                butd.className = "uk-button uk-button-danger button-reset";
+                butd.type = "submit";
+                butd.id = "delete";
+
+                butcon.appendChild(butd);
+
+                form.appendChild(butcon);
 
                 content.innerHTML = "";
                 content.appendChild(form);
@@ -378,6 +407,7 @@ function setEventListeners() {
         }
     }
 
+    // Form on New Page
     try {
         document.getElementById("new_form").onsubmit = function (event) {
             var url = document.getElementById("url").value;
@@ -415,6 +445,14 @@ function setEventListeners() {
             return false;
         };
     } catch (err) { }
+
+    // Form on Details page
+    try {
+        document.getElementById('details_form').onsubmit = function () {
+            //TODO:
+        };
+    } catch (err) { }
+
 }
 
 window.onpopstate = function (event) {
