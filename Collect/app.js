@@ -8,6 +8,13 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+const d = require("./tools/download");
+d.ContentDescription.removeContent("developer.mozilla.org-45c6a35603aa045510afaf2b81af44ded1dc5c08ec80ddacdc", function (err) {
+    if (err) {
+        return console.log(err);
+    }
+    console.log("Success");
+});
 const views_1 = require("./routes/views");
 const api_v1_1 = require("./routes/api_v1");
 const sites_1 = require("./routes/sites");

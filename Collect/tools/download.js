@@ -7,6 +7,7 @@ const murl = require("url");
 const mpath = require("path");
 const extractor = require("unfluff");
 const getFolderSize = require("get-folder-size");
+const async = require("async");
 function website(url, depth = 0, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -126,6 +127,36 @@ function humanFileSize(bytes, si) {
     return bytes.toFixed(1) + ' ' + units[u];
 }
 exports.humanFileSize = humanFileSize;
+// Source: https://stackoverflow.com/a/25069828/5728357
+function removeFolder(location, next) {
+    fs.readdir(location, function (err, files) {
+        async.each(files, function (file, cb) {
+            file = location + '/' + file;
+            fs.stat(file, function (err, stat) {
+                if (err) {
+                    return cb(err);
+                }
+                if (stat.isDirectory()) {
+                    removeFolder(file, cb);
+                }
+                else {
+                    fs.unlink(file, function (err) {
+                        if (err) {
+                            return cb(err);
+                        }
+                        return cb();
+                    });
+                }
+            });
+        }, function (err) {
+            if (err)
+                return next(err);
+            fs.rmdir(location, function (err) {
+                return next(err);
+            });
+        });
+    });
+}
 class ContentDescription {
     constructor(_url, _pagepath, _id, _domain, _date, _title, _size) {
         this.url = _url;
@@ -171,6 +202,30 @@ class ContentDescription {
             }
             result.push(desc);
             ContentDescription.saveFile(result, callback);
+        });
+    }
+    static removeContent(id, callback) {
+        //Remove from file
+        ContentDescription.loadFile(function (err, result) {
+            if (err) {
+                return callback(err);
+            }
+            result = result.filter(function (item) {
+                return item.id !== id;
+            });
+            //Save list
+            ContentDescription.saveFile(result, function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                //Now we need to remove the directory
+                removeFolder(mpath.join('public', 's', id), function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    return callback(null);
+                });
+            });
         });
     }
     static contains(url, callback) {
