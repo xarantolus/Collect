@@ -60,3 +60,7 @@ Please don't use a password you use somewhere else. The login system is insecure
 
 ## Warning
 You're using this tool at your own risk. I am not responsible for any lost data like passwords or websites.
+
+
+## License
+See the [License file](LICENSE)
