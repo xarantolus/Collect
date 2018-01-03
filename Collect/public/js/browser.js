@@ -402,15 +402,17 @@ function setEventListeners() {
                             e_f.innerHTML = '<p class="uk-text-center">' + data.message + '</p>';
                             e_f.style.visibility = "visible";
                         }
-                    }).catch(function () {
-                        var e_f = document.getElementById("error_field");
-                        e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
-                        e_f.style.visibility = "visible";
-                        setLoading(false);
-                        setEventListeners();
                     });
-                    return false;
+                })
+                .catch(function (err) {
+                    console.log(err);
+                    var e_f = document.getElementById("error_field");
+                    e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
+                    e_f.style.visibility = "visible";
+                    setLoading(false);
+                    setEventListeners();
                 });
+            return false;
         };
     } catch (err) { }
 }
