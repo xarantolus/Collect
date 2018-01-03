@@ -1,1 +1,23 @@
-# CollectCollect is a server to collect & archive websites written in NodeJS.It is intended for people who want to archive individual Websites, eg>`https://github.com/some/repo`Collect stores a static copy of the url on your disk## Features   * General      * Website archiving      * Website viewing   * Webinterface      * Add sites      * Browse your archive by domain      * Add sites to the archive      * Edit title of a saved page   * API (incomplete)      * Get all sites / sites by domain      * Get Details of saved content      * Add a site to the Archive
+# Collect
+Collect is a server to collect & archive websites written in NodeJS.
+
+It is intended for people who want to archive individual Websites, eg
+
+>https://github.com/some/repo
+
+Collect stores a static copy of the url on your disk
+
+## Features
+   * General
+      * Website archiving
+      * Website viewing
+   * Webinterface
+      * Add sites
+      * Browse your archive by domain
+      * Add sites to the archive
+      * Edit title of a saved page
+   * API (incomplete)
+      * Get all sites / sites by domain
+      * Get Details of saved content
+      * Add a site to the Archive
+
