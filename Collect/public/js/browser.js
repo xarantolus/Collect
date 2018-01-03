@@ -1,5 +1,7 @@
 //Socket.io events
 var socket = io();
+const n_timeout = 3500;
+const n_pos = "bottom-right"
 socket.on('url', function (data) {
     var url = new URL(data.url);
     var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
@@ -8,8 +10,8 @@ socket.on('url', function (data) {
             UIkit.notification({
                 message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
                 status: 'primary',
-                pos: 'bottom-right',
-                timeout: 3000
+                pos: n_pos,
+                timeout: n_timeout
             });
             notification_count++;
             break;
@@ -18,8 +20,8 @@ socket.on('url', function (data) {
             UIkit.notification({
                 message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
                 status: 'success',
-                pos: 'bottom-right',
-                timeout: 3000
+                pos: n_pos,
+                timeout: n_timeout
             });
             notification_count--;
             break;
@@ -28,8 +30,8 @@ socket.on('url', function (data) {
             UIkit.notification({
                 message: 'Error while processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
                 status: 'danger',
-                pos: 'bottom-right',
-                timeout: 3000
+                pos: n_pos,
+                timeout: n_timeout
             });
             notification_count--;
             break;

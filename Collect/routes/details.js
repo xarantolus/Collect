@@ -27,7 +27,7 @@ router.get('/:id?', (req, res, next) => {
             return next(err);
         }
         var item = result[index];
-        res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
+        return res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
     });
 });
 router.post('/:id?', (req, res, next) => {
@@ -72,7 +72,7 @@ router.post('/:id?', (req, res, next) => {
                 });
             }
         }
-        if (req.body.delete !== undefined && req.body.delete != null) {
+        else if (req.body.delete !== undefined && req.body.delete != null) {
             download.ContentDescription.removeContent(id, function (err) {
                 if (err) {
                     err['status'] = 500;
@@ -83,7 +83,7 @@ router.post('/:id?', (req, res, next) => {
                 return res.redirect("/");
             });
         }
-        if (res.writable) {
+        else {
             next();
         }
     });

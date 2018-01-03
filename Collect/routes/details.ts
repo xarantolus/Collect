@@ -32,7 +32,7 @@ router.get('/:id?', (req: express.Request, res: express.Response, next: express.
 
         var item = result[index];
 
-        res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
+        return res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
     });
 });
 
@@ -81,9 +81,7 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                     return res.render('details', { item: item, message: "Title changed successfully" });
                 });
             }
-        }
-
-        if (req.body.delete !== undefined && req.body.delete != null) {
+        } else if (req.body.delete !== undefined && req.body.delete != null) {
             download.ContentDescription.removeContent(id, function (err) {
                 if (err) {
                     err['status'] = 500;
@@ -93,9 +91,7 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                 }
                 return res.redirect("/");
             });
-        }
-
-        if (res.writable) {
+        } else {
             next();
         }
     });
