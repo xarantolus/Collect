@@ -4,12 +4,11 @@
 import express = require('express');
 import download = require('../tools/download');
 import notif = require('../tools/notifcount');
-import auth = require('http-auth');
 import url = require('url');
 const router = express.Router();
 
 //Show all archived domains
-router.get('/', auth.connect(global["basic_auth"]), (req: express.Request, res: express.Response) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     download.ContentDescription.getSaved(function (err, result) {
         if (err) {
             return res.render('error', { error: err });
@@ -18,7 +17,7 @@ router.get('/', auth.connect(global["basic_auth"]), (req: express.Request, res: 
     });
 });
 
-router.get('/new', auth.connect(global["basic_auth"]), (req: express.Request, res: express.Response) => {
+router.get('/new', (req: express.Request, res: express.Response) => {
     res.render('new', { title: "New Entry" });
 });
 

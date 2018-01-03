@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const path = require("path");
-const auth = require("http-auth");
-const fs = require("fs");
+const auth = require("./tools/auth");
 const user_file = "users.json";
 var bodyParser = require('body-parser');
 var app = express();
@@ -11,24 +10,20 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
-var users = JSON.parse(fs.readFileSync(user_file).toString());
-var basic = auth.basic({
-    realm: "Web."
-}, function (username, password, callback) {
-    callback(users.some(item => item.username === username && item.password === password));
-});
-const views_1 = require("./routes/views");
 const api_v1_1 = require("./routes/api_v1");
+const views_1 = require("./routes/views");
 const sites_1 = require("./routes/sites");
 const details_1 = require("./routes/details");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.get('/', auth.connect(basic), views_1.default);
-//app.use('/', views);
+// Unauthorized routes
+app.use('/api/v1/', api_v1_1.default);
+app.use(auth);
+// Authorized routes
+app.use('/', views_1.default);
 app.use('/details/', details_1.default);
 app.use('/site/', sites_1.default);
-app.use('/api/v1/', api_v1_1.default);
 app.use(express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

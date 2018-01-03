@@ -1,9 +1,9 @@
 ﻿import debug = require('debug');
 import express = require('express');
 import path = require('path');
+import auth = require('./tools/auth');
 import io = require('socket.io');
 import fs = require('fs');
-import auth = require('http-auth');
 const user_file: string = "users.json";
 
 var bodyParser = require('body-parser')
@@ -15,17 +15,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-var users = JSON.parse(fs.readFileSync(user_file).toString());
-
-var basic = auth.basic({
-    realm: "Web."
-}, function (username, password, callback) { // Custom authentication method.
-    callback(users.some(item => item.username === username && item.password === password));
-});
-
-
-import views from './routes/views';
 import api from './routes/api_v1';
+import views from './routes/views';
 import site from './routes/sites';
 import details from './routes/details';
 
@@ -33,10 +24,18 @@ import details from './routes/details';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Unauthorized routes
+// We leave the api unauthorized because we don't have an implementation in browser.js
+app.use('/api/v1/', api);
+
+app.use(auth as express.RequestHandler);
+
+// Authorized routes
 app.use('/', views);
 app.use('/details/', details);
 app.use('/site/', site);
-app.use('/api/v1/', api);
+
+
 
 
 app.use(express.static(path.join(__dirname, 'public')));
