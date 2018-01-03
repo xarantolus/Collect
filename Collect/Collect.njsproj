@@ -77,7 +77,6 @@
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="public\css\main.css" />
-    <Content Include="README.md" />
     <Content Include="views\details.pug">
       <SubType>Code</SubType>
     </Content>
