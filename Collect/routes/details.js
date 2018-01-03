@@ -68,7 +68,7 @@ router.post('/:id?', (req, res, next) => {
                         err.message = "Couldn't change title";
                         return next(err);
                     }
-                    res.render('details', { item: item, message: "Title changed successfully" });
+                    return res.render('details', { item: item, message: "Title changed successfully" });
                 });
             }
         }
@@ -80,10 +80,12 @@ router.post('/:id?', (req, res, next) => {
                     err.message = "Error while deleting entry";
                     return next(err);
                 }
-                res.redirect("/");
+                return res.redirect("/");
             });
         }
-        next();
+        if (res.writable) {
+            next();
+        }
     });
 });
 exports.default = router;

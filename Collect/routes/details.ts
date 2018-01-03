@@ -78,7 +78,7 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                         err.message = "Couldn't change title";
                         return next(err);
                     }
-                    res.render('details', { item: item, message: "Title changed successfully" });
+                    return res.render('details', { item: item, message: "Title changed successfully" });
                 });
             }
         }
@@ -91,11 +91,13 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                     err.message = "Error while deleting entry";
                     return next(err);
                 }
-                res.redirect("/");
+                return res.redirect("/");
             });
         }
 
-        next();
+        if (res.writable) {
+            next();
+        }
     });
 });
 
