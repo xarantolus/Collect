@@ -42,9 +42,14 @@ socket.on('url', function (data) {
         LoadTable(current_domain);
     }
 });
+var initial = true;
 socket.on('notifcount', function (count) {
     notification_count = count || 0;
     setNotifications();
+    if (initial) {
+        setTitle(document.title);
+        initial = false;
+    }
 });
 
 var notification_count = 0;
