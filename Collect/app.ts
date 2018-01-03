@@ -27,6 +27,7 @@ app.set('view engine', 'pug');
 // Unauthorized routes
 // We leave the api unauthorized because we don't have an implementation in browser.js
 app.use('/api/v1/', api);
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(auth as express.RequestHandler);
 
@@ -38,7 +39,6 @@ app.use('/site/', site);
 
 
 
-app.use(express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -18,13 +18,14 @@ const details_1 = require("./routes/details");
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 // Unauthorized routes
+// We leave the api unauthorized because we don't have an implementation in browser.js
 app.use('/api/v1/', api_v1_1.default);
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(auth);
 // Authorized routes
 app.use('/', views_1.default);
 app.use('/details/', details_1.default);
 app.use('/site/', sites_1.default);
-app.use(express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
