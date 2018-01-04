@@ -3,9 +3,10 @@ import express = require('express');
 import crypto = require('crypto');
 import fs = require('fs');
 
+const api_path: string = "/api/v1/";
 var config = require('../config.json');
-
 var cookies: Array<Cookie> = require('../cookies.json');
+
 
 class Cookie {
     public value: string;
@@ -56,6 +57,16 @@ function generateCookie(cb: (err: Error, cookie: Cookie) => any): void {
 module.exports = function (req: express.Request, res: express.Response, next: express.NextFunction): any {
     var user = auth(req);
     var session_cookie = req.cookies["session_id"];
+
+
+    if (req.path.startsWith(api_path)) {
+        if (req.param("token") === config.api_token) {
+            return next();
+        } else {
+           return res.status(401).json({ "message": "Access denied. Set a valid \"token\" in your parameters" });
+        }
+    }
+
 
     console.log("Cookie: " + session_cookie);
     if (!session_cookie) {

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const auth = require("basic-auth");
 const crypto = require("crypto");
 const fs = require("fs");
+const api_path = "/api/v1/";
 var config = require('../config.json');
 var cookies = require('../cookies.json');
 class Cookie {
@@ -44,6 +45,14 @@ function generateCookie(cb) {
 module.exports = function (req, res, next) {
     var user = auth(req);
     var session_cookie = req.cookies["session_id"];
+    if (req.path.startsWith(api_path)) {
+        if (req.param("token") === config.api_token) {
+            return next();
+        }
+        else {
+            return res.status(401).json({ "message": "Access denied. Set a valid \"token\" in your parameters" });
+        }
+    }
     console.log("Cookie: " + session_cookie);
     if (!session_cookie) {
         if (!user || !(user.name === config.username && user.pass === config.password)) {
