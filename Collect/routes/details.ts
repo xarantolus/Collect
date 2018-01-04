@@ -78,7 +78,7 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                         err.message = "Couldn't change title";
                         return next(err);
                     }
-                    return res.render('details', { item: item, message: "Title changed successfully" });
+                    return res.render('details', { item: item, message: "Title changed successfully", file_size: download.humanFileSize(item.size, true) });
                 });
             }
         } else if (req.body.delete !== undefined && req.body.delete != null) {
