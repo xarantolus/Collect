@@ -4,6 +4,7 @@ import path = require('path');
 import auth = require('./tools/auth');
 import io = require('socket.io');
 import fs = require('fs');
+import cookieParser = require('cookie-parser');
 
 var config = require('./config.json')
 
@@ -18,6 +19,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+// parse cookies
+app.use(cookieParser());
+
 import api from './routes/api_v1';
 import views from './routes/views';
 import site from './routes/sites';
@@ -27,17 +31,15 @@ import details from './routes/details';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// Unauthorized routes
-// We leave the api unauthorized because we don't have an implementation in browser.js
-app.use('/api/v1/', api);
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(auth as express.RequestHandler);
 
 // Authorized routes
+app.use('/api/v1/', api);
 app.use('/', views);
 app.use('/details/', details);
 app.use('/site/', site);
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 

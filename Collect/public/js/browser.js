@@ -109,7 +109,8 @@ function LoadTable(domain = "", replace = false) {
     var date_start = Date.now();
     setLoading(true);
     fetch('/api/v1/sites/' + domain, {
-        method: 'get'
+        method: 'get',
+        credentials: 'include'
     }).then(function (response) {
         response.json().then(function (sites) {
             if (response.status === 200) {
@@ -191,7 +192,8 @@ function LoadDetails(id, replace = false) {
     var date_start = Date.now();
     setLoading(true);
     fetch('/api/v1/details/' + id, {
-        method: 'get'
+        method: 'get',
+        credentials: 'include'
     }).then(function (response) {
         response.json().then(function (item) {
             var content = document.getElementById("content");
@@ -445,6 +447,7 @@ function setEventListeners() {
             fetch("/api/v1/site/add",
                 {
                     method: "POST",
+                    credentials: 'include',
                     body: data
                 })
                 .then(function (response) {

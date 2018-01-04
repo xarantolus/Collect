@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const path = require("path");
 const auth = require("./tools/auth");
+const cookieParser = require("cookie-parser");
 var config = require('./config.json');
 const user_file = "users.json";
 var bodyParser = require('body-parser');
@@ -11,6 +12,8 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+// parse cookies
+app.use(cookieParser());
 const api_v1_1 = require("./routes/api_v1");
 const views_1 = require("./routes/views");
 const sites_1 = require("./routes/sites");
@@ -18,15 +21,13 @@ const details_1 = require("./routes/details");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-// Unauthorized routes
-// We leave the api unauthorized because we don't have an implementation in browser.js
-app.use('/api/v1/', api_v1_1.default);
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(auth);
 // Authorized routes
+app.use('/api/v1/', api_v1_1.default);
 app.use('/', views_1.default);
 app.use('/details/', details_1.default);
 app.use('/site/', sites_1.default);
+app.use(express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
