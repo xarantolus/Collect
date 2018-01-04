@@ -57,26 +57,22 @@ function generateCookie(cb: (err: Error, cookie: Cookie) => any): void {
 module.exports = function (req: express.Request, res: express.Response, next: express.NextFunction): any {
     var user = auth(req);
     var session_cookie = req.cookies["session_id"];
+      
 
-
-    if (req.path.startsWith(api_path)) {
-        if (req.param("token") === config.api_token) {
-            return next();
-        } else {
-           return res.status(401).json({ "message": "Access denied. Set a valid \"token\" in your parameters" });
-        }
-    }
-
-
-    console.log("Cookie: " + session_cookie);
+    
     if (!session_cookie) {
         if (!user || !(user.name === config.username && user.pass === config.password)) {
-            console.log("First authentication");
+            if (req.path.startsWith(api_path)) {
+                if (req.param("token") === config.api_token) {
+                    return next();
+                } else {
+                    return res.status(401).json({ "message": "Access denied. Set a valid \"token\" in your parameters" });
+                }
+            }
             res.set('WWW-Authenticate', 'Basic realm="auth"');
             res.status(401).send();
             return;
         } else {
-            console.log("Generating...");
             generateCookie(function (err, c) {
                 if (err) {
                     return next(err);
@@ -90,7 +86,6 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
             console.log("Valid Cookie");
             next();
         } else {
-            console.log("Invalid Cookie");
             res.clearCookie("session_id");
             res.set('WWW-Authenticate', 'Basic realm="auth"');
             res.status(401).send();
