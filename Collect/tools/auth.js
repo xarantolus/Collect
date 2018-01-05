@@ -71,7 +71,6 @@ module.exports = function (req, res, next) {
     }
     else {
         if (isValidCookie(session_cookie)) {
-            console.log("Valid Cookie");
             next();
         }
         else {

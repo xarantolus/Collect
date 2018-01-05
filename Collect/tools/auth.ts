@@ -83,7 +83,6 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
         }
     } else {
         if (isValidCookie(session_cookie)) {
-            console.log("Valid Cookie");
             next();
         } else {
             res.clearCookie("session_id");
