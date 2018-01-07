@@ -52,7 +52,7 @@ An `processing` object describes a started process. An example object looks like
 ```json
 { 
     "message": "Processing started",
-	"target": "http://example.com/some/page"
+    "target": "http://example.com/some/page"
 }
 ```
 * `message`: A message
@@ -81,7 +81,7 @@ http://yourserver:port/api/v1/sites/_domain_
 The parameter `domain` is a domain name, eg `example.com`. If don't give this parameter, all sites from all domains will be returned.
 
 #### Result
-This method returns a List of [Site](#site) objects or an [Error](#error)
+This method returns a List of [Site](#site-internal-contentdescription) objects or an [Error](#error)
 
 ### Details(GET)
 To get details about a saved website, you can use the `/details/` endpoint.
@@ -96,7 +96,7 @@ The parameter `id` is an id of an entry, eg `example.com-4c52804bf1541a1f1ef789b
 If you don't give this parameter or the id doesn't exist on the server, you'll get a 404 response.
 
 #### Result
-This method returns a [Site](#site) object or an [Error](#error)
+This method returns a [Site](#site-internal-contentdescription) object or an [Error](#error)
 
 ### Add Site(POST)
 To add a site to your saved website, you can use the `/site/add` endpoint.
