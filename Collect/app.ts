@@ -48,6 +48,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
+    if (req.path.startsWith("/api/v1/")) {
+        err['api'] = true;
+    }
     err['status'] = 404;
     next(err);
 });
