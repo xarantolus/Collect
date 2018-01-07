@@ -6,18 +6,18 @@ block content
       p(class="uk-text-center")=message
 
   
-  form(class='uk-form-horizontal uk-margin-large', id='details_form' action='/details/' + item.id, method="POST")
+  form(class="uk-form-horizontal uk-margin-large", id="details_form" action="/details/" + item.id, method="POST")
     // Url 
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Url"
       div(class="uk-form-controls")
-        input(class="uk-input" type="text" name="url" placeholder="Url" value=item.url disabled)
+        a(class="uk-input" href=item.url, target="_blank")=item.url
 
     // Path 
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Path"
       div(class="uk-form-controls")
-        input(class="uk-input" type="text" name="pagepath" placeholder="Path" value=item.pagepath disabled)
+        a(class="uk-input" id="pagepath" href="/s/" +item.pagepath)=item.pagepath
 
 
     // Size 
@@ -36,13 +36,13 @@ block content
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Domain"
       div(class="uk-form-controls")
-        input(class="uk-input" type="text" name="domain" placeholder="Domain" value=item.domain disabled)
+        a(class="uk-input" href="/site/" +item.domain)=item.domain
 
     // Saved 
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Saved"
       div(class="uk-form-controls")
-        input(class="uk-input" type="text" name="saved" placeholder="Saved" value=(new Date(item.saved)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/,'$2. $1 $3') disabled)
+        input(class="uk-input" type="text" name="saved" placeholder="Saved" value=(new Date(item.saved)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/,"$2. $1 $3") disabled)
 
     // Title 
     div(class="uk-margin")

@@ -227,17 +227,40 @@ function LoadDetails(id, replace = false) {
 
                     container.appendChild(input_con);
 
-                    var input = document.createElement("input");
-                    input.classList = "uk-input";
-                    input.name = f;
-                    input.type = "text";
-                    input.placeholder = fields[i];
-                    input.value = f === "saved" ?
-                        (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
-                        : f === "size" ? humanFileSize(item["size"], true) : item[f];
-                    if (f !== "title") {
-                        input.disabled = true;
+                    var input = null;
+                    if (["url", "pagepath", "domain"].some(item => item === f)) {
+                        input = document.createElement("a");
+                        switch (f) {
+                            case "url": {
+                                input.href = item.url;
+                                input.innerText = item.url;
+                                input.target = "_blank";
+                                break;
+                            }
+                            case "pagepath": {
+                                input.href = '/s/' + item.pagepath;
+                                input.innerText = item.pagepath;
+                                break;
+                            }
+                            case "domain": {
+                                input.href = '/site/' + item.domain;
+                                input.innerText = item.domain;
+                                break;
+                            }
+                        }
+                    } else {
+                        input = document.createElement("input");
+                        input.name = f;
+                        input.type = "text";
+                        input.placeholder = fields[i];
+                        input.value = f === "saved" ?
+                            (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
+                            : f === "size" ? humanFileSize(item["size"], true) : item[f];
+                        if (f !== "title") {
+                            input.disabled = true;
+                        }
                     }
+                    input.classList = "uk-input";
 
 
                     input_con.appendChild(input);
