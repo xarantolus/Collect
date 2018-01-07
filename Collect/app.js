@@ -42,7 +42,10 @@ if (app.get('env') === 'development') {
         res.status(err['status'] || 500);
         if (err['api'] || false) {
             delete err.api;
-            res.json(err);
+            if (err.stack) {
+                delete err.stack;
+            }
+            res.json({ status: err.status, message: err.message || "Unknown error" });
         }
         else {
             res.render('error', {
@@ -55,11 +58,20 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use((err, req, res, next) => {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+    res.status(err['status'] || 500);
+    if (err['api'] || false) {
+        delete err.api;
+        if (err.stack) {
+            delete err.stack;
+        }
+        res.json({ status: err.status, message: err.message || "Unknown error" });
+    }
+    else {
+        res.render('error', {
+            message: err.message,
+            error: {} //Don't print stack trace
+        });
+    }
 });
 var port = app.get('port') || config.port;
 console.log("Server listening on port " + port);
