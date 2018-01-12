@@ -26,27 +26,12 @@ router.get('/sites/:domain?', (req, res, next) => {
 });
 router.get('/details/:id', (req, res, next) => {
     var id = req.params.id;
-    download.ContentDescription.getSaved(function (err, result) {
+    download.ContentDescription.getById(id, function (err, item) {
         if (err) {
-            err = new Error();
             err['status'] = 500;
             err['api'] = true;
-            err.message = "Can't read data file";
             return next(err);
         }
-        var index = -1;
-        if (id) {
-            index = result.findIndex(item => item.id === id);
-        }
-        if (index === -1 || index >= result.length) {
-            var err = new Error();
-            err['status'] = 404;
-            err['api'] = true;
-            err.message = "Id not found in saved sites";
-            delete err.stack;
-            return next(err);
-        }
-        var item = result[index];
         res.status(200).json(item);
     });
 });
