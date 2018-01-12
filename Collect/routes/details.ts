@@ -9,28 +9,12 @@ const router = express.Router();
 router.get('/:id?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var id = req.params.id;
 
-    download.ContentDescription.getSaved(function (err, result) {
+    download.ContentDescription.getById(id, function (err, item) {
         if (err) {
             err['status'] = 500;
             err['api'] = false;
-            err.message = "Can't read data file";
             return next(err);
         }
-
-        var index = -1;
-        if (id) {
-            index = result.findIndex(item => item.id === id);
-        }
-
-        if (index === -1 || index >= result.length) {
-            var err = new Error();
-            err['status'] = 404;
-            err['api'] = false;
-            err.message = "Id not found in saved sites";
-            return next(err);
-        }
-
-        var item = result[index];
 
         return res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
     });
@@ -38,41 +22,16 @@ router.get('/:id?', (req: express.Request, res: express.Response, next: express.
 
 router.post('/:id?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var id = req.params.id;
-    if (id === undefined || id === null || id == "") {
-        var err = new Error();
-        err['status'] = 412;
-        err['api'] = false;
-        err.message = "No id specified";
-        return next(err);
-    }
-
-    download.ContentDescription.getSaved(function (err, result) {
+    download.ContentDescription.getById(id, function (err, item) {
         if (err) {
             err['status'] = 500;
             err['api'] = false;
-            err.message = "Can't read data file";
             return next(err);
         }
-
-        var index = -1;
-        if (id) {
-            index = result.findIndex(item => item.id === id);
-        }
-
-        if (index === -1 || index >= result.length) {
-            var err = new Error();
-            err['status'] = 404;
-            err['api'] = false;
-            err.message = "Id not found in saved sites";
-            return next(err);
-        }
-
         if (req.body.submit !== undefined && req.body.submit != null) {
             if (req.body.title) {
-                var item_id = result[index].id;
-                download.ContentDescription.setTitle(item_id, req.body.title, function (err, item) {
+                download.ContentDescription.setTitle(item.id, req.body.title, function (err, item) {
                     if (err) {
-                        console.log(err);
                         err['status'] = 500;
                         err['api'] = false;
                         err.message = "Couldn't change title";

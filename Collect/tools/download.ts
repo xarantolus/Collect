@@ -296,4 +296,29 @@ export class ContentDescription {
             }
         });
     }
+
+    public static getById(id: string, callback: (err: Error, result: ContentDescription) => void): void {
+        if (!id) {
+            return callback(new Error("No id given"), null);
+        }
+
+        ContentDescription.loadFile(function (err, result) {
+            if (err) {
+                return callback(err, null);
+            }
+
+            var item = null;
+            if (id) {
+                var index = result.findIndex(item => item.id === id);
+                if (index !== -1) {
+                    item = result[index];
+                }
+            }
+
+            if (item) {
+                return callback(null, item);
+            }
+            return callback(new ReferenceError("There is no item with this id"), null);
+        });
+    }
 }
