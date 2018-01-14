@@ -55,10 +55,12 @@ function generateCookie(cb: (err: Error, cookie: Cookie) => any): void {
 }
 
 module.exports = function (req: express.Request, res: express.Response, next: express.NextFunction): any {
-    var user = auth(req);
+    var user = null;
+    if (req.body && req.body.username && req.body.password) {
+        user = { name: req.body.username, pass: req.body.password };
+    }
+
     var session_cookie = req.cookies["session_id"];
-
-
 
     if (!session_cookie) {
         if (!user || !(user.name === config.username && user.pass === config.password)) {
