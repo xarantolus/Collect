@@ -425,85 +425,87 @@ function getLastUrlElement(str) {
 }
 
 function setEventListeners() {
-    var str_site = location.protocol + '//' + location.host + '/site/';
-    var str_details = location.protocol + '//' + location.host + '/details/';
-    var str_new = location.protocol + '//' + location.host + '/new';
-    var elements = document.getElementsByTagName('a');
-    for (var i = 0; i < elements.length; i++) {
-        // Update table for list urls
-        if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/') {
-            elements[i].onclick = function () {
-                var domain = getLastUrlElement(this.href);
-                LoadTable(domain);
-                return false;
-            };
+    if (location.pathname !== "/login") {
+        var str_site = location.protocol + '//' + location.host + '/site/';
+        var str_details = location.protocol + '//' + location.host + '/details/';
+        var str_new = location.protocol + '//' + location.host + '/new';
+        var elements = document.getElementsByTagName('a');
+        for (var i = 0; i < elements.length; i++) {
+            // Update table for list urls
+            if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/') {
+                elements[i].onclick = function () {
+                    var domain = getLastUrlElement(this.href);
+                    LoadTable(domain);
+                    return false;
+                };
+            }
+
+            // Update details for details urls
+            if (elements[i].href.startsWith(str_details)) {
+                elements[i].onclick = function () {
+                    var id = getLastUrlElement(this.href);
+                    LoadDetails(id);
+                    return false;
+                };
+            }
+
+            // New Page
+            if (elements[i].href.startsWith(str_new)) {
+                elements[i].onclick = function () {
+                    LoadNew();
+                    return false;
+                };
+            }
         }
 
-        // Update details for details urls
-        if (elements[i].href.startsWith(str_details)) {
-            elements[i].onclick = function () {
-                var id = getLastUrlElement(this.href);
-                LoadDetails(id);
-                return false;
-            };
-        }
+        // Form on New Page
+        try {
+            document.getElementById("new_form").onsubmit = function (event) {
+                var url = document.getElementById("url").value;
+                var depth = document.getElementById("depth").value;
 
-        // New Page
-        if (elements[i].href.startsWith(str_new)) {
-            elements[i].onclick = function () {
-                LoadNew();
-                return false;
-            };
-        }
-    }
+                var data = new URLSearchParams();
+                data.append("url", url);
+                data.append("depth", depth);
 
-    // Form on New Page
-    try {
-        document.getElementById("new_form").onsubmit = function (event) {
-            var url = document.getElementById("url").value;
-            var depth = document.getElementById("depth").value;
-
-            var data = new URLSearchParams();
-            data.append("url", url);
-            data.append("depth", depth);
-
-            fetch("/api/v1/site/add",
-                {
-                    method: "POST",
-                    credentials: 'include',
-                    body: data
-                })
-                .then(function (response) {
-                    response.json().then(function (data) {
+                fetch("/api/v1/site/add",
+                    {
+                        method: "POST",
+                        credentials: 'include',
+                        body: data
+                    })
+                    .then(function (response) {
+                        response.json().then(function (data) {
+                            var e_f = document.getElementById("error_field");
+                            if (response.status === 202) {
+                                e_f.style.visibility = "hidden";
+                                return LoadTable();
+                            } else {
+                                e_f.innerHTML = '<p class="uk-text-center">' + data.message + '</p>';
+                                e_f.style.visibility = "visible";
+                            }
+                        });
+                    })
+                    .catch(function (err) {
+                        console.log(err);
                         var e_f = document.getElementById("error_field");
-                        if (response.status === 202) {
-                            e_f.style.visibility = "hidden";
-                            return LoadTable();
-                        } else {
-                            e_f.innerHTML = '<p class="uk-text-center">' + data.message + '</p>';
-                            e_f.style.visibility = "visible";
-                        }
+                        e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
+                        e_f.style.visibility = "visible";
+                        setLoading(false);
+                        setEventListeners();
                     });
-                })
-                .catch(function (err) {
-                    console.log(err);
-                    var e_f = document.getElementById("error_field");
-                    e_f.innerHTML = '<p class="uk-text-center">Failed to load, please try again.</p>';
-                    e_f.style.visibility = "visible";
-                    setLoading(false);
-                    setEventListeners();
-                });
-            return false;
-        };
-    } catch (err) { }
+                return false;
+            };
+        } catch (err) { }
 
-    // Form on Details page
-    try {
-        document.getElementById('details_form').onsubmit = function () {
-            //TODO:
-        };
-    } catch (err) { }
+        // Form on Details page
+        try {
+            document.getElementById('details_form').onsubmit = function () {
+                //TODO:
+            };
+        } catch (err) { }
 
+    }
 }
 
 window.onpopstate = function (event) {
