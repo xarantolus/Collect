@@ -87,11 +87,15 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
             if (isResourceRequest(req.path)) {
                 return next();
             } else {
-                if (!user) {
-                    return res.status(401).render('login');
+                if (req.path === "/login") {
+                    if (!user) {
+                        return res.status(401).render('login');
+                    } else {
+                        //it was wrong info
+                        return res.status(401).render('login', { error_message: 'The username/password you provided is wrong' });
+                    }
                 } else {
-                    //it was wrong info
-                    return res.status(401).render('login', { error_message: 'The username/password you provided is wrong' });
+                    return res.redirect("/login");
                 }
             }
         } else {
@@ -102,7 +106,7 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
                     return next(err);
                 }
                 res.cookie("session_id", c.value, { expires: c.expires });
-                res.redirect("/");
+                return res.redirect("/");
             });
         }
     } else {
@@ -117,7 +121,11 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
             if (isResourceRequest(req.path)) {
                 return next();
             } else {
-                return res.status(401).render('login', { error_message: 'Your cookie expired. Please log in again.' });
+                if (req.path === "/login") {
+                    return res.status(401).render('login', { error_message: 'Your cookie expired. Please log in again.' });
+                } else {
+                    return res.redirect("/login");
+                }
             }
         }
     }
