@@ -69,7 +69,13 @@ module.exports = function (req, res, next) {
                 return next();
             }
             else {
-                return res.status(401).render('login');
+                if (!user) {
+                    return res.status(401).render('login');
+                }
+                else {
+                    //it was wrong info
+                    return res.status(401).render('login', { error_message: 'The username/password you provided is wrong' });
+                }
             }
         }
         else {
@@ -80,7 +86,7 @@ module.exports = function (req, res, next) {
                     return next(err);
                 }
                 res.cookie("session_id", c.value, { expires: c.expires });
-                next();
+                res.redirect("/");
             });
         }
     }
@@ -93,11 +99,13 @@ module.exports = function (req, res, next) {
         else {
             // wrong info, create a new one one
             res.clearCookie("session_id");
-            if (!req.path.startsWith('/s/')) {
+            // Send the login page
+            if (isResourceRequest(req.path)) {
                 return next();
             }
-            res.status(401).render('login', { error_message: 'The info you provided was not correct' });
-            return;
+            else {
+                return res.status(401).render('login', { error_message: 'Your cookie expired. Please log in again.' });
+            }
         }
     }
 };
