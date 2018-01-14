@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  form(class='uk-form-horizontal uk-margin-large', id='login_form', method='POST', action='/login') 
+    -if (error_message)
+      div(class="uk-alert-danger", uk-alert, id="error_field")
+        p(class="uk-text-center")=error_message
+    // Username
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Name"
+      div(class="uk-form-controls")
+        input(class="uk-input" id="username" type="text" name="username" placeholder="Username" value="")
+    // Password
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Password"
+      div(class="uk-form-controls")
+        input(class="uk-input" id="password" type="text" name="password" placeholder="Password" value="")
