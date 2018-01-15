@@ -1,77 +1,80 @@
 //Socket.io events
-var socket = io();
-const n_timeout = 3500;
-const n_pos = "bottom-right"
-var notification_count = 0;
-socket.on('url', function (data) {
-    var url = new URL(data.url);
-    var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
-    switch (data.step) {
-        case 0: {
-            UIkit.notification({
-                message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
-                status: 'primary',
-                pos: n_pos,
-                timeout: n_timeout
-            });
-            notification_count++;
-            break;
+if (location.pathname !== "/login") {
+    var socket = io();
+    const n_timeout = 3500;
+    const n_pos = "bottom-right"
+    var notification_count = 0;
+    socket.on('url', function (data) {
+        var url = new URL(data.url);
+        var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
+        switch (data.step) {
+            case 0: {
+                UIkit.notification({
+                    message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
+                    status: 'primary',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count++;
+                break;
+            }
+            case 2: {
+                UIkit.notification({
+                    message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
+                    status: 'success',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count--;
+                break;
+            }
+            case 4: {
+                UIkit.notification({
+                    message: 'Error while processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
+                    status: 'danger',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count--;
+                break;
+            }
         }
-        case 2: {
-            UIkit.notification({
-                message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
-                status: 'success',
-                pos: n_pos,
-                timeout: n_timeout
-            });
-            notification_count--;
-            break;
+        setNotifications();
+        if (!current_domain.startsWith("-") && !current_domain.startsWith("+")) {
+            LoadTable(current_domain);
         }
-        case 4: {
-            UIkit.notification({
-                message: 'Error while processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
-                status: 'danger',
-                pos: n_pos,
-                timeout: n_timeout
-            });
-            notification_count--;
-            break;
+    });
+    var initial = true;
+    socket.on('notifcount', function (count) {
+        notification_count = count || 0;
+        setNotifications();
+        if (initial) {
+            setTitle(document.title);
+            initial = false;
         }
-    }
-    setNotifications();
-    if (!current_domain.startsWith("-") && !current_domain.startsWith("+")) {
-        LoadTable(current_domain);
-    }
-});
-var initial = true;
-socket.on('notifcount', function (count) {
-    notification_count = count || 0;
-    setNotifications();
-    if (initial) {
-        setTitle(document.title);
-        initial = false;
-    }
-});
+    });
 
-socket.on('disconnect', function () {
-    notification_count = 0;
-    var c_e = document.getElementById("notif_count");
-    c_e.innerText = "?";
-    c_e.style.backgroundColor = "red";
-});
+    socket.on('disconnect', function () {
+        notification_count = 0;
+        var c_e = document.getElementById("notif_count");
+        c_e.innerText = "?";
+        c_e.style.backgroundColor = "red";
+    });
 
-socket.on('connect', function () {
-    var c_e = document.getElementById("notif_count");
-    c_e.innerHTML = notification_count;
-    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    socket.on('connect', function () {
+        var c_e = document.getElementById("notif_count");
+        c_e.innerHTML = notification_count;
+        c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
 
-});
-function setNotifications() {
-    //Elements
-    notification_count = notification_count < 0 ? 0 : notification_count;
-    var c_e = document.getElementById("notif_count");
-    c_e.innerHTML = notification_count;
-    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    });
+
+    function setNotifications() {
+        //Elements
+        notification_count = notification_count < 0 ? 0 : notification_count;
+        var c_e = document.getElementById("notif_count");
+        c_e.innerHTML = notification_count;
+        c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    }
 }
 
 function setTitle(title) {
