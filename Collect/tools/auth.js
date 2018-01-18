@@ -71,11 +71,11 @@ module.exports = function (req, res, next) {
             else {
                 if (req.path === "/login") {
                     if (!user) {
-                        return res.status(401).render('login');
+                        return res.status(401).render('login', { title: "Login" });
                     }
                     else {
                         //it was wrong info
-                        return res.status(401).render('login', { error_message: 'The username/password you provided is wrong' });
+                        return res.status(401).render('login', { title: "Login", error_message: 'The username/password you provided is wrong' });
                     }
                 }
                 else {
@@ -110,7 +110,7 @@ module.exports = function (req, res, next) {
             }
             else {
                 if (req.path === "/login") {
-                    return res.status(401).render('login', { error_message: 'Your cookie expired. Please log in again.' });
+                    return res.status(401).render('login', { title: "Login", error_message: 'Your cookie expired. Please log in again.' });
                 }
                 else {
                     return res.redirect("/login");
