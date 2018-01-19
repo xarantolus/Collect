@@ -1,3 +1,9 @@
+// Variables
+var notification_count = 0;
+var current_domain = "";
+
+var n_timeout = 3500;
+var n_pos = "bottom-right"
 // General Methods
 
 // Source: https://stackoverflow.com/a/14919494/5728357
@@ -15,6 +21,79 @@ function humanFileSize(bytes, si) {
         ++u;
     } while (Math.abs(bytes) >= thresh && u < units.length - 1);
     return bytes.toFixed(1) + ' ' + units[u];
+}
+
+function setLoading(bool) {
+    var spinner = document.getElementById("load_spinner");
+    var logo = document.getElementById("logo");
+    if (bool) {
+        spinner.style.display = "inline";
+        logo.style.display = "none";
+    } else {
+        spinner.style.display = "none";
+        logo.style.display = "inline";
+    }
+}
+
+function setTitle(title) {
+    document.title = notification_count > 0 ? '(' + notification_count + ') ' + title : title;
+}
+
+function scrollToTop() {
+    if (document.body.scrollTop !== 0 || document.documentElement.scrollTop !== 0) {
+        window.scrollBy(0, -50);
+        requestAnimationFrame(scrollToTop);
+    }
+}
+
+function setState(data, title, url, replace = false) {
+    if (replace) {
+        window.history.replaceState(data, title, url);
+    } else {
+        window.history.pushState(data, title, url);
+    }
+}
+
+function getLastUrlElement(str) {
+    var elem = "";
+    var url = new URL(str);
+    if (url.pathname !== "/") {
+        var split = url.pathname.split("/");
+        elem = split[split.length - 1];
+    }
+    return elem;
+}
+
+function tableElement(tag, html) {
+    var elem = document.createElement(tag);
+    elem.innerHTML = html;
+    return elem;
+}
+
+function formatDate(date) {
+    return (new Date(date)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
+}
+
+function createRow(site) {
+    var container = document.createElement("tr");
+    const fields = ["title", "saved", "domain", "details"];
+    for (var i in fields) {
+        var html = "";
+        if (fields[i] === "title") {
+            html = '<a href="/s/' + site["pagepath"] + '">' + site["title"] + '</a>';
+        }
+        else if (fields[i] === "domain") {
+            html = '<a href="/site/' + site["domain"] + '">' + site["domain"] + '</a>';
+        }
+        else if (fields[i] === "details") {
+            html = '<a href="/details/' + site["id"] + '">Details</a>';
+        }
+        else if (fields[i] === "saved") {
+            html = formatDate(site["saved"]);
+        }
+        container.appendChild(tableElement("td", html));
+    }
+    return container;
 }
 
 // Method for Requesting Data
@@ -113,6 +192,61 @@ function SubmitNewForm(evt) {
     evt.preventDefault();
 }
 
+function LoadTable(domain = "", replace = false) {
+    current_domain = domain;
+    var date_start = Date.now();
+    setLoading(true);
+    ajax('/api/v1/sites/', null).get(function (status, sites) {
+        var content = document.getElementById("content");
+        if (status === 200) {
+            if (sites.length > 0) {
+                // Create table
+                var table = document.createElement("table");
+                table.className = "uk-table uk-table-striped uk-table-hover uk-table-responsive";
+
+                // Create thead
+                var thead = document.createElement("thead");
+                var tr = document.createElement("tr");
+                tr.appendChild(tableElement("th", "Title"));
+                tr.appendChild(tableElement("th", "Date"));
+                tr.appendChild(tableElement("th", "Domain"));
+                tr.appendChild(tableElement("th", "Details"));
+
+                thead.appendChild(tr);
+                table.appendChild(thead);
+
+                //Create tbody
+                var tbody = document.createElement("tbody");
+
+                //Add sites
+                for (var index in sites) {
+                    tbody.appendChild(createRow(sites[index]));
+                }
+                table.appendChild(tbody);
+                content.innerHTML = "";
+                content.appendChild(table);
+            } else {
+                content.innerHTML = '<div class="uk-placeholder uk-text-center">There are no archived sites.<br><a href="/new">Add a new site to your archive</a></div>';
+            }
+        } else {
+            var message = "An unknown error occurred.";
+            if (sites.message) {
+                message = "Error: " + sites.message;
+            }
+            content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Try again</a></div>';
+        }
+
+        setLoading(false);
+        var dm = domain === "" ? "All Sites" : domain;
+        setTitle(dm + " - Collect");
+        document.getElementById("title").innerText = dm;
+        setState(domain, document.title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
+
+        //Re-enable event listeners
+        setEventListeners();
+        scrollToTop();
+    });
+}
 
 
 
@@ -135,4 +269,5 @@ window.onpopstate = function (event) {
 
 
 // Run this on load
+current_domain = getLastUrlElement(document.location);
 setEventListeners();
