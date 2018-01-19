@@ -142,7 +142,7 @@ function setEventListeners() {
                     return false;
                 };
             }
-            /*
+            
             // Update details for details urls
             if (elements[i].href.startsWith(str_details)) {
                 elements[i].onclick = function () {
@@ -151,9 +151,9 @@ function setEventListeners() {
                     return false;
                 };
             }
-            */
+            
 
-            /*
+            
             // "Add" Element in header
             if (elements[i].href.startsWith(str_new)) {
                 elements[i].onclick = function () {
@@ -162,7 +162,7 @@ function setEventListeners() {
                 };
             }
 
-            */
+            
         }
         // Form on New Page
         if (location.pathname === "/new") {
@@ -196,7 +196,6 @@ function SubmitNewForm(evt) {
 
 function LoadTable(domain = "", replace = false) {
     current_domain = domain;
-    var date_start = Date.now();
     setLoading(true);
     ajax('/api/v1/sites/', null).get(function (status, sites) {
         var content = document.getElementById("content");
@@ -250,6 +249,166 @@ function LoadTable(domain = "", replace = false) {
     });
 }
 
+function LoadDetails(id, replace = false) {
+    //We need an id
+    if (id === null || id === "" || id === undefined) {
+        throw new ReferenceError("Missing parameter id");
+    }
+    //Details are loading, so domain is -
+    current_domain = "-" + id;
+    setLoading(true);
+
+    ajax('/api/v1/details/' + id, null).get(function (status, item) {
+        var content = document.getElementById("content");
+        if (status === 200) {
+            // Create form
+            var form = document.createElement("form");
+            form.id = 'details_form';
+            form.action = '/details/' + item.id;
+            form.method = "POST";
+
+            form.className = "uk-form-horizontal uk-margin-large";
+
+            var fields = ["Url", "Path", "Size", "Id", "Domain", "Saved", "Title"];
+
+            for (var i = 0; i < fields.length; i++) {
+                var f = fields[i] === "Path" ? "pagepath" : fields[i].toLowerCase();
+
+                var container = document.createElement("div");
+                container.className = "uk-margin";
+
+                var label = document.createElement("label");
+                label.className = "uk-form-label";
+                label.htmlFor = "form-horizontal-text";
+                label.innerText = fields[i] === "Size" ? "Size on disk" : fields[i];
+
+                container.appendChild(label);
+
+
+                var input_con = document.createElement("div");
+                input_con.className = "uk-form-controls";
+
+                container.appendChild(input_con);
+
+                var input = null;
+                if (["url", "pagepath", "domain"].some(item => item === f)) {
+                    input = document.createElement("a");
+                    switch (f) {
+                        case "url": {
+                            input.href = item.url;
+                            input.innerText = item.url;
+                            input.target = "_blank";
+                            break;
+                        }
+                        case "pagepath": {
+                            input.href = '/s/' + item.pagepath;
+                            input.innerText = item.pagepath;
+                            break;
+                        }
+                        case "domain": {
+                            input.href = '/site/' + item.domain;
+                            input.innerText = item.domain;
+                            break;
+                        }
+                    }
+                } else {
+                    input = document.createElement("input");
+                    input.name = f;
+                    input.type = "text";
+                    input.placeholder = fields[i];
+                    input.value = f === "saved" ?
+                        (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
+                        : f === "size" ? humanFileSize(item["size"], true) : item[f];
+                    if (f !== "title") {
+                        input.disabled = true;
+                    }
+                }
+                input.classList = "uk-input";
+
+
+                input_con.appendChild(input);
+                form.appendChild(container);
+            }
+
+            var butcon = document.createElement("div");
+            butcon.className = "uk-margin";
+
+            // Submit button
+            var buts = document.createElement("button");
+            buts.innerText = "Submit";
+            buts.name = "submit";
+            buts.className = "uk-button uk-button-primary button-submit";
+            buts.type = "submit";
+            buts.id = "submit";
+
+            butcon.appendChild(buts);
+
+            // Delete button
+            var butd = document.createElement("button");
+            butd.innerText = "Delete";
+            butd.name = "delete";
+            butd.className = "uk-button uk-button-danger button-reset";
+            butd.type = "submit";
+            butd.id = "delete";
+
+            butcon.appendChild(butd);
+
+            form.appendChild(butcon);
+
+            content.innerHTML = "";
+            content.appendChild(form);
+        } else {
+            var message = "An unknown error occurred.";
+            if (sites.message) {
+                message = "Error: " + sites.message;
+            }
+            content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + id + '">Try again</a></div>';
+        }
+        setLoading(false);
+
+        setTitle("Details - Collect");
+        document.getElementById("title").innerText = "Details";
+
+        setState("-" + id, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
+        //Re-enable event listeners
+        setEventListeners();
+        scrollToTop();
+    });
+}
+
+function LoadNew(replace = false) {
+    current_domain = "+";
+    document.getElementById("content").innerHTML = `<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new"> 
+        <div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div>
+        <!-- Url-->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="form-horizontal-text">Url</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="url" type="url" name="url" placeholder="Url" value="">
+          </div>
+        </div>
+        <!-- Depth-->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="form-horizontal-text">Depth</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">
+          </div>
+        </div>
+        <div class="uk-margin">
+          <button class="uk-button uk-button-primary button-submit" type="submit">Submit</button>
+          <button class="uk-button uk-button-default button-reset" type="reset">Reset</button>
+        </div>
+      </form>`;
+
+
+    setTitle("New Entry - Collect");
+    document.getElementById("title").innerText = "New Entry";
+    setState(current_domain, document.title, location.protocol + "//" + location.host + "/new", replace);
+
+    //Re-enable event listeners
+    setEventListeners();
+    scrollToTop();
+}
 
 
 window.onpopstate = function (event) {
