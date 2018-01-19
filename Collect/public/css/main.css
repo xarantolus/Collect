@@ -9,6 +9,11 @@
     padding-top: 5vh;
 }
 
+.hidden {
+    visibility: hidden;
+    display: none;
+}
+
 th {
     font-weight: bold !important;
 }

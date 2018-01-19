@@ -50,7 +50,9 @@ module.exports = function (req, res, next) {
     if (req.body && req.body.username && req.body.password) {
         user = { name: req.body.username, pass: req.body.password };
     }
+    console.log(JSON.stringify(req.query));
     var session_cookie = req.cookies["session_id"];
+    var redirect = req.body.redirect || req.query.redirect || "/";
     if (!session_cookie) {
         if (!user || !(user.name === config.username && user.pass === config.password)) {
             // We don't have a user or wrong info
@@ -71,15 +73,15 @@ module.exports = function (req, res, next) {
             else {
                 if (req.path === "/login") {
                     if (!user) {
-                        return res.status(401).render('login', { title: "Login" });
+                        return res.status(401).render('login', { title: "Login", redirect: redirect });
                     }
                     else {
                         //it was wrong info
-                        return res.status(401).render('login', { title: "Login", error_message: 'The username/password you provided is wrong' });
+                        return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'The username/password you provided is wrong' });
                     }
                 }
                 else {
-                    return res.redirect("/login");
+                    return res.redirect("/login?redirect=" + encodeURIComponent(req.url));
                 }
             }
         }
@@ -91,7 +93,7 @@ module.exports = function (req, res, next) {
                     return next(err);
                 }
                 res.cookie("session_id", c.value, { expires: c.expires });
-                return res.redirect("/");
+                return res.redirect(redirect);
             });
         }
     }
@@ -110,10 +112,10 @@ module.exports = function (req, res, next) {
             }
             else {
                 if (req.path === "/login") {
-                    return res.status(401).render('login', { title: "Login", error_message: 'Your cookie expired. Please log in again.' });
+                    return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'Your cookie expired. Please log in again.' });
                 }
                 else {
-                    return res.redirect("/login");
+                    return res.redirect("/login?redirect=" + encodeURIComponent(req.url));
                 }
             }
         }
