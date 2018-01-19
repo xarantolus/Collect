@@ -173,17 +173,23 @@ function createRow(site) {
     return container;
 }
 
+
 // Method for Requesting Data
 // Based on https://gist.github.com/duanckham/e5b690178b759603b81c
 // usage(POST): ajax(url, data).post(function(status, obj) { });
 // usage(GET): ajax(url, data).get(function(status, obj) { });
 var ajax = function (url, data) {
     var wrap = function (method, cb) {
+        var sendstr = null;
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
 
-        console.log(data);
-        xhr.send(data);
+        if (method === 'POST' && data && data.depth && data.url) {
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            sendstr = "url=" + encodeURIComponent(data.url) + "&depth=" + encodeURIComponent(data.depth);
+        }
+
+        xhr.send(sendstr);
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status > 0) {
@@ -252,12 +258,8 @@ function setEventListeners() {
 function SubmitNewForm(evt) {
     var url = document.getElementById("url").value;
     var depth = document.getElementById("depth").value;
-
-    var formdata = new FormData();
-    formdata.append("url", url);
-    formdata.append("depth", depth);
-
-    ajax("/api/v1/site/add", formdata).post(function (status, obj) {
+    
+    ajax("/api/v1/site/add", { url: url, depth: depth }).post(function (status, obj) {
         var e_f = document.getElementById("error_field");
         if (status === 202) {
             e_f.style.visibility = "hidden";
