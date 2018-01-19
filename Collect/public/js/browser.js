@@ -123,7 +123,8 @@ function setNotifications() {
     c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
 }
 
-function setState(data, title, url, replace = false) {
+function setState(data, title, url, replace) {
+    replace = replace || false;
     if (replace) {
         window.history.replaceState(data, title, url);
     } else {
@@ -258,7 +259,7 @@ function setEventListeners() {
 function SubmitNewForm(evt) {
     var url = document.getElementById("url").value;
     var depth = document.getElementById("depth").value;
-    
+
     ajax("/api/v1/site/add", { url: url, depth: depth }).post(function (status, obj) {
         var e_f = document.getElementById("error_field");
         if (status === 202) {
@@ -273,7 +274,9 @@ function SubmitNewForm(evt) {
     evt.preventDefault();
 }
 
-function LoadTable(domain = "", replace = false) {
+function LoadTable(domain, replace) {
+    domain = domain || "";
+    replace = replace || false;
     current_domain = domain;
     setLoading(true);
     ajax('/api/v1/sites/' + domain, null).get(function (status, sites) {
@@ -328,7 +331,8 @@ function LoadTable(domain = "", replace = false) {
     });
 }
 
-function LoadDetails(id, replace = false) {
+function LoadDetails(id, replace) {
+    replace = replace || false;
     //We need an id
     if (id === null || id === "" || id === undefined) {
         throw new ReferenceError("Missing parameter id");
@@ -370,7 +374,7 @@ function LoadDetails(id, replace = false) {
                 container.appendChild(input_con);
 
                 var input = null;
-                if (["url", "pagepath", "domain"].some(item => item === f)) {
+                if (["url", "pagepath", "domain"].some(function (item) { return item === f; })) {
                     input = document.createElement("a");
                     switch (f) {
                         case "url": {
@@ -455,29 +459,10 @@ function LoadDetails(id, replace = false) {
     });
 }
 
-function LoadNew(replace = false) {
+function LoadNew(replace) {
+    replace = replace || false;
     current_domain = "+";
-    document.getElementById("content").innerHTML = `<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new"> 
-        <div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div>
-        <!-- Url-->
-        <div class="uk-margin">
-          <label class="uk-form-label" for="form-horizontal-text">Url</label>
-          <div class="uk-form-controls">
-            <input class="uk-input" id="url" type="url" name="url" placeholder="Url" value="">
-          </div>
-        </div>
-        <!-- Depth-->
-        <div class="uk-margin">
-          <label class="uk-form-label" for="form-horizontal-text">Depth</label>
-          <div class="uk-form-controls">
-            <input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">
-          </div>
-        </div>
-        <div class="uk-margin">
-          <button class="uk-button uk-button-primary button-submit" type="submit">Submit</button>
-          <button class="uk-button uk-button-default button-reset" type="reset">Reset</button>
-        </div>
-      </form>`;
+    document.getElementById("content").innerHTML = '<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new">\n<div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div>\n<!-- Url-->\n<div class="uk-margin">\n<label class="uk-form-label" for="form-horizontal-text">Url</label>\n<div class="uk-form-controls">\n<input class="uk-input" id="url" type="url" name="url" placeholder="Url" value="">\n</div>\n</div>\n<!-- Depth-->\n<div class="uk-margin">\n<label class="uk-form-label" for="form-horizontal-text">Depth</label>\n<div class="uk-form-controls">\n<input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">\n</div>\n</div>\n<div class="uk-margin">\n<button class="uk-button uk-button-primary button-submit" type="submit">Submit</button>\n<button class="uk-button uk-button-default button-reset" type="reset">Reset</button>\n</div>\n</form>';
 
 
     setTitle("New Entry - Collect");
