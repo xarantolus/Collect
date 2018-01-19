@@ -4,14 +4,15 @@ const express = require("express");
 const path = require("path");
 const auth = require("./tools/auth");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 var config = require('./config.json');
 const user_file = "users.json";
 var bodyParser = require('body-parser');
 var app = express();
+// Compress responses
+app.use(compression());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
 // parse cookies
 app.use(cookieParser());
 const api_v1_1 = require("./routes/api_v1");

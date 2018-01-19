@@ -50,7 +50,11 @@ function generateCookie(cb: (err: Error, cookie: Cookie) => any): void {
         // Save the cookies!
 
         cookies.push(cookie);
-        fs.writeFile('cookies.json', JSON.stringify(cookies))
+        fs.writeFile('cookies.json', JSON.stringify(cookies), function (err) {
+            if (err) {
+                console.log(err)
+            }
+        });
     });
 }
 
@@ -71,7 +75,7 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
     var session_cookie = req.cookies["session_id"];
 
     var redirect: string = req.body.redirect || req.query.redirect || "/";
-   
+
 
 
     if (!session_cookie) {

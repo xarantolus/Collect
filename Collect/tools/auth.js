@@ -38,7 +38,11 @@ function generateCookie(cb) {
         cb(null, cookie);
         // Save the cookies!
         cookies.push(cookie);
-        fs.writeFile('cookies.json', JSON.stringify(cookies));
+        fs.writeFile('cookies.json', JSON.stringify(cookies), function (err) {
+            if (err) {
+                console.log(err);
+            }
+        });
     });
 }
 const resWhitelist = ["/android-icon-144x144.png", "/android-icon-192x192.png", "/android-icon-36x36.png", "/android-icon-48x48.png", "/android-icon-72x72.png", "/android-icon-96x96.png", "/apple-icon-114x114.png", "/apple-icon-120x120.png", "/apple-icon-144x144.png", "/apple-icon-152x152.png", "/apple-icon-180x180.png", "/apple-icon-57x57.png", "/apple-icon-60x60.png", "/apple-icon-72x72.png", "/apple-icon-76x76.png", "/apple-icon-precomposed.png", "/apple-icon.png", "/browserconfig.xml", "/css", "/css/main.css", "/css/uikit-rtl.css", "/css/uikit-rtl.min.css", "/css/uikit.css", "/css/uikit.min.css", "/favicon-16x16.png", "/favicon-32x32.png", "/favicon-96x96.png", "/favicon.ico", "/icon.svg", "/js", "/js/browser.js", "/js/fetch.min.js", "/js/fetch.min.js.map", "/js/promise-7.0.4.min.js", "/js/promise-7.0.4.min.js.map", "/js/socket.io.js", "/js/socket.io.js.map", "/js/uikit-icons.js", "/js/uikit-icons.min.js", "/js/uikit.js", "/js/uikit.min.js", "/manifest.json", "/ms-icon-144x144.png", "/ms-icon-150x150.png", "/ms-icon-310x310.png", "/ms-icon-70x70.png"];

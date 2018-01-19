@@ -5,6 +5,7 @@ import auth = require('./tools/auth');
 import io = require('socket.io');
 import fs = require('fs');
 import cookieParser = require('cookie-parser');
+import compression = require('compression');
 
 var config = require('./config.json')
 
@@ -13,11 +14,11 @@ const user_file: string = "users.json";
 var bodyParser = require('body-parser')
 var app = express()
 
+// Compress responses
+app.use(compression());
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
-app.use(bodyParser.json())
 
 // parse cookies
 app.use(cookieParser());
