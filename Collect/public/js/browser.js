@@ -4,10 +4,80 @@ var current_domain = "";
 
 var n_timeout = 3500;
 var n_pos = "bottom-right"
+
+//Socket.io, but only if not logging in
+if (location.pathname !== "/login") {
+    var socket = io();
+
+    //Url event handling
+    socket.on('url', function (data) {
+        var url = new URL(data.url);
+        var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
+        switch (data.step) {
+            case 0: {
+                UIkit.notification({
+                    message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
+                    status: 'primary',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count++;
+                break;
+            }
+            case 2: {
+                UIkit.notification({
+                    message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
+                    status: 'success',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count--;
+                break;
+            }
+            case 4: {
+                UIkit.notification({
+                    message: 'Error while processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
+                    status: 'danger',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count--;
+                break;
+            }
+        }
+        setNotifications();
+        if (!current_domain.startsWith("-") && !current_domain.startsWith("+")) {
+            LoadTable(current_domain);
+        }
+    });
+
+    //Notification count handling
+    var initial = true;
+    socket.on('notifcount', function (count) {
+        notification_count = count || 0;
+        setNotifications();
+        if (initial) {
+            setTitle(document.title);
+            initial = false;
+        }
+    });
+    socket.on('disconnect', function () {
+        notification_count = 0;
+        var c_e = document.getElementById("notif_count");
+        c_e.innerText = "?";
+        c_e.style.backgroundColor = "red";
+    });
+    socket.on('connect', function () {
+        var c_e = document.getElementById("notif_count");
+        c_e.innerHTML = notification_count;
+        c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    });
+}
+
 // General Methods
 
-// Source: https://stackoverflow.com/a/14919494/5728357
 function humanFileSize(bytes, si) {
+    // Source: https://stackoverflow.com/a/14919494/5728357
     var thresh = si ? 1000 : 1024;
     if (Math.abs(bytes) < thresh) {
         return bytes + ' B';
@@ -44,6 +114,13 @@ function scrollToTop() {
         window.scrollBy(0, -50);
         requestAnimationFrame(scrollToTop);
     }
+}
+
+function setNotifications() {
+    notification_count = notification_count < 0 ? 0 : notification_count;
+    var c_e = document.getElementById("notif_count");
+    c_e.innerHTML = notification_count;
+    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
 }
 
 function setState(data, title, url, replace = false) {
@@ -103,17 +180,16 @@ function createRow(site) {
 var ajax = function (url, data) {
     var wrap = function (method, cb) {
         var xhr = new XMLHttpRequest();
-
         xhr.open(method, url, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(data ? JSON.stringify(data) : null);
+
+        console.log(data);
+        xhr.send(data);
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status > 0) {
                 cb(xhr.status, JSON.parse(xhr.responseText));
             }
         }
-
         return xhr;
     };
 
@@ -127,6 +203,7 @@ var ajax = function (url, data) {
     };
 };
 
+// setting event listeners
 function setEventListeners() {
     if (location.pathname !== "/login") {
         var str_site = location.protocol + '//' + location.host + '/site/';
@@ -142,7 +219,7 @@ function setEventListeners() {
                     return false;
                 };
             }
-            
+
             // Update details for details urls
             if (elements[i].href.startsWith(str_details)) {
                 elements[i].onclick = function () {
@@ -151,9 +228,9 @@ function setEventListeners() {
                     return false;
                 };
             }
-            
 
-            
+
+
             // "Add" Element in header
             if (elements[i].href.startsWith(str_new)) {
                 elements[i].onclick = function () {
@@ -162,7 +239,7 @@ function setEventListeners() {
                 };
             }
 
-            
+
         }
         // Form on New Page
         if (location.pathname === "/new") {
@@ -176,11 +253,11 @@ function SubmitNewForm(evt) {
     var url = document.getElementById("url").value;
     var depth = document.getElementById("depth").value;
 
-    var data = new FormData();
-    data.append("url", url);
-    data.append("depth", depth);
+    var formdata = new FormData();
+    formdata.append("url", url);
+    formdata.append("depth", depth);
 
-    ajax("/api/v1/site/add", data).post(function (status, obj) {
+    ajax("/api/v1/site/add", formdata).post(function (status, obj) {
         var e_f = document.getElementById("error_field");
         if (status === 202) {
             e_f.style.visibility = "hidden";
@@ -410,7 +487,6 @@ function LoadNew(replace = false) {
     scrollToTop();
 }
 
-
 window.onpopstate = function (event) {
     //If we have no event, we go to the root page
     current_domain = event === null ? "" : event.state || "";
@@ -427,7 +503,6 @@ window.onpopstate = function (event) {
         LoadTable(current_domain || "", true);
     }
 };
-
 
 // Run this on load
 current_domain = getLastUrlElement(document.location);
