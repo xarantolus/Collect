@@ -276,7 +276,7 @@ function SubmitNewForm(evt) {
 function LoadTable(domain = "", replace = false) {
     current_domain = domain;
     setLoading(true);
-    ajax('/api/v1/sites/', null).get(function (status, sites) {
+    ajax('/api/v1/sites/' + domain, null).get(function (status, sites) {
         var content = document.getElementById("content");
         if (status === 200) {
             if (sites.length > 0) {
