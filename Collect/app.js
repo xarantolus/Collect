@@ -21,6 +21,7 @@ const details_1 = require("./routes/details");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set('view cache', true);
 app.use(auth);
 // Authorized routes
 app.use('/api/v1/', api_v1_1.default);
