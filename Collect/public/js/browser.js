@@ -129,39 +129,41 @@ var ajax = function (url, data) {
 
 function setEventListeners() {
     if (location.pathname !== "/login") {
-        /*
-            var str_site = location.protocol + '//' + location.host + '/site/';
-            var str_details = location.protocol + '//' + location.host + '/details/';
-            var str_new = location.protocol + '//' + location.host + '/new';
-            var elements = document.getElementsByTagName('a');
-            for (var i = 0; i < elements.length; i++) {
-                // Update table for list urls
-                if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/') {
-                    elements[i].onclick = function () {
-                        var domain = getLastUrlElement(this.href);
-                        LoadTable(domain);
-                        return false;
-                    };
-                }
-    
-                // Update details for details urls
-                if (elements[i].href.startsWith(str_details)) {
-                    elements[i].onclick = function () {
-                        var id = getLastUrlElement(this.href);
-                        LoadDetails(id);
-                        return false;
-                    };
-                }
-    
-                // "Add" Element in header
-                if (elements[i].href.startsWith(str_new)) {
-                    elements[i].onclick = function () {
-                        LoadNew();
-                        return false;
-                    };
-                }
+        var str_site = location.protocol + '//' + location.host + '/site/';
+        var str_details = location.protocol + '//' + location.host + '/details/';
+        var str_new = location.protocol + '//' + location.host + '/new';
+        var elements = document.getElementsByTagName('a');
+        for (var i = 0; i < elements.length; i++) {
+            // Update table for list urls
+            if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/') {
+                elements[i].onclick = function () {
+                    var domain = getLastUrlElement(this.href);
+                    LoadTable(domain);
+                    return false;
+                };
+            }
+            /*
+            // Update details for details urls
+            if (elements[i].href.startsWith(str_details)) {
+                elements[i].onclick = function () {
+                    var id = getLastUrlElement(this.href);
+                    LoadDetails(id);
+                    return false;
+                };
             }
             */
+
+            /*
+            // "Add" Element in header
+            if (elements[i].href.startsWith(str_new)) {
+                elements[i].onclick = function () {
+                    LoadNew();
+                    return false;
+                };
+            }
+
+            */
+        }
         // Form on New Page
         if (location.pathname === "/new") {
             document.getElementById("new_form").addEventListener('submit', SubmitNewForm);
