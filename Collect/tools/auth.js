@@ -50,7 +50,6 @@ module.exports = function (req, res, next) {
     if (req.body && req.body.username && req.body.password) {
         user = { name: req.body.username, pass: req.body.password };
     }
-    console.log(JSON.stringify(req.query));
     var session_cookie = req.cookies["session_id"];
     var redirect = req.body.redirect || req.query.redirect || "/";
     if (!session_cookie) {
