@@ -1,7 +1,7 @@
 // Variables
 var notification_count = 0;
 var current_domain = "";
-
+var titleWithoutCount = document.title;
 var n_timeout = 3500;
 var n_pos = "bottom-right"
 
@@ -106,6 +106,7 @@ function setLoading(bool) {
 }
 
 function setTitle(title) {
+    titleWithoutCount = title;
     document.title = notification_count > 0 ? '(' + notification_count + ') ' + title : title;
 }
 
@@ -121,6 +122,7 @@ function setNotifications() {
     var c_e = document.getElementById("notif_count");
     c_e.innerHTML = notification_count;
     c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    setTitle(titleWithoutCount);
 }
 
 function setState(data, title, url, replace) {
