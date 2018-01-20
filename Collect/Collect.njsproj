@@ -87,6 +87,7 @@
     <Content Include="views\layout.pug" />
     <Content Include="views\error.pug" />
     <TypeScriptCompile Include="tools\notifcount.ts" />
+    <TypeScriptCompile Include="tools\version-middleware.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\s\" />

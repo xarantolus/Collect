@@ -6,6 +6,9 @@ import io = require('socket.io');
 import fs = require('fs');
 import cookieParser = require('cookie-parser');
 import compression = require('compression');
+import version_mw = require('./tools/version-middleware');
+
+var version = require('./package.json').version || "Unspecified Version";
 
 var config = require('./config.json')
 
@@ -28,6 +31,10 @@ import views from './routes/views';
 import site from './routes/sites';
 import details from './routes/details';
 
+
+// Display version on pages
+app.use(version_mw.globals)
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -35,7 +42,7 @@ app.set('view cache', true);
 
 app.use(auth as express.RequestHandler);
 
-// Authorized routes
+// All routes are authorized
 app.use('/api/v1/', api);
 app.use('/', views);
 app.use('/details/', details);
@@ -86,7 +93,7 @@ app.use((err: any, req, res, next) => {
         if (err.stack) {
             delete err.stack;
         }
-        res.json({ status: err.status, message: err.message || "Unknown error" });
+        res.json({ status: err.status || 500, message: err.message || "Unknown error" });
     } else {
         res.render('error', {
             message: err.message,
@@ -96,7 +103,7 @@ app.use((err: any, req, res, next) => {
 });
 
 var port = app.get('port') || config.port;
-console.log("Server listening on port " + port);
+console.log("Collect-Server(" + version + ") listening on port " + port);
 var server = app.listen(port);
 
 //Set variables

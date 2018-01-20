@@ -5,6 +5,8 @@ const path = require("path");
 const auth = require("./tools/auth");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
+const version_mw = require("./tools/version-middleware");
+var version = require('./package.json').version || "Unspecified Version";
 var config = require('./config.json');
 const user_file = "users.json";
 var bodyParser = require('body-parser');
@@ -19,12 +21,14 @@ const api_v1_1 = require("./routes/api_v1");
 const views_1 = require("./routes/views");
 const sites_1 = require("./routes/sites");
 const details_1 = require("./routes/details");
+// Display version on pages
+app.use(version_mw.globals);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('view cache', true);
 app.use(auth);
-// Authorized routes
+// All routes are authorized
 app.use('/api/v1/', api_v1_1.default);
 app.use('/', views_1.default);
 app.use('/details/', details_1.default);
@@ -69,7 +73,7 @@ app.use((err, req, res, next) => {
         if (err.stack) {
             delete err.stack;
         }
-        res.json({ status: err.status, message: err.message || "Unknown error" });
+        res.json({ status: err.status || 500, message: err.message || "Unknown error" });
     }
     else {
         res.render('error', {
@@ -79,7 +83,7 @@ app.use((err, req, res, next) => {
     }
 });
 var port = app.get('port') || config.port;
-console.log("Server listening on port " + port);
+console.log("Collect-Server(" + version + ") listening on port " + port);
 var server = app.listen(port);
 //Set variables
 var io = require('socket.io')(server);
