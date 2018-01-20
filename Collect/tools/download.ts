@@ -241,6 +241,7 @@ export class ContentDescription {
         //Remove from file
         ContentDescription.loadFile(function (err, result) {
             if (err) {
+                err.message = "Error loading file";
                 return callback(err);
             }
             result = result.filter(function (item) {
@@ -249,11 +250,13 @@ export class ContentDescription {
             //Save list
             ContentDescription.saveFile(result, function (err) {
                 if (err) {
+                    err.message = "Error saving file";
                     return callback(err);
                 }
                 //Now we need to remove the directory
                 removeFolder(mpath.join('public', 's', id), function (err) {
                     if (err) {
+                        err.message = "Error while removing directory";
                         return callback(err);
                     }
                     return callback(null);
