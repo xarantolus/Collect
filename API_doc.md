@@ -152,3 +152,23 @@ The parameter `title` is the new title of the site
 #### Result
 This method returns an [Error](#error) object.
 If successful, the [Error](#error) object has a status of 200.
+
+
+
+
+### Delete Site (POST)
+To delete a saved site, you can use the `/site/_id_/delete` endpoint.
+
+Note: Although this is a POST endpoint, the API token must be passed in the query string.
+
+#### Url
+```
+http://yourserver:port/api/v1/site/_id_/delete
+```
+
+###### id(required)
+The parameter `id` is the id of a saved site, eg `example.com-4c52804bf1541a1f1ef789bf402f7112f91a066dd58c7fb1fe`
+
+#### Result
+This method returns an [Error](#error) object.
+If successful, the [Error](#error) object has a status of 200.

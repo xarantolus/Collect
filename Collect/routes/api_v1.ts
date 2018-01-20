@@ -70,6 +70,24 @@ router.post('/site/:id/settitle', (req: express.Request, res: express.Response, 
     });
 });
 
+router.post('/site/:id/delete', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    var id: string = req.params.id;
+
+
+    download.ContentDescription.removeContent(id, function (err) {
+        if (err) {
+            err['status'] = 500;
+            err['api'] = true;
+            return next(err);
+        }
+
+        res.status(200).send({
+            "status": 200,
+            "message": "Item deleted successfully"
+        });
+    });
+});
+
 router.post('/site/add', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var posted_url: string = "";
     try {
