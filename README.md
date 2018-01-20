@@ -18,10 +18,11 @@ Collect stores a static copy of the url on your disk
       * Browse your archive by domain
       * Add sites to the archive
       * Edit title of a saved page
-   * API (incomplete)
+   * API
       * Get all sites / sites by domain
       * Get details of saved content
       * Add a site to the archive
+      * Edit title of a saved page
 	  * For more, see [the API documentation](API_doc.md)
 ### Installation
 Before installing Collect, please make sure that `git`, `node` and `npm` are installed.
