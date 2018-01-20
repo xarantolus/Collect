@@ -61,6 +61,20 @@ router.post('/site/:id/settitle', (req, res, next) => {
         });
     });
 });
+router.post('/site/:id/delete', (req, res, next) => {
+    var id = req.params.id;
+    download.ContentDescription.removeContent(id, function (err) {
+        if (err) {
+            err['status'] = 500;
+            err['api'] = true;
+            return next(err);
+        }
+        res.status(200).send({
+            "status": 200,
+            "message": "Item deleted successfully"
+        });
+    });
+});
 router.post('/site/add', (req, res, next) => {
     var posted_url = "";
     try {
