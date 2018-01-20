@@ -67,7 +67,10 @@ http://yourserver:port/api/v1/endpoint?token=my_example_token
 
 Note: The token is omitted from the urls in the documentation
 
+
 ## Endpoints
+
+
 
 ### Sites (GET)
 To see the sites that are saved on your Collect server, you can use the `/sites/` endpoint.
@@ -83,6 +86,10 @@ The parameter `domain` is a domain name, eg `example.com`. If don't give this pa
 #### Result
 This method returns a List of [Site](#site-internal-contentdescription) objects or an [Error](#error)
 
+
+
+
+
 ### Details(GET)
 To get details about a saved website, you can use the `/details/` endpoint.
 
@@ -97,6 +104,9 @@ If you don't give this parameter or the id doesn't exist on the server, you'll g
 
 #### Result
 This method returns a [Site](#site-internal-contentdescription) object or an [Error](#error)
+
+
+
 
 ### Add Site(POST)
 To add a site to your saved website, you can use the `/site/add` endpoint.
@@ -119,3 +129,26 @@ If omitted, `depth` is 0.
 
 #### Result
 This method returns a [Processing](#processing) object or an [Error](#error)
+
+
+
+
+### Change Site Title(POST)
+To change the displayed title of a saved site, you can use the `/site/_id_/settitle` endpoint.
+
+Note: Although this is a POST endpoint, the API token must be passed in the query string.
+
+#### Url
+```
+http://yourserver:port/api/v1/site/_id_/settitle
+```
+
+###### id(required)
+The parameter `id` is the id of a saved site, eg `example.com-4c52804bf1541a1f1ef789bf402f7112f91a066dd58c7fb1fe`
+
+###### title(required)
+The parameter `title` is the new title of the site
+
+#### Result
+This method returns an [Error](#error) object.
+If successful, the [Error](#error) object has a status of 200.

@@ -35,6 +35,32 @@ router.get('/details/:id', (req, res, next) => {
         res.status(200).json(item);
     });
 });
+router.post('/site/:id/settitle', (req, res, next) => {
+    var id = req.params.id;
+    var newtitle = null;
+    if (req.body && req.body.title && (req.body.title).length > 0) {
+        newtitle = req.body.title;
+    }
+    else {
+        var err = new Error();
+        err['status'] = 412;
+        err['api'] = true;
+        err.message = "Missing parameter \"title\"";
+        delete err.stack;
+        return next(err);
+    }
+    download.ContentDescription.setTitle(id, newtitle, function (err, item) {
+        if (err) {
+            err['status'] = 500;
+            err['api'] = true;
+            return next(err);
+        }
+        res.status(200).send({
+            "status": 200,
+            "message": "Title changed successfully"
+        });
+    });
+});
 router.post('/site/add', (req, res, next) => {
     var posted_url = "";
     try {
