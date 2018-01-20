@@ -83,7 +83,7 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
             // We don't have a user or wrong info
             if (req.path.startsWith(api_path)) {
                 // This is an api request
-                if (req.param("token") === config.api_token) {
+                if (req.params && req.query.token === config.api_token) {
                     // It is authorized
                     return next();
                 } else {
