@@ -41,6 +41,35 @@ router.get('/details/:id', (req: express.Request, res: express.Response, next: e
 
 });
 
+router.post('/site/:id/settitle', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    var id: string = req.params.id;
+    var newtitle: string = null;
+
+    if (req.body && req.body.title && (req.body.title).length > 0) {
+        newtitle = req.body.title;
+    } else {
+        var err = new Error();
+        err['status'] = 412;
+        err['api'] = true;
+        err.message = "Missing parameter \"title\"";
+        delete err.stack;
+        return next(err);
+    }
+
+    download.ContentDescription.setTitle(id, newtitle, function (err, item) {
+        if (err) {
+            err['status'] = 500;
+            err['api'] = true;
+            return next(err);
+        }
+
+        res.status(200).send({
+            "status": 200,
+            "message": "Title changed successfully"
+        });
+    });
+});
+
 router.post('/site/add', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var posted_url: string = "";
     try {
