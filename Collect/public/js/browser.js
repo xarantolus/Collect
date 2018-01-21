@@ -202,6 +202,9 @@ function createRow(site) {
 
 // Source: https://stackoverflow.com/a/38931547/5728357
 function urlencodeFormData(fd) {
+    if (fd === null) {
+        return null;
+    }
     var s = '';
     function encode(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
     for (var pair of fd.entries()) {
@@ -294,12 +297,10 @@ function setEventListeners() {
 
 // Event Methods
 function SubmitNewForm(evt) {
-    var url = document.getElementById("url").value;
-    var depth = document.getElementById("depth").value;
-
+    // Get required data
     var f = new FormData();
-    f.append("url", url);
-    f.append("depth", depth);
+    f.append("url", document.getElementById("url").value);
+    f.append("depth", document.getElementById("depth").value);
 
     ajax("/api/v1/site/add", f).post(function (status, obj) {
         var e_f = document.getElementById("error_field");
@@ -315,12 +316,26 @@ function SubmitNewForm(evt) {
     evt.preventDefault();
 }
 
-function SubmitDeleteEntry() {
+function SubmitDeleteEntry(evt) {
+    var id = current_domain.substr(1, current_domain.length - 1);
 
+    ajax("/api/v1/site/" + id + "/delete", null).post(function (status, obj) {
+        if (status === 200) {
+            return LoadTable();
+        } else {
+            e_f.innerHTML = '<p class="uk-text-center">' + obj.message + '</p>';
+            e_f.style.visibility = "visible";
+            setLoading(false);
+        }
+    });
+
+    evt.preventDefault();
 }
 
-function SubmitChangeTitle() {
+function SubmitChangeTitle(evt) {
 
+
+    evt.preventDefault();
 }
 
 function LoadTable(domain, replace) {
@@ -393,6 +408,24 @@ function LoadDetails(id, replace) {
     ajax('/api/v1/details/' + id, null).get(function (status, item) {
         var content = document.getElementById("content");
         if (status === 200) {
+            // Create error field d_err
+            /*
+    div(class="uk-alert-success", id="d_err", uk-alert, style="display: none")
+      p(class="uk-text-center")=message */
+
+            var err_con = document.createElement("div");
+            err_con.className = "uk-alert-success";
+            err_con.id = "d_err";
+            err_con["uk-alert"] = "";
+            err_con.style.display = "none";
+
+            var err_mess = document.createElement("p");
+            err_mess.className = "uk-text-center";
+            err_mess.id = "d_err_mess";
+            err_mess.innerText = "message";
+
+            err_con.appendChild(err_mess);
+
             // Create form
             var form = document.createElement("form");
             form.id = 'details_form';
@@ -490,6 +523,7 @@ function LoadDetails(id, replace) {
             form.appendChild(butcon);
 
             content.innerHTML = "";
+            content.appendChild(err_con);
             content.appendChild(form);
         } else {
             var message = "An unknown error occurred.";
