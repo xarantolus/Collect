@@ -2,8 +2,11 @@
 
 block content
   - if(message)
-    div(class="uk-alert-success", uk-alert)
-      p(class="uk-text-center")=message
+    div(class="uk-alert-success", id="d_err", uk-alert)
+      p(class="uk-text-center", id="d_err_mess")=message
+  - else
+    div(class="uk-alert-success", id="d_err", uk-alert, style="display: none")
+      p(class="uk-text-center", id="d_err_mess")
 
   
   form(class="uk-form-horizontal uk-margin-large", id="details_form" action="/details/" + item.id, method="POST")
