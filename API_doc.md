@@ -45,7 +45,7 @@ An `Error` describes an error. An example object looks like this:
 * `status`: The same status as in the http response
 * `message`: Describes the error
 
-Note: When an `Error` object is returned, the status code is always in the 4xx or 5xx range.
+Note: When the status code is in the 4xx or 5xx range, an `Error` object is returned.
 
 ### Processing
 An `processing` object describes a started process. An example object looks like this:
