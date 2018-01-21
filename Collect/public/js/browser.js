@@ -205,7 +205,7 @@ function urlencodeFormData(fd) {
     var s = '';
     function encode(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
     for (var pair of fd.entries()) {
-        if (typeof pair[1] == 'string') {
+        if (typeof pair[1] === 'string') {
             s += (s ? '&' : '') + encode(pair[0]) + '=' + encode(pair[1]);
         }
     }
@@ -230,7 +230,7 @@ var ajax = function (url, formdata) {
         xhr.send(sendstr);
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status > 0) {
+            if (xhr.readyState === 4 && xhr.status > 0) {
                 cb(xhr.status, JSON.parse(xhr.responseText));
             }
         }
@@ -313,6 +313,14 @@ function SubmitNewForm(evt) {
         }
     });
     evt.preventDefault();
+}
+
+function SubmitDeleteEntry() {
+
+}
+
+function SubmitChangeTitle() {
+
 }
 
 function LoadTable(domain, replace) {
