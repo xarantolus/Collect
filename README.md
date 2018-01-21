@@ -1,5 +1,5 @@
 # Collect
-Collect is a server to collect & archive websites written in NodeJS.
+Collect is a server to collect & archive websites written for NodeJS.
 
 It is intended for people who want to archive individual websites, eg
 
