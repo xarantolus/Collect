@@ -55,7 +55,7 @@ if (location.pathname !== "/login") {
         if (current_domain === "-" + data.id) {
             // On details page for this item
             LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
-        } else if (current_domain !== "+") {
+        } else if (current_domain !== "+" && current_domain.startsWith("-")) {
             LoadTable(current_domain, null);
         }
     });
