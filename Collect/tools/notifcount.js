@@ -1,7 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express = require("express");
-var app = express();
 function setNotificationCount(count) {
     global["notif_count"] = count;
 }
