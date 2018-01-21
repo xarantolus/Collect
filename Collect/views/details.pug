@@ -2,12 +2,12 @@
 
 block content  
   form(class="uk-form-horizontal uk-margin-large", id="details_form" action="/details/" + item.id, method="POST")
-   - if(message)
-    div(class="uk-alert-success", id="d_err", uk-alert)
-      p(class="uk-text-center", id="d_err_mess")=message
-   - else
-    div(class="uk-alert-success", id="d_err", uk-alert, style="display: none")
-      p(class="uk-text-center", id="d_err_mess")
+    - if(message)
+     div(class="uk-alert-success", id="d_err", uk-alert)
+       p(class="uk-text-center", id="d_err_mess")=message
+    - else
+     div(class="uk-alert-success", id="d_err", uk-alert, style="display: none")
+       p(class="uk-text-center", id="d_err_mess")
     // Url 
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Url"
