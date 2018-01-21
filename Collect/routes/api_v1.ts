@@ -85,6 +85,8 @@ router.post('/site/:id/delete', (req: express.Request, res: express.Response, ne
             "status": 200,
             "message": "Item deleted successfully"
         });
+        // Event
+        req.app.get('socketio').emit('delete', { "message": "Deleted item \"" + id + "\"", "id": id });
     });
 });
 
@@ -121,7 +123,7 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
         delete err.stack;
         return next(err);
     }
-    
+
     try {
         if (!download.isValidUrl(posted_url))
             throw new Error("Not a valid url");

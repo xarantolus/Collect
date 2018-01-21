@@ -48,6 +48,9 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                     err.message = "Error while deleting entry";
                     return next(err);
                 }
+
+                req.app.get('socketio').emit('delete', { "message": "Deleted item \"" + id + "\"", "id": id });
+
                 return res.redirect("/");
             });
         } else {
