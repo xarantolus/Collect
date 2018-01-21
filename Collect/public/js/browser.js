@@ -292,6 +292,11 @@ function setEventListeners() {
         if (location.pathname === "/new") {
             document.getElementById("new_form").addEventListener('submit', SubmitNewForm);
         }
+
+        // Form on Details Page
+        if (location.pathname.startsWith("/details/")) {
+            document.getElementById("delete").addEventListener('click', SubmitDeleteEntry);
+        }
     }
 }
 
@@ -321,10 +326,16 @@ function SubmitDeleteEntry(evt) {
 
     ajax("/api/v1/site/" + id + "/delete", null).post(function (status, obj) {
         if (status === 200) {
+            // There should be a notification coming from the server
             return LoadTable();
         } else {
-            e_f.innerHTML = '<p class="uk-text-center">' + obj.message + '</p>';
-            e_f.style.visibility = "visible";
+            var error_field = document.getElementById("d_err");
+            var error_message_elem = document.getElementById("d_err_mess");
+
+            error_field.className = "uk-alert-danger";
+            error_field.style.display = "block";
+            error_message_elem = obj.message || "Unknown error";
+
             setLoading(false);
         }
     });
@@ -408,11 +419,6 @@ function LoadDetails(id, replace) {
     ajax('/api/v1/details/' + id, null).get(function (status, item) {
         var content = document.getElementById("content");
         if (status === 200) {
-            // Create error field d_err
-            /*
-    div(class="uk-alert-success", id="d_err", uk-alert, style="display: none")
-      p(class="uk-text-center")=message */
-
             var err_con = document.createElement("div");
             err_con.className = "uk-alert-success";
             err_con.id = "d_err";
@@ -422,12 +428,15 @@ function LoadDetails(id, replace) {
             var err_mess = document.createElement("p");
             err_mess.className = "uk-text-center";
             err_mess.id = "d_err_mess";
-            err_mess.innerText = "message";
+            err_mess.innerText = "";
 
             err_con.appendChild(err_mess);
 
             // Create form
             var form = document.createElement("form");
+
+            form.appendChild(err_con);
+
             form.id = 'details_form';
             form.action = '/details/' + item.id;
             form.method = "POST";
@@ -523,7 +532,6 @@ function LoadDetails(id, replace) {
             form.appendChild(butcon);
 
             content.innerHTML = "";
-            content.appendChild(err_con);
             content.appendChild(form);
         } else {
             var message = "An unknown error occurred.";
@@ -579,4 +587,13 @@ window.onpopstate = function (event) {
 
 // Run this on load
 current_domain = getLastUrlElement(document.location);
+
+if (window.location.pathname.startsWith("/new")) {
+    // New page
+    current_domain = "+";
+} else if (window.location.pathname.startsWith("/details/")) {
+    //Details page
+    current_domain = "-" + current_domain;
+}
+
 setEventListeners();
