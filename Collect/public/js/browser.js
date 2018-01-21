@@ -51,6 +51,30 @@ if (location.pathname !== "/login") {
         }
     });
 
+    socket.on('titlechange', function (data) {
+        if (current_domain === "-" + data.id) {
+            // On details page for this item
+            LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
+        } else if (current_domain !== "+") {
+            LoadTable(current_domain, null);
+        }
+    });
+
+    socket.on('delete', function (data) {
+        if (current_domain === "-" + data.id) {
+            // On details page for this item, but it got deleted
+            LoadTable("", null);
+        } else if (current_domain !== "+") {
+            LoadTable(current_domain, null);
+        }
+
+        UIkit.notification({
+            message: data.message || "Deleted an item",
+            status: 'primary',
+            pos: n_pos,
+            timeout: n_timeout
+        });
+    });
     //Notification count handling
     var initial = true;
     socket.on('notifcount', function (count) {
