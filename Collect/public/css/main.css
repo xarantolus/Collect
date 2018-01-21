@@ -9,6 +9,12 @@
     padding-top: 5vh;
 }
 
+.uk-input {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .hidden {
     visibility: hidden;
     display: none;
@@ -81,5 +87,9 @@ form {
 
     #load_spinner {
         height: 10vh;
+    }
+
+    .button-reset {
+        padding-right: 20vw;
     }
 }
