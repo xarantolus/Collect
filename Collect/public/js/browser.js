@@ -61,10 +61,10 @@ if (location.pathname !== "/login") {
     });
 
     socket.on('delete', function (data) {
-        if (current_domain === "-" + data.id) {
+        if (current_domain === ("-" + data.id)) {
             // On details page for this item, but it got deleted
             LoadTable("", null);
-        } else if (current_domain !== "+") {
+        } else if (current_domain !== "+" && !current_domain.startsWith("-")) {
             LoadTable(current_domain, null);
         }
 
