@@ -34,7 +34,10 @@ router.post('/:id?', (req, res, next) => {
                         err.message = "Couldn't change title";
                         return next(err);
                     }
-                    return res.render('details', { item: item, message: "Title changed successfully", file_size: download.humanFileSize(item.size, true) });
+                    res.render('details', { item: item, message: "Title changed successfully", file_size: download.humanFileSize(item.size, true) });
+                    // Event
+                    req.app.get('socketio').emit('titlechange', { "message": "Changed title of " + id, "id": id, "newtitle": item.title });
+                    return;
                 });
             }
         }
@@ -46,6 +49,7 @@ router.post('/:id?', (req, res, next) => {
                     err.message = "Error while deleting entry";
                     return next(err);
                 }
+                req.app.get('socketio').emit('delete', { "message": "Deleted item \"" + id + "\"", "id": id });
                 return res.redirect("/");
             });
         }
