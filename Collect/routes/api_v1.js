@@ -58,6 +58,8 @@ router.post('/site/:id/settitle', (req, res, next) => {
             "status": 200,
             "message": "Title changed successfully"
         });
+        // Event
+        req.app.get('socketio').emit('titlechange', { "message": "Changed title of " + id, "id": id, "newtitle": newtitle });
     });
 });
 router.post('/site/:id/delete', (req, res, next) => {
@@ -72,6 +74,8 @@ router.post('/site/:id/delete', (req, res, next) => {
             "status": 200,
             "message": "Item deleted successfully"
         });
+        // Event
+        req.app.get('socketio').emit('delete', { "message": "Deleted item \"" + id + "\"", "id": id });
     });
 });
 router.post('/site/add', (req, res, next) => {

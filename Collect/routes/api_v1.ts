@@ -67,6 +67,9 @@ router.post('/site/:id/settitle', (req: express.Request, res: express.Response, 
             "status": 200,
             "message": "Title changed successfully"
         });
+
+        // Event
+        req.app.get('socketio').emit('titlechange', { "message": "Changed title of " + id, "id": id, "newtitle": newtitle });
     });
 });
 

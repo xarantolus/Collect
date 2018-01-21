@@ -37,7 +37,11 @@ router.post('/:id?', (req: express.Request, res: express.Response, next: express
                         err.message = "Couldn't change title";
                         return next(err);
                     }
-                    return res.render('details', { item: item, message: "Title changed successfully", file_size: download.humanFileSize(item.size, true) });
+                    res.render('details', { item: item, message: "Title changed successfully", file_size: download.humanFileSize(item.size, true) });
+
+                    // Event
+                    req.app.get('socketio').emit('titlechange', { "message": "Changed title of " + id, "id": id, "newtitle": item.title });
+                    return;
                 });
             }
         } else if (req.body.delete !== undefined && req.body.delete != null) {

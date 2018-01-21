@@ -20,3 +20,11 @@ Event name: ´delete´
 
 Data: 
 { "message": *string*, "id": *string* }
+
+
+
+#### Title Change
+Event name: ´titlechange´
+
+Data: 
+{ "message": *string*, "id": *string*, "newtitle": *string* }
