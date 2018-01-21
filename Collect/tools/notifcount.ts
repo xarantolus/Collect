@@ -1,7 +1,3 @@
-import express = require('express');
-
-var app = express();
-
 export function setNotificationCount(count: number): void {
     global["notif_count"] = count;
 }
