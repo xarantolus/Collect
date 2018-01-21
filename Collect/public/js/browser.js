@@ -200,20 +200,31 @@ function createRow(site) {
     return container;
 }
 
+// Source: https://stackoverflow.com/a/38931547/5728357
+function urlencodeFormData(fd) {
+    var s = '';
+    function encode(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
+    for (var pair of fd.entries()) {
+        if (typeof pair[1] == 'string') {
+            s += (s ? '&' : '') + encode(pair[0]) + '=' + encode(pair[1]);
+        }
+    }
+    return s;
+}
 
 // Method for Requesting Data
 // Based on https://gist.github.com/duanckham/e5b690178b759603b81c
 // usage(POST): ajax(url, data).post(function(status, obj) { });
 // usage(GET): ajax(url, data).get(function(status, obj) { });
-var ajax = function (url, data) {
+var ajax = function (url, formdata) {
     var wrap = function (method, cb) {
         var sendstr = null;
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
 
-        if (method === 'POST' && data && data.depth && data.url) {
+        if (method === 'POST' && formdata) {
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            sendstr = "url=" + encodeURIComponent(data.url) + "&depth=" + encodeURIComponent(data.depth);
+            sendstr = urlencodeFormData(formdata);
         }
 
         xhr.send(sendstr);
@@ -286,7 +297,11 @@ function SubmitNewForm(evt) {
     var url = document.getElementById("url").value;
     var depth = document.getElementById("depth").value;
 
-    ajax("/api/v1/site/add", { url: url, depth: depth }).post(function (status, obj) {
+    var f = new FormData();
+    f.append("url", url);
+    f.append("depth", depth);
+
+    ajax("/api/v1/site/add", f).post(function (status, obj) {
         var e_f = document.getElementById("error_field");
         if (status === 202) {
             e_f.style.visibility = "hidden";
