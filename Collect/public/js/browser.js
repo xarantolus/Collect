@@ -2,6 +2,7 @@
 var notification_count = 0;
 var current_domain = "";
 var titleWithoutCount = document.title;
+var t_prevent_reload = false;
 var n_timeout = 3500;
 var n_pos = "bottom-right"
 
@@ -52,11 +53,16 @@ if (location.pathname !== "/login") {
     });
 
     socket.on('titlechange', function (data) {
-        if (current_domain === "-" + data.id) {
-            // On details page for this item
-            LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
-        } else if (current_domain !== "+" && !current_domain.startsWith("-")) {
-            LoadTable(current_domain, null);
+        // Is reloading currently prevented?
+        if (!t_prevent_reload) {
+            if (current_domain === "-" + data.id) {
+                // On details page for this item
+                LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
+            } else if (current_domain !== "+" && !current_domain.startsWith("-")) {
+                LoadTable(current_domain, null);
+            }
+        } else {
+            t_prevent_reload = false;
         }
     });
 
@@ -296,6 +302,7 @@ function setEventListeners() {
         // Form on Details Page
         if (location.pathname.startsWith("/details/")) {
             document.getElementById("delete").addEventListener('click', SubmitDeleteEntry);
+            document.getElementById("submit").addEventListener('click', SubmitChangeTitle);
         }
     }
 }
@@ -344,8 +351,31 @@ function SubmitDeleteEntry(evt) {
 }
 
 function SubmitChangeTitle(evt) {
+    var id = current_domain.substr(1, current_domain.length - 1);
+    t_prevent_reload = true;
 
+    var f = new FormData();
+    f.append("title", document.getElementById("d_title").value);
 
+    ajax("/api/v1/site/" + id + "/settitle", f).post(function (status, obj) {
+        var error_field = document.getElementById("d_err");
+        var error_message_elem = document.getElementById("d_err_mess");
+        
+        if (status === 200) {
+            error_field.className = "uk-alert-success uk-alert";
+        } else {
+            error_field.className = "uk-alert-danger uk-alert";
+        }
+
+        error_message_elem.innerText = obj.message || "Unknown error";
+        error_field.style.display = "block";
+        setLoading(false);
+
+        setTimeout(function () {
+            error_field.style.display = "none";
+        }, n_timeout);
+    });
+    
     evt.preventDefault();
 }
 
