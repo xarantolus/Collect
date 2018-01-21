@@ -445,6 +445,8 @@ function LoadDetails(id, replace) {
                         : f === "size" ? humanFileSize(item["size"], true) : item[f];
                     if (f !== "title") {
                         input.disabled = true;
+                    } else {
+                        input.id = "d_title";
                     }
                 }
                 input.classList = "uk-input";
