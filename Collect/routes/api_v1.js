@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const download = require("../tools/download");
 const notif = require("../tools/notifcount");
-const url = require("url");
 const router = express.Router();
 router.get('/sites/:domain?', (req, res, next) => {
     var domain = req.params.domain;
@@ -109,9 +108,9 @@ router.post('/site/add', (req, res, next) => {
         delete err.stack;
         return next(err);
     }
-    var parsed;
     try {
-        parsed = url.parse(posted_url);
+        if (!download.isValidUrl(posted_url))
+            throw new Error("Not a valid url");
     }
     catch (err) {
         err['status'] = 422;

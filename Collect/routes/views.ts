@@ -45,9 +45,9 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
         return res.render('new', { title: "New Entry", error_message: errr.message });
     }
 
-    var parsed: url.Url;
     try {
-        parsed = url.parse(posted_url);
+        if (!download.isValidUrl(posted_url))
+            throw new Error("Not a valid url");
     } catch (err) {
         return res.render('new', { title: "New Entry", error_message: "Parameter \"url\" is not an url" });
     }

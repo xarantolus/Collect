@@ -121,10 +121,10 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
         delete err.stack;
         return next(err);
     }
-
-    var parsed: url.Url;
+    
     try {
-        parsed = url.parse(posted_url);
+        if (!download.isValidUrl(posted_url))
+            throw new Error("Not a valid url");
     } catch (err) {
         err['status'] = 422;
         err['api'] = true;
