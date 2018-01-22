@@ -1,5 +1,6 @@
 // Variables
 var notification_count = 0;
+var ajax_has_error = false;
 var current_domain = "";
 var titleWithoutCount = document.title;
 var t_prevent_reload = false;
@@ -101,6 +102,11 @@ if (location.pathname !== "/login") {
         var c_e = document.getElementById("notif_count");
         c_e.innerHTML = notification_count;
         c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+
+        if (ajax_has_error) {
+            // the ajax request failed and waits for the connection to the server to be re-established
+            resolveCurrent();
+        }
     });
 }
 
@@ -206,6 +212,34 @@ function createRow(site) {
     return container;
 }
 
+function DisplayError(message) {
+    message = message || "An unknown error occured.";
+
+    current_domain = current_domain || "";
+
+    var href = "/";
+
+    if (current_domain.startsWith("-")) {
+        href = "/details/" + current_domain.substr(1, current_domain.length - 1);
+    }
+    else if (current_domain.startsWith("+")) {
+        href = "/new";
+    }
+    else if (current_domain && current_domain != "") {
+        href = "/site/" + current_domain;
+    }
+
+    document.getElementById("content").innerHTML = '<div class="uk-placeholder uk-text-center" style="color: red">' + message + '<br><a href="' + href + '">Try again</a></div>';
+
+    setTitle("Error - Collect");
+    document.getElementById("title").innerText = "Error";
+
+    setState(current_domain, document.title, location.protocol + "//" + location.host + href, true);
+    //Re-enable event listeners
+    setEventListeners();
+    scrollToTop();
+}
+
 // Source: https://stackoverflow.com/a/38931547/5728357
 function urlencodeFormData(fd) {
     if (fd === null) {
@@ -227,6 +261,7 @@ function urlencodeFormData(fd) {
 // usage(GET): ajax(url, data).get(function(status, obj) { });
 var ajax = function (url, formdata) {
     var wrap = function (method, cb) {
+        ajax_has_error = false; // don't reload automatically if the user submitted another request
         var sendstr = null;
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
@@ -243,6 +278,14 @@ var ajax = function (url, formdata) {
                 cb(xhr.status, JSON.parse(xhr.responseText));
             }
         }
+
+        xhr.onerror = function (ev) {
+            DisplayError("The connection to the server timed out.");
+            setEventListeners();
+            setLoading(false);
+            ajax_has_error = true;
+        }
+
         return xhr;
     };
 
@@ -263,6 +306,7 @@ function setEventListeners() {
         var str_details = location.protocol + '//' + location.host + '/details/';
         var str_new = location.protocol + '//' + location.host + '/new';
         var elements = document.getElementsByTagName('a');
+
         for (var i = 0; i < elements.length; i++) {
             // Update table for list urls
             if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/') {
@@ -282,8 +326,6 @@ function setEventListeners() {
                 };
             }
 
-
-
             // "Add" Element in header
             if (elements[i].href.startsWith(str_new)) {
                 elements[i].onclick = function () {
@@ -291,19 +333,22 @@ function setEventListeners() {
                     return false;
                 };
             }
-
-
-        }
-        // Form on New Page
-        if (location.pathname === "/new") {
-            document.getElementById("new_form").addEventListener('submit', SubmitNewForm);
         }
 
-        // Form on Details Page
-        if (location.pathname.startsWith("/details/")) {
-            document.getElementById("delete").addEventListener('click', SubmitDeleteEntry);
-            document.getElementById("submit").addEventListener('click', SubmitChangeTitle);
-        }
+        try {
+            // Form on New Page
+            if (location.pathname === "/new") {
+                document.getElementById("new_form").addEventListener('submit', SubmitNewForm);
+            }
+        } catch (e) { }
+
+        try {
+            // Form on Details Page
+            if (location.pathname.startsWith("/details/")) {
+                document.getElementById("delete").addEventListener('click', SubmitDeleteEntry);
+                document.getElementById("submit").addEventListener('click', SubmitChangeTitle);
+            }
+        } catch (e) { }
     }
 }
 
@@ -360,7 +405,7 @@ function SubmitChangeTitle(evt) {
     ajax("/api/v1/site/" + id + "/settitle", f).post(function (status, obj) {
         var error_field = document.getElementById("d_err");
         var error_message_elem = document.getElementById("d_err_mess");
-        
+
         if (status === 200) {
             error_field.className = "uk-alert-success uk-alert";
         } else {
@@ -375,7 +420,7 @@ function SubmitChangeTitle(evt) {
             error_field.style.display = "none";
         }, n_timeout);
     });
-    
+
     evt.preventDefault();
 }
 
@@ -598,21 +643,27 @@ function LoadNew(replace) {
     scrollToTop();
 }
 
-window.onpopstate = function (event) {
-    //If we have no event, we go to the root page
-    current_domain = event === null ? "" : event.state || "";
+function resolveCurrent(replace) {
+    replace = replace || false;
+
     if (current_domain.startsWith("-")) {
         // current_domain contains the details id
-        LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
+        LoadDetails(current_domain.substr(1, current_domain.length - 1), replace);
     }
     else if (current_domain.startsWith("+")) {
         //The /new page
-        LoadNew(true);
+        LoadNew(replace);
     }
     else {
         // current_domain contains the domain we had before
-        LoadTable(current_domain || "", true);
+        LoadTable(current_domain || "", replace);
     }
+}
+
+window.onpopstate = function (event) {
+    //If we have no event, we go to the root page
+    current_domain = event === null ? "" : event.state || "";
+    resolveCurrent(true);
 };
 
 // Run this on load
