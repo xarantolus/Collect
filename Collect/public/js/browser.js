@@ -477,7 +477,9 @@ function LoadTable(domain, replace) {
 
         //Re-enable event listeners
         setEventListeners();
-        scrollToTop();
+        if (!replace) {
+            scrollToTop();
+        }
     });
 }
 
@@ -623,7 +625,9 @@ function LoadDetails(id, replace) {
         setState("-" + id, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
         //Re-enable event listeners
         setEventListeners();
-        scrollToTop();
+        if (replace) {
+            scrollToTop();
+        }
     });
 }
 
@@ -640,7 +644,9 @@ function LoadNew(replace) {
 
     //Re-enable event listeners
     setEventListeners();
-    scrollToTop();
+    if (!replace) {
+        scrollToTop();
+    }
 }
 
 function resolveCurrent(replace) {
