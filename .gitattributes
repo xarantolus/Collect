@@ -63,7 +63,7 @@
 #*.RTF   diff=astextplain
 
 # Uikit files
-Collect/public/css/uikit* linguist-vendored
+Collect/public/css/* linguist-vendored
 
 # Generated/Compiled Javascript Files
 *.js linguist-vendored
@@ -71,3 +71,6 @@ Collect/public/css/uikit* linguist-vendored
 
 # browser.js is not generated
 Collect/public/js/browser.js linguist-vendored=false
+
+# main.css not extern
+Collect/public/css/main.css
