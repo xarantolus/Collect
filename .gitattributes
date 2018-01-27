@@ -61,3 +61,13 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+# Uikit files
+Collect/public/css/uikit* linguist-vendored
+
+# Generated/Compiled Javascript Files
+*.js linguist-vendored
+*.js.map linguist-vendored
+
+# browser.js is not generated
+Collect/public/js/browser.js linguist-vendored=false
