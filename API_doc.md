@@ -34,6 +34,8 @@ A `site` object describes a saved page. An example object looks like this:
 * `title`: The title displayed in the listing
 * `size`: Size of all content of this page, in bytes
 
+---
+
 ### Error
 An `Error` describes an error. An example object looks like this:
 ```json
@@ -47,6 +49,8 @@ An `Error` describes an error. An example object looks like this:
 
 Note: When the status code is in the 4xx or 5xx range, an `Error` object is returned.
 
+---
+
 ### Processing
 An `processing` object describes a started process. An example object looks like this:
 ```json
@@ -58,6 +62,8 @@ An `processing` object describes a started process. An example object looks like
 * `message`: A message
 * `target`: The url being processed/downloaded
 
+---
+
 ## Authentication
 All API requests must be authenticated either by using a cookie(webinterface) or by passing the API token.
 If you do an APi request, you need to pass your `api_token`(see `config.json`) as url parameter(`token`), eg
@@ -68,9 +74,9 @@ http://yourserver:port/api/v1/endpoint?token=my_example_token
 Note: The token is omitted from the urls in the documentation
 
 
+---
+
 ## Endpoints
-
-
 
 ### Sites (GET)
 To see the sites that are saved on your Collect server, you can use the `/sites/` endpoint.
@@ -87,7 +93,7 @@ The parameter `domain` is a domain name, eg `example.com`. If don't give this pa
 This method returns a List of [Site](#site-internal-contentdescription) objects or an [Error](#error)
 
 
-
+---
 
 
 ### Details(GET)
@@ -106,6 +112,7 @@ If you don't give this parameter or the id doesn't exist on the server, you'll g
 This method returns a [Site](#site-internal-contentdescription) object or an [Error](#error)
 
 
+---
 
 
 ### Add Site(POST)
@@ -131,6 +138,7 @@ If omitted, `depth` is 0.
 This method returns a [Processing](#processing) object or an [Error](#error)
 
 
+---
 
 
 ### Change Site Title(POST)
@@ -154,6 +162,7 @@ This method returns an [Error](#error) object.
 If successful, the [Error](#error) object has a status of 200.
 
 
+---
 
 
 ### Delete Site (POST)
