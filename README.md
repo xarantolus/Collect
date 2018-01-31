@@ -24,6 +24,12 @@ Collect stores a static copy of the url on your disk
       * Add a site to the archive
       * Edit title of a saved page
 	  * For more, see [the API documentation](API_doc.md)
+
+
+#### Screenshot
+  ![Screenshot](screenshot.png)
+
+
 ### Installation
 Before installing Collect, please make sure that `git`, `node` and `npm` are installed.
 
