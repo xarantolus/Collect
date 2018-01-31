@@ -73,6 +73,7 @@ You're using this tool at your own risk. I am not responsible for any lost data 
 ## Credits
    [The UIkit library](https://github.com/uikit/uikit): Copyright YOOtheme GmbH under the MIT license.
 
+   [Ionicons](https://github.com/ionic-team/ionicons): MIT license.
 
 ## License
 See the [License file](LICENSE)
