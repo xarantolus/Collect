@@ -88,22 +88,22 @@ if (location.pathname !== "/login") {
         setNotifications();
         setTitle(titleWithoutCount);
     });
-socket.on('disconnect', function () {
-    notification_count = 0;
-    var c_e = document.getElementById("notif_count");
-    c_e.innerText = "?";
-    c_e.style.backgroundColor = "red";
-});
-socket.on('connect', function () {
-    var c_e = document.getElementById("notif_count");
-    c_e.innerHTML = notification_count;
-    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    socket.on('disconnect', function () {
+        notification_count = 0;
+        var c_e = document.getElementById("notif_count");
+        c_e.innerText = "?";
+        c_e.style.backgroundColor = "red";
+    });
+    socket.on('connect', function () {
+        var c_e = document.getElementById("notif_count");
+        c_e.innerHTML = notification_count;
+        c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
 
-    if (ajax_has_error) {
-        // the ajax request failed and waits for the connection to the server to be re-established
-        resolveCurrent();
-    }
-});
+        if (ajax_has_error) {
+            // the ajax request failed and waits for the connection to the server to be re-established
+            resolveCurrent();
+        }
+    });
 }
 
 // General Methods
