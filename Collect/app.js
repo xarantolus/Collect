@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
         });
     }
 });
-var port = app.get('port') || config.port;
+var port = app.get('port') || process.env.PORT || config.port;
 console.log("Collect-Server(" + version + ") listening on port " + port);
 var server = app.listen(port);
 //Set variables
