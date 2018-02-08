@@ -1,7 +1,7 @@
 // Variables
 var notification_count = 0;
 var ajax_has_error = false;
-var current_domain = "";
+var state = { data: "", isTable: false, isNew: false, isDetails: false };
 var titleWithoutCount = document.title;
 var t_prevent_reload = false;
 var n_timeout = 3500;
@@ -48,19 +48,19 @@ if (location.pathname !== "/login") {
             }
         }
         setNotifications();
-        if (!current_domain.startsWith("-") && !current_domain.startsWith("+")) {
-            LoadTable(current_domain);
+        if (!state.isDetails && !state.isNew) {
+            LoadTable(state.data);
         }
     });
 
     socket.on('titlechange', function (data) {
         // Is reloading currently prevented?
         if (!t_prevent_reload) {
-            if (current_domain === "-" + data.id) {
+            if (state.data === data.id && state.isDetails) {
                 // On details page for this item
-                LoadDetails(current_domain.substr(1, current_domain.length - 1), true);
-            } else if (current_domain !== "+" && !current_domain.startsWith("-")) {
-                LoadTable(current_domain, null);
+                LoadDetails(state.data, true);
+            } else if (!state.isNew && state.isTable) {
+                LoadTable(state.data, null);
             }
         } else {
             t_prevent_reload = false;
@@ -68,11 +68,11 @@ if (location.pathname !== "/login") {
     });
 
     socket.on('delete', function (data) {
-        if (current_domain === ("-" + data.id)) {
+        if (state.data === data.id && state.isDetails) {
             // On details page for this item, but it got deleted
             LoadTable("", null);
-        } else if (current_domain !== "+" && !current_domain.startsWith("-")) {
-            LoadTable(current_domain, null);
+        } else if (!state.isNew && !state.isDetails) {
+            LoadTable(state.data, null);
         }
 
         UIkit.notification({
@@ -211,18 +211,16 @@ function createRow(site) {
 function DisplayError(message) {
     message = message || "An unknown error occured.";
 
-    current_domain = current_domain || "";
-
     var href = "/";
 
-    if (current_domain.startsWith("-")) {
-        href = "/details/" + current_domain.substr(1, current_domain.length - 1);
+    if (state.isDetails) {
+        href = "/details/" + state.data;
     }
-    else if (current_domain.startsWith("+")) {
+    else if (state.isNew) {
         href = "/new";
     }
-    else if (current_domain && current_domain != "") {
-        href = "/site/" + current_domain;
+    else if (state.isTable && state.data !== "") {
+        href = "/site/" + state.data;
     }
 
     document.getElementById("content").innerHTML = '<div class="uk-placeholder uk-text-center" style="color: red">' + message + '<br><a href="' + href + '">Try again</a></div>';
@@ -230,7 +228,7 @@ function DisplayError(message) {
     setTitle("Error - Collect");
     document.getElementById("title").innerText = "Error";
 
-    setState(current_domain, document.title, location.protocol + "//" + location.host + href, true);
+    setState(state, document.title, location.protocol + "//" + location.host + href, true);
     //Re-enable event listeners
     setEventListeners();
     scrollToTop();
@@ -370,7 +368,7 @@ function SubmitNewForm(evt) {
 }
 
 function SubmitDeleteEntry(evt) {
-    var id = current_domain.substr(1, current_domain.length - 1);
+    var id = state.data;
 
     ajax("/api/v1/site/" + id + "/delete", null).post(function (status, obj) {
         if (status === 200) {
@@ -392,7 +390,8 @@ function SubmitDeleteEntry(evt) {
 }
 
 function SubmitChangeTitle(evt) {
-    var id = current_domain.substr(1, current_domain.length - 1);
+    var id = state.data;
+    // Prevent reloading the current page after the title changes
     t_prevent_reload = true;
 
     var f = new FormData();
@@ -423,7 +422,12 @@ function SubmitChangeTitle(evt) {
 function LoadTable(domain, replace) {
     domain = domain || "";
     replace = replace || false;
-    current_domain = domain;
+
+    state.data = domain;
+    state.isDetails = false;
+    state.isNew = false;
+    state.isTable = true;
+
     setLoading(true);
     ajax('/api/v1/sites/' + domain, null).get(function (status, sites) {
         var content = document.getElementById("content");
@@ -485,8 +489,12 @@ function LoadDetails(id, replace) {
     if (id === null || id === "" || id === undefined) {
         throw new ReferenceError("Missing parameter id");
     }
-    //Details are loading, so domain is -
-    current_domain = "-" + id;
+
+    state.data = id;
+    state.isDetails = true;
+    state.isNew = false;
+    state.isTable = false;
+
     setLoading(true);
 
     ajax('/api/v1/details/' + id, null).get(function (status, item) {
@@ -629,14 +637,19 @@ function LoadDetails(id, replace) {
 
 function LoadNew(replace) {
     replace = replace || false;
-    current_domain = "+";
+
+    state.data = null;
+    state.isDetails = false;
+    state.isNew = true;
+    state.isTable = false;
+
     document.getElementById("content").innerHTML = '<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new">\n<div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div>\n<!-- Url-->\n<div class="uk-margin">\n<label class="uk-form-label" for="form-horizontal-text">Url</label>\n<div class="uk-form-controls">\n<input class="uk-input" id="url" type="url" name="url" placeholder="Url" value="">\n</div>\n</div>\n<!-- Depth-->\n<div class="uk-margin">\n<label class="uk-form-label" for="form-horizontal-text">Depth</label>\n<div class="uk-form-controls">\n<input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">\n</div>\n</div>\n<div class="uk-margin">\n<button class="uk-button uk-button-primary button-submit" type="submit">Submit</button>\n<button class="uk-button uk-button-default button-reset" type="reset">Reset</button>\n</div>\n</form>';
 
     document.getElementById("url").focus();
 
     setTitle("New Entry - Collect");
     document.getElementById("title").innerText = "New Entry";
-    setState(current_domain, document.title, location.protocol + "//" + location.host + "/new", replace);
+    setState(state, document.title, location.protocol + "//" + location.host + "/new", replace);
 
     //Re-enable event listeners
     setEventListeners();
@@ -648,35 +661,42 @@ function LoadNew(replace) {
 function resolveCurrent(replace) {
     replace = replace || false;
 
-    if (current_domain.startsWith("-")) {
-        // current_domain contains the details id
-        LoadDetails(current_domain.substr(1, current_domain.length - 1), replace);
+    if (state.isDetails) {
+        // data contains the details id
+        LoadDetails(state.data, replace);
     }
-    else if (current_domain.startsWith("+")) {
+    else if (state.isNew) {
         //The /new page
         LoadNew(replace);
     }
     else {
-        // current_domain contains the domain we had before
-        LoadTable(current_domain || "", replace);
+        // data contains the domain we had before
+        LoadTable(state.data || "", replace);
     }
 }
 
 window.onpopstate = function (event) {
-    //If we have no event, we go to the root page
-    current_domain = event === null ? "" : event.state || "";
+    if (event && event.state) {
+        state = event.state;
+    }
+    // Else: default state (line 5)
+
     resolveCurrent(true);
 };
 
 // Run this on load
-current_domain = getLastUrlElement(document.location);
+state.data = getLastUrlElement(document.location);
 
 if (window.location.pathname.startsWith("/new")) {
     // New page
-    current_domain = "+";
+    state.isNew = true;
+    state.data = null;
 } else if (window.location.pathname.startsWith("/details/")) {
     //Details page
-    current_domain = "-" + current_domain;
+    state.isDetails = true;
+} else {
+    // Must be table
+    state.isTable = true;
 }
 
 setEventListeners();
