@@ -572,7 +572,7 @@ function LoadDetails(id, replace) {
                     input.type = "text";
                     input.placeholder = fields[i];
                     input.value = f === "saved" ?
-                        (new Date(item[f])).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
+                        formatDate(item[f])
                         : f === "size" ? humanFileSize(item["size"], true) : item[f];
                     if (f !== "title") {
                         input.disabled = true;
