@@ -473,7 +473,7 @@ function LoadTable(domain, replace) {
         var dm = domain === "" ? "All Sites" : domain;
         setTitle(dm + " - Collect");
         document.getElementById("title").innerText = dm;
-        setState(domain, document.title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
+        setState(state, document.title, location.protocol + "//" + location.host + (domain === "" ? "/" : "/site/" + domain), replace);
 
         //Re-enable event listeners
         setEventListeners();
@@ -626,7 +626,7 @@ function LoadDetails(id, replace) {
         setTitle("Details - Collect");
         document.getElementById("title").innerText = "Details";
 
-        setState("-" + id, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
+        setState(state, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
         //Re-enable event listeners
         setEventListeners();
         if (replace) {
