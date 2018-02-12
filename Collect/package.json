@@ -22,7 +22,8 @@
     "pug": "^2.0.0-rc.3",
     "socket.io": "^2.0.4",
     "unfluff": "^3.0.0",
-    "website-scraper": "^3.3.2"
+    "website-scraper": "^3.3.2",
+    "website-scraper-phantom": "^0.1.0"
   },
   "devDependencies": {
     "@types/debug": "0.0.30",

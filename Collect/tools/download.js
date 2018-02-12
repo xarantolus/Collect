@@ -8,6 +8,7 @@ const mpath = require("path");
 const extractor = require("unfluff");
 const getFolderSize = require("get-folder-size");
 const async = require("async");
+const phantomHtml = require("website-scraper-phantom");
 function website(url, depth = 0, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -24,7 +25,8 @@ function website(url, depth = 0, callback) {
                 directory: mpath.join("public", "s", dir),
                 maxRecursiveDepth: 1,
                 recursive: depth !== 0,
-                maxDepth: depth > 1 ? depth : null
+                maxDepth: depth > 1 ? depth : null,
+                httpResponseHandler: phantomHtml
             };
             scrape(options, function (error, results) {
                 if (error) {
