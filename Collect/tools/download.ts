@@ -6,7 +6,6 @@ import mpath = require('path')
 import extractor = require('unfluff');
 import getFolderSize = require('get-folder-size');
 import async = require('async');
-import phantomHtml = require('website-scraper-phantom');
 
 export function website(url: string, depth: number = 0, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
@@ -25,8 +24,7 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                 directory: mpath.join("public", "s", dir),
                 maxRecursiveDepth: 1,
                 recursive: depth !== 0,
-                maxDepth: depth > 1 ? depth : null,
-                httpResponseHandler: phantomHtml
+                maxDepth: depth > 1 ? depth : null
             };
 
             scrape(options, function (error, results) {
