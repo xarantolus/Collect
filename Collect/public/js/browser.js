@@ -142,13 +142,6 @@ function setTitle(title) {
     document.title = notification_count > 0 ? '(' + notification_count + ') ' + title : title;
 }
 
-function scrollToTop() {
-    if (document.body.scrollTop !== 0 || document.documentElement.scrollTop !== 0) {
-        window.scrollBy(0, -50);
-        requestAnimationFrame(scrollToTop);
-    }
-}
-
 function setNotifications() {
     notification_count = notification_count < 0 ? 0 : notification_count;
     var c_e = document.getElementById("notif_count");
@@ -231,7 +224,6 @@ function DisplayError(message) {
     setState(state, document.title, location.protocol + "//" + location.host + href, true);
     //Re-enable event listeners
     setEventListeners();
-    scrollToTop();
 }
 
 // Source: https://stackoverflow.com/a/38931547/5728357
@@ -477,9 +469,6 @@ function LoadTable(domain, replace) {
 
         //Re-enable event listeners
         setEventListeners();
-        if (!replace) {
-            scrollToTop();
-        }
     });
 }
 
@@ -629,9 +618,6 @@ function LoadDetails(id, replace) {
         setState(state, document.title, location.protocol + "//" + location.host + "/details/" + id, replace);
         //Re-enable event listeners
         setEventListeners();
-        if (replace) {
-            scrollToTop();
-        }
     });
 }
 
@@ -653,9 +639,6 @@ function LoadNew(replace) {
 
     //Re-enable event listeners
     setEventListeners();
-    if (!replace) {
-        scrollToTop();
-    }
 }
 
 function resolveCurrent(replace) {
