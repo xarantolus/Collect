@@ -455,7 +455,7 @@ function LoadTable(domain, replace) {
             }
         } else {
             var message = "An unknown error occurred.";
-            if (sites.message) {
+            if ((sites || {}).message) {
                 message = "Error: " + sites.message;
             }
             content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + (domain === "" ? "/" : "/site/" + domain) + '">Try again</a></div>';
@@ -605,7 +605,7 @@ function LoadDetails(id, replace) {
             content.appendChild(form);
         } else {
             var message = "An unknown error occurred.";
-            if (sites.message) {
+            if ((item || {}).message) {
                 message = "Error: " + sites.message;
             }
             content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + id + '">Try again</a></div>';
