@@ -103,8 +103,14 @@ module.exports = function (req, res, next) {
     else {
         // We have user info
         if (isValidCookie(session_cookie)) {
-            // this info is valid, continue
-            next();
+            // Redirect to home page if the user goes to the login site(usually while using back buttons)
+            if (req.path === "/login") {
+                return res.redirect("/");
+            }
+            else {
+                // this info is valid, continue
+                return next();
+            }
         }
         else {
             // wrong info, create a new one one
