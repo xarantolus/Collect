@@ -345,6 +345,8 @@ function SubmitNewForm(evt) {
     f.append("url", document.getElementById("url").value);
     f.append("depth", document.getElementById("depth").value);
 
+    setLoading(true);
+
     ajax("/api/v1/site/add", f).post(function (status, obj) {
         var e_f = document.getElementById("error_field");
         if (status === 202) {
@@ -361,6 +363,8 @@ function SubmitNewForm(evt) {
 
 function SubmitDeleteEntry(evt) {
     var id = state.data;
+
+    setLoading(true);
 
     ajax("/api/v1/site/" + id + "/delete", null).post(function (status, obj) {
         if (status === 200) {
@@ -385,6 +389,8 @@ function SubmitChangeTitle(evt) {
     var id = state.data;
     // Prevent reloading the current page after the title changes
     t_prevent_reload = true;
+
+    setLoading(true);
 
     var f = new FormData();
     f.append("title", document.getElementById("d_title").value);
