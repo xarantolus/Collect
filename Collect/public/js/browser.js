@@ -561,6 +561,7 @@ function LoadDetails(id, replace) {
                             break;
                         }
                     }
+                    input.id = f;
                 } else {
                     input = document.createElement("input");
                     input.name = f;
@@ -571,6 +572,7 @@ function LoadDetails(id, replace) {
                         : f === "size" ? humanFileSize(item["size"], true) : item[f];
                     if (f !== "title") {
                         input.disabled = true;
+                        input.id = f;
                     } else {
                         input.id = "d_title";
                     }
