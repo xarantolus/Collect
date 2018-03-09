@@ -4,8 +4,6 @@
 }
 
 #content {
-    padding-right: 1vw;
-    padding-left: 1vw;
     padding-top: 5vh;
 }
 
@@ -90,6 +88,6 @@ form {
     }
 
     .button-reset {
-        padding-right: 20vw;
+        width: 35vw;
     }
 }
