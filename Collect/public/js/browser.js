@@ -226,35 +226,31 @@ function DisplayError(message) {
     setEventListeners();
 }
 
-// Source: https://stackoverflow.com/a/38931547/5728357
-function urlencodeFormData(fd) {
-    if (fd === null) {
-        return null;
-    }
-    var s = '';
-    function encode(s) { return encodeURIComponent(s).replace(/%20/g, '+'); }
-    for (var pair of fd.entries()) {
-        if (typeof pair[1] === 'string') {
-            s += (s ? '&' : '') + encode(pair[0]) + '=' + encode(pair[1]);
+// Source: https://stackoverflow.com/a/1714899/5728357
+function urlencodeFormData(obj) {
+    var str = [];
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
         }
     }
-    return s;
+    return str.join("&");
 }
 
 // Method for Requesting Data
 // Based on https://gist.github.com/duanckham/e5b690178b759603b81c
 // usage(POST): ajax(url, data).post(function(status, obj) { });
 // usage(GET): ajax(url, data).get(function(status, obj) { });
-var ajax = function (url, formdata) {
+var ajax = function (url, data) {
     var wrap = function (method, cb) {
         ajax_has_error = false; // don't reload automatically if the user submitted another request
         var sendstr = null;
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
 
-        if (method === 'POST' && formdata) {
+        if (method === 'POST' && data) {
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            sendstr = urlencodeFormData(formdata);
+            sendstr = urlencodeFormData(data);
         }
 
         xhr.send(sendstr);
@@ -341,9 +337,10 @@ function setEventListeners() {
 // Event Methods
 function SubmitNewForm(evt) {
     // Get required data
-    var f = new FormData();
-    f.append("url", document.getElementById("url").value);
-    f.append("depth", document.getElementById("depth").value);
+    var f = {
+        "url": document.getElementById("url").value,
+        "depth": document.getElementById("depth").value
+    };
 
     setLoading(true);
 
@@ -392,8 +389,7 @@ function SubmitChangeTitle(evt) {
 
     setLoading(true);
 
-    var f = new FormData();
-    f.append("title", document.getElementById("d_title").value);
+    f = { "title": document.getElementById("d_title").value };
 
     ajax("/api/v1/site/" + id + "/settitle", f).post(function (status, obj) {
         var error_field = document.getElementById("d_err");
