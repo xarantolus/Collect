@@ -90,6 +90,11 @@ After installing, the server should output `PhantomJS will be used to process we
 
 If the install fails, you cannot use the module and __*Collect*__ will fall back to the normal way of saving pages.
 
+If you cannot save any pages after installing, remove the module by running 
+```
+npm uninstall website-scraper-phantom
+```
+
 ## Security considerations
    * The login system uses plain text
 
