@@ -33,6 +33,8 @@ Collect stores a static copy of the url on your disk
 ### Installation
 Before installing Collect, please make sure that `git`, `node` and `npm` are installed.
 
+*Note*: This server was tested on `NodeJS v7.7.3` and `NodeJS v6.13.1`.
+
 Start by cloning the repository to your computer/server:
 ```
 git clone https://github.com/xarantolus/Collect.git
@@ -64,6 +66,20 @@ To change settings, edit `Collect/config.json`. There, you can set a `port`, `us
 
 Please don't use a password you use somewhere else. 
 
+### Plugins
+It is recommended to use [`PhantomJS`](http://phantomjs.org/) to process the websites after downloading.
+This ensures that dynamically loaded content is also saved.
+
+
+To use this, install the [`node-website-scraper-phantom` module](https://github.com/website-scraper/node-website-scraper-phantom).
+```
+npm install website-scraper-phantom
+```
+
+After installing, the server should output `PhantomJS will be used to process websites` when started.
+
+If the install fails, you cannot use the module and __*Collect*__ will fall back to the normal way of saving pages.
+
 ## Security considerations
    * The login system uses plain text
 
@@ -71,10 +87,13 @@ Please don't use a password you use somewhere else.
 You're using this tool at your own risk. I am not responsible for any lost data like passwords or websites.
 
 ## Credits
-   [The UIkit library](https://github.com/uikit/uikit): Copyright YOOtheme GmbH under the MIT license.
+   [Website Scraper Module](https://github.com/website-scraper/node-website-scraper): MIT license. I really want to thank the creators. This server is mostly a user interface to this module and would never have been possible without their work.
+   
+   [Website Scraper Module PhantomJS Plugin](https://github.com/website-scraper/node-website-scraper-phantom): MIT license. Makes processing dynamic pages as easy as pie.
 
-   [Ionicons](https://github.com/ionic-team/ionicons): MIT license.
+   [The UIkit library](https://github.com/uikit/uikit): Copyright YOOtheme GmbH under the MIT license. I really love this UI framework.
+
+   [Ionicons](https://github.com/ionic-team/ionicons): MIT license. The icons are really nice. I used the `ion-ios-cloudy-outline` icon.
 
 ## License
 See the [License file](LICENSE)
-

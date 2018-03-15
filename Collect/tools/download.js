@@ -8,6 +8,18 @@ const mpath = require("path");
 const extractor = require("unfluff");
 const getFolderSize = require("get-folder-size");
 const async = require("async");
+var usePhantom = false;
+var phantomHtml;
+try {
+    phantomHtml = require('website-scraper-phantom');
+    usePhantom = true;
+    console.log("PhantomJS will be used to process websites");
+}
+catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+        throw e;
+    }
+}
 function website(url, depth = 0, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -22,9 +34,9 @@ function website(url, depth = 0, callback) {
                     { url: url, filename: getFileName(url) }
                 ],
                 directory: mpath.join("public", "s", dir),
-                maxRecursiveDepth: 1,
                 recursive: depth !== 0,
-                maxDepth: depth > 1 ? depth : null
+                maxDepth: depth > 1 ? depth : null,
+                httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
             };
             scrape(options, function (error, results) {
                 if (error) {

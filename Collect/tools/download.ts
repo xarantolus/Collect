@@ -7,6 +7,18 @@ import extractor = require('unfluff');
 import getFolderSize = require('get-folder-size');
 import async = require('async');
 
+var usePhantom = false;
+var phantomHtml;
+try {
+    phantomHtml = require('website-scraper-phantom');
+    usePhantom = true;
+    console.log("PhantomJS will be used to process websites");
+} catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+        throw e;
+    }
+}
+
 export function website(url: string, depth: number = 0, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -22,9 +34,9 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                     { url: url, filename: getFileName(url) }
                 ],
                 directory: mpath.join("public", "s", dir),
-                maxRecursiveDepth: 1,
-                recursive: depth !== 0,
-                maxDepth: depth > 1 ? depth : null
+                recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
+                maxDepth: depth > 1 ? depth : null, // null == No limit
+                httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
             };
 
             scrape(options, function (error, results) {
