@@ -14,14 +14,16 @@ Collect stores a static copy of the url on your disk
       * Website archiving
       * Website viewing
    * Webinterface
-      * Add sites
-      * Browse your archive by domain
       * Add sites to the archive
+      * Browse your archive by domain
       * Edit title of a saved page
+	  * Delete sites
+	  * Update current page if something changed
    * API
       * Get all sites / sites by domain
       * Get details of saved content
       * Add a site to the archive
+	  * Delete a site
       * Edit title of a saved page
 	  * For more, see [the API documentation](API_doc.md)
 
