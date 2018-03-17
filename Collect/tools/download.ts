@@ -349,7 +349,7 @@ export class ContentDescription {
 
     public static getById(id: string, callback: (err: Error, result: ContentDescription) => void): void {
         if (!id) {
-            return callback(new Error("No id given"), null);
+            return callback(new ReferenceError("No id given"), null);
         }
 
         ContentDescription.loadFile(function (err, result) {
