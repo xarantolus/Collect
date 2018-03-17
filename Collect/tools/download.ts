@@ -7,6 +7,18 @@ import extractor = require('unfluff');
 import getFolderSize = require('get-folder-size');
 import async = require('async');
 
+var id_length: number = require('../config.json').id_length;
+
+if (id_length) {
+    id_length = 5;
+    console.log("[warn] 'id_length' is not set in config. The default of 5 will be used.");
+}
+
+if (id_length < 5) {
+    console.log("[warn] 'id_length' cannot be smaller than 5. The default of 5 will be used.");
+}
+
+
 var usePhantom = false;
 var phantomHtml;
 try {
@@ -160,9 +172,10 @@ function getFileName(url: string): string {
 
 
 function findValidDir(url: string, callback: (path: string) => void) {
-    // 25 bytes => 50 chars
-    crypto.randomBytes(25, function (err, buffer) {
-        var path = murl.parse(url, false).host + "-" + buffer.toString('hex');
+    // eg 25 bytes => 50 chars
+    crypto.randomBytes(Math.ceil(id_length / 2), function (err, buffer) {
+        // get exact length of the string
+        var path = murl.parse(url, false).host + "-" + buffer.toString('hex').slice(0, id_length);
         fs.exists(mpath.join("public", "s", path), function (exists: boolean) {
             if (exists) {
                 findValidDir(url, callback);

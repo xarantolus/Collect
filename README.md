@@ -72,9 +72,27 @@ node app
 When you open the website in your browser, you will notice that you need to authenticate.
 
 #### Settings
-To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password` and `api_token`.
+To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password`, `id_length` and `api_token`.
 
-Please don't use a password you use somewhere else. 
+<details><summary>Settings documentation</summary><p>
+###### Port
+The port the server should listen on. If another program uses this port, the server will not be able to start.
+
+###### Username
+The username that should be used to log in.
+
+###### Password
+The password for this user. [Please don't use a password you use somewhere else.](#security-considerations)
+
+###### ID length
+The length of the ids the server should generate. If you save **a lot** of websites from the same domain (>1 billion) you should change this number.
+
+###### API token
+If you like to play around with the API, you can set an API token. It is implemented so integrating apps like [Workflow](https://workflow.is) is easy.
+
+If you don't want to use the API, it is recommended to set the token to a long random string.
+</p></details>
+ 
 
 ### Plugins
 It is recommended to use [`PhantomJS`](http://phantomjs.org/) to process the websites after downloading.
