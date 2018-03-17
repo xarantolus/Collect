@@ -27,7 +27,7 @@ router.get('/details/:id', (req, res, next) => {
     var id = req.params.id;
     download.ContentDescription.getById(id, function (err, item) {
         if (err) {
-            err['status'] = 500;
+            err['status'] = (err instanceof ReferenceError) ? 404 : 500;
             err['api'] = true;
             return next(err);
         }

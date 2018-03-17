@@ -50,10 +50,6 @@ if (app.get('env') === 'development') {
     app.use((err, req, res, next) => {
         res.status(err['status'] || 500);
         if (err['api'] || false) {
-            delete err.api;
-            if (err.stack) {
-                delete err.stack;
-            }
             res.json({ status: err.status, message: err.message || "Unknown error" });
         }
         else {

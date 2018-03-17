@@ -301,7 +301,7 @@ class ContentDescription {
     }
     static getById(id, callback) {
         if (!id) {
-            return callback(new Error("No id given"), null);
+            return callback(new ReferenceError("No id given"), null);
         }
         ContentDescription.loadFile(function (err, result) {
             if (err) {
