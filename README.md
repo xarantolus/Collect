@@ -74,7 +74,8 @@ When you open the website in your browser, you will notice that you need to auth
 #### Settings
 To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password`, `id_length` and `api_token`.
 
-<details><summary>Settings documentation</summary><p>
+<details><summary>Settings documentation</summary>
+
 ###### Port
 The port the server should listen on. If another program uses this port, the server will not be able to start.
 
