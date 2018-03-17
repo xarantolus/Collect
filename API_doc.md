@@ -66,7 +66,7 @@ An `processing` object describes a started process. An example object looks like
 
 ## Authentication
 All API requests must be authenticated either by using a cookie(webinterface) or by passing the API token.
-If you do an APi request, you need to pass your `api_token`(see `config.json`) as url parameter(`token`), eg
+If you do an API request, you need to pass your `api_token`(see `config.json`) as url parameter(`token`), eg
 ```
 http://yourserver:port/api/v1/endpoint?token=my_example_token
 ```
@@ -116,7 +116,7 @@ This method returns a [Site](#site-internal-contentdescription) object or an [Er
 
 
 ### Add Site(POST)
-To add a site to your saved website, you can use the `/site/add` endpoint.
+To add a site to your saved websites, you can use the `/site/add` endpoint.
 
 Note: This endpoint returns a status code of 202 on success.
 
@@ -181,3 +181,15 @@ The parameter `id` is the id of a saved site, eg `example.com-4c52804bf1541a1f1e
 #### Result
 This method returns an [Error](#error) object.
 If successful, the [Error](#error) object has a status of 200.
+
+
+
+---
+
+To see these API requests in action, open your browser console and enable `XHR` (Firefox) or open the "Network" tab (Chrome & Firefox).
+
+You should see something like this (Firefox): 
+
+![Console Screenshot (Firefox)](github/screenshot-console.png?raw=true)
+
+If you have any questions or something doesn't work the way you expected it to, feel free to open an issue.

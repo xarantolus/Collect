@@ -16,9 +16,9 @@ Collect stores a static copy of the url on your disk
    * Webinterface
       * Add sites to the archive
       * Browse your archive by domain
-      * Edit title of a saved page
+      * Edit titles of saved pages
 	  * Delete sites
-	  * Update current page if something changed
+	  * Updates changes on the server in real time
    * API
       * Get all sites / sites by domain
       * Get details of saved content
