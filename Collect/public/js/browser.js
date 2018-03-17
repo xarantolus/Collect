@@ -628,7 +628,7 @@ function LoadDetails(id, replace) {
         } else {
             var message = "An unknown error occurred.";
             if ((item || {}).message) {
-                message = "Error: " + sites.message;
+                message = "Error: " + item.message;
             }
             content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + id + '">Try again</a></div>';
         }
