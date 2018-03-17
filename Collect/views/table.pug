@@ -21,7 +21,7 @@ block content
                 a(href='/details/' + val.id)
                  | Details
       - var count_label = "There " + (list.length === 1 ? "is":"are") + " " + list.length + " item" + (list.length === 1 ? "" : "s") + (((domain || "") === "") ? "." : " for this domain.")
-      div(class='uk-text-center uk-text-muted uk-text-small')=count_label
+      div(class='uk-text-center uk-margin-small uk-text-muted uk-text-small')=count_label
   - else
       div(class='uk-placeholder uk-text-center')
        | There are no archived sites.
