@@ -459,6 +459,16 @@ function LoadTable(domain, replace) {
                 table.appendChild(tbody);
                 content.innerHTML = "";
                 content.appendChild(table);
+
+                // Add Counter
+                var count_label = "There " + (sites.length === 1 ? "is" : "are") + " " + sites.length + " item" + (sites.length === 1 ? "" : "s") + (((domain || "") === "") ? "." : " for this domain.");
+
+                var c_l = document.createElement("div");
+                c_l.className = "uk-text-center uk-text-muted uk-text-small";
+                c_l.innerText = count_label;
+
+                content.appendChild(c_l);
+
             } else {
                 content.innerHTML = '<div class="uk-placeholder uk-text-center">There are no archived sites.<br><a href="/new">Add a new site to your archive</a></div>';
             }

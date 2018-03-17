@@ -13,7 +13,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>75f742df-d4a3-4584-961d-a400e1c86b92</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>tools\download.ts</StartupFile>
+    <StartupFile>app.ts</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
