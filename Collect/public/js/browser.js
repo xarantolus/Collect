@@ -37,6 +37,7 @@ if (location.pathname !== "/login") {
 
                 // Play notification                
                 if (notif_sound && notif_sound.canPlayType("audio/ogg") && notif_sound.readyState > 3) {
+                    notif_sound.currentTime = 0;
                     notif_sound.play();
                 }
 
