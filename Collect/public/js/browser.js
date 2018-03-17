@@ -5,7 +5,8 @@ var state = { data: "", isTable: false, isNew: false, isDetails: false };
 var titleWithoutCount = document.title;
 var t_prevent_reload = false;
 var n_timeout = 3500;
-var n_pos = "bottom-right"
+var n_pos = "bottom-right";
+var notif_sound = (Audio) ? new Audio("/notification_sound.ogg") : null;
 
 //Socket.io, but only if not logging in
 if (location.pathname !== "/login") {
@@ -33,6 +34,12 @@ if (location.pathname !== "/login") {
                     pos: n_pos,
                     timeout: n_timeout
                 });
+
+                // Play notification                
+                if (notif_sound && notif_sound.canPlayType("audio/ogg") && notif_sound.readyState > 3) {
+                    notif_sound.play();
+                }
+
                 notification_count--;
                 break;
             }
@@ -547,8 +554,9 @@ function LoadDetails(id, replace) {
                             break;
                         }
                         case "pagepath": {
-                            input.href = '/s/' + item.pagepath;
-                            input.innerText = item.pagepath;
+                            var displaypath = (item.pagepath.endsWith("/index.html") || item.pagepath.endsWith("\index.html")) ? (item.id + "/") : item.pagepath;
+                            input.href = '/s/' + displaypath;
+                            input.innerText = displaypath;
                             break;
                         }
                         case "domain": {

@@ -110,5 +110,8 @@ You're using this tool at your own risk. I am not responsible for any lost data 
 
    [Ionicons](https://github.com/ionic-team/ionicons): MIT license. The icons are really nice. I used the `ion-ios-cloudy-outline` icon.
 
+   [Notification Sound](https://freesound.org/people/philitup321/sounds/204369/): CC0 1.0 Universal License
+
+   
 ## License
 See the [License file](LICENSE)
