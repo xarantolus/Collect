@@ -83,30 +83,42 @@ function website(url, depth = 0, callback) {
     });
 }
 exports.website = website;
-//We assume that urls with these extensinos return html
-const html_exts = [".asp", ".php", ".html", ".jsp"];
+//We assume that urls with these extensions return html
+const html_exts = [".asp", ".php", ".html", ".jsp", ".aspx"];
+const INDEX_NAME = "index.html";
 function getFileName(url) {
-    // /path/asdf.jpg
-    var urlpath = murl.parse(url, false).pathname;
-    // asdf.jpg
-    var base = mpath.basename(urlpath);
-    if (base != "" && base != null) {
-        // .jpg
-        var ext = mpath.extname(base);
-        if (ext === null || ext === "" || html_exts.some(item => ext == item)) {
-            ext = "html";
-        }
-        else {
-            ext = ext.substr(1, ext.length);
-        }
-        var bsplit = base.split('.');
-        bsplit.pop();
-        bsplit.push(ext);
-        return bsplit.join('.');
+    if (url.endsWith("/")) {
+        // Index of a directory or home page
+        return INDEX_NAME;
+    }
+    var urlobj = murl.parse(url, false);
+    if (urlobj.protocol + "//" + urlobj.host === url) {
+        // Home page
+        return INDEX_NAME;
+    }
+    var base = mpath.basename(url);
+    if (base === "" || base === null) {
+        // In case we don't have a basename
+        return INDEX_NAME;
+    }
+    var ext = mpath.extname(base);
+    if (ext === null || ext === "" || html_exts.some(item => ext == item)) {
+        // it's probably a html response
+        ext = "html";
     }
     else {
-        return "index.html";
+        // remove the dot from the extension
+        ext = ext.substr(1, ext.length);
     }
+    // if the file name contains dots, they will be inserted again when joining
+    var bsplit = base.split('.');
+    // Remove extension if there was one in the url
+    if (bsplit.length > 1) {
+        bsplit.pop();
+    }
+    // Add the extension we got before
+    bsplit.push(ext);
+    return bsplit.join('.');
 }
 function findValidDir(url, callback) {
     // 25 bytes => 50 chars
