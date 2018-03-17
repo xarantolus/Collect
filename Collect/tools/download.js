@@ -97,6 +97,13 @@ function getFileName(url) {
         return INDEX_NAME;
     }
     var base = mpath.basename(url);
+    // Remove achor from url if there is one
+    var remove_anchor = base.split('#');
+    if (remove_anchor.length > 1) {
+        remove_anchor.pop();
+        base = remove_anchor.join('');
+    }
+    remove_anchor = null;
     if (base === "" || base === null) {
         // In case we don't have a basename
         return INDEX_NAME;

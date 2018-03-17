@@ -19,7 +19,7 @@ block content
       label(class="uk-form-label" for="form-horizontal-text")="Path"
       div(class="uk-form-controls")
         - var pp = (item.pagepath.endsWith("/index.html") || item.pagepath.endsWith("\index.html")) ? (item.id + "/") : item.pagepath;
-        a(class="uk-input" id="pagepath" href="/s/" +item.pagepath)=pp
+        a(class="uk-input" id="pagepath" href="/s/" + pp)=pp
 
 
     // Size 
