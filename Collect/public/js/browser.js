@@ -1,6 +1,6 @@
 // Variables
 var notification_count = 0;
-var ajax_has_error = false;
+var needs_to_reload = false;
 var state = { data: "", isTable: false, isNew: false, isDetails: false };
 var titleWithoutCount = document.title;
 var t_prevent_reload = false;
@@ -103,14 +103,15 @@ if (location.pathname !== "/login") {
         var c_e = document.getElementById("notif_count");
         c_e.innerText = "?";
         c_e.style.backgroundColor = "red";
+        needs_to_reload = true;
     });
     socket.on('connect', function () {
         var c_e = document.getElementById("notif_count");
         c_e.innerHTML = notification_count;
         c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
 
-        if (ajax_has_error) {
-            // the ajax request failed and waits for the connection to the server to be re-established
+        if (needs_to_reload) {
+            // this is not the first connect. We need to reload in case anything was changed while we didn't receive events
             resolveCurrent();
         }
     });
@@ -253,7 +254,7 @@ function urlencodeFormData(obj) {
 // usage(GET): ajax(url, data).get(function(status, obj) { });
 var ajax = function (url, data) {
     var wrap = function (method, cb) {
-        ajax_has_error = false; // don't reload automatically if the user submitted another request
+        needs_to_reload = false; // don't reload automatically if the user submitted another request
         var sendstr = null;
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
@@ -275,7 +276,7 @@ var ajax = function (url, data) {
             DisplayError("The connection to the server timed out.");
             setEventListeners();
             setLoading(false);
-            ajax_has_error = true;
+            needs_to_reload = true;
         }
 
         return xhr;
