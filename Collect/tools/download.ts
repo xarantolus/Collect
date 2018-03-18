@@ -9,7 +9,7 @@ import async = require('async');
 
 var id_length: number = require('../config.json').id_length;
 
-if (id_length) {
+if (id_length === null) {
     id_length = 5;
     console.log("[warn] 'id_length' is not set in config. The default of 5 will be used.");
 }

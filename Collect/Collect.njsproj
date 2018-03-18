@@ -88,6 +88,7 @@
     <Content Include="views\table.pug" />
     <Content Include="views\layout.pug" />
     <Content Include="views\error.pug" />
+    <TypeScriptCompile Include="tools\integrity.ts" />
     <TypeScriptCompile Include="tools\notifcount.ts" />
     <TypeScriptCompile Include="tools\version-middleware.ts" />
   </ItemGroup>

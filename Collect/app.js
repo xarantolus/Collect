@@ -6,6 +6,7 @@ const auth = require("./tools/auth");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const version_mw = require("./tools/version-middleware");
+require('./tools/integrity').checkIntegrity();
 var version = require('./package.json').version || "Unspecified Version";
 var config = require('./config.json');
 const user_file = "users.json";

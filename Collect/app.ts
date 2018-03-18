@@ -8,6 +8,8 @@ import cookieParser = require('cookie-parser');
 import compression = require('compression');
 import version_mw = require('./tools/version-middleware');
 
+require('./tools/integrity').checkIntegrity();
+
 var version = require('./package.json').version || "Unspecified Version";
 
 var config = require('./config.json')
