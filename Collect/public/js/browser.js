@@ -268,7 +268,15 @@ var ajax = function (url, data) {
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status > 0) {
-                cb(xhr.status, JSON.parse(xhr.responseText));
+                if (xhr.status === 401) {
+                    window.location.reload();
+                }
+
+                try {
+                    cb(xhr.status, JSON.parse(xhr.responseText));
+                } catch (e) {
+                    cb(422, { message: "Error while processing data." })
+                }
             }
         }
 
