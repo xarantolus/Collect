@@ -137,7 +137,7 @@ function getFileName(url) {
 }
 function findValidDir(url, callback) {
     // eg 25 bytes => 50 chars
-    crypto.randomBytes(Math.round(Math.ceil(id_length / 2)), function (err, buffer) {
+    crypto.randomBytes(Math.ceil(id_length / 2), function (err, buffer) {
         // get exact length of the string
         var path = murl.parse(url, false).host + "-" + buffer.toString('hex').slice(0, id_length);
         fs.exists(mpath.join("public", "s", path), function (exists) {

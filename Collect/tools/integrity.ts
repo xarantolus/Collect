@@ -6,57 +6,68 @@ import path = require('path');
 export function checkIntegrity(): void {
     console.log("Preparing integrity check...");
 
-    // Load lists
-    var list: dl.ContentDescription[] = JSON.parse(fs.readFileSync(dl.ContentDescription.CONTENT_FILE, 'utf-8'));
-    var newlist: dl.ContentDescription[] = [];
+    try {
+        var content = fs.readFileSync(dl.ContentDescription.CONTENT_FILE, 'utf-8');
+    } catch (e) {
+        console.error("Failed loading the content file. If you are starting for the first time, this is no problem.");
+        return;
+    }
 
-    console.log("Checking if folders for ids exist...");
+    try {
+        // Load lists
+        var list: dl.ContentDescription[] = JSON.parse(content);
+        var newlist: dl.ContentDescription[] = [];
 
-    // If folder exists, the item can stay (In case the folder was deleted but the item wasn't)
-    for (var i = 0; i < list.length; i++) {
-        var dirname = path.join('public', 's', list[i].id);
+        console.log("Checking if folders for ids exist...");
 
-        if (fs.existsSync(dirname)) {
-            newlist.push(list[i]);
+        // If folder exists, the item can stay (In case the folder was deleted but the item wasn't)
+        for (var i = 0; i < list.length; i++) {
+            var dirname = path.join('public', 's', list[i].id);
+
+            if (fs.existsSync(dirname)) {
+                newlist.push(list[i]);
+            } else {
+                console.log("\"" + list[i].id + "\" - \"" + list[i].title + "\" does not exist and will be removed from the index.");
+            }
+        }
+
+        if (list.length > newlist.length) {
+            // Save without old items
+            fs.writeFileSync(dl.ContentDescription.CONTENT_FILE, JSON.stringify(newlist), 'utf-8');
+
+            var delcount = list.length - newlist.length;
+            console.log("Deleted " + delcount.toString() + " entry" + (delcount === 1 ? "" : "s") + " from the index because " + (delcount === 1 ? "its directory does" : "their directories do") + " not exist.");
         } else {
-            console.log("\"" + list[i].id + "\" - \"" + list[i].title + "\" does not exist and will be removed from the index.");
+            console.log("All folders exist.");
         }
-    }
 
-    if (list.length > newlist.length) {
-        // Save without old items
-        fs.writeFileSync(dl.ContentDescription.CONTENT_FILE, JSON.stringify(newlist), 'utf-8');
+        // Clean up
+        list = null;
 
-        var delcount = list.length - newlist.length;
-        console.log("Deleted " + delcount.toString() + " entry" + (delcount === 1 ? "" : "s") + " from the index because " + (delcount === 1 ? "its directory does" : "their directories do") + " not exist.");
-    } else {
-        console.log("All folders exist.");
-    }
+        console.log("Checking if ids for folders exist...");
 
-    // Clean up
-    list = null;
+        // If item exists, the folder can stay (In case the item was deleted/not saved but the folder is on disk)
+        var content_dirs = dirs(path.join('public', 's'));
 
-    console.log("Checking if ids for folders exist...");
-
-    // If item exists, the folder can stay (In case the item was deleted/not saved but the folder is on disk)
-    var content_dirs = dirs(path.join('public', 's'));
-
-    var deleted_count: number = 0;
-    for (var i = 0; i < content_dirs.length; i++) {
-        if (!newlist.some(item => item.id === content_dirs[i])) {
-            console.log(content_dirs[i], "is not in list");
-            rimraf(path.join('public', 's', content_dirs[i]));
-            deleted_count++;
+        var deleted_count: number = 0;
+        for (var i = 0; i < content_dirs.length; i++) {
+            if (!newlist.some(item => item.id === content_dirs[i])) {
+                console.log(content_dirs[i], "is not in list");
+                rimraf(path.join('public', 's', content_dirs[i]));
+                deleted_count++;
+            }
         }
-    }
 
-    if (deleted_count > 0) {
-        console.log("Deleted " + deleted_count.toString() + " director" + (deleted_count === 1 ? "y that wasn't" : "ies that weren't") + " in the index.");
-    } else {
-        console.log("All entrys exist.");
-    }
+        if (deleted_count > 0) {
+            console.log("Deleted " + deleted_count.toString() + " director" + (deleted_count === 1 ? "y that wasn't" : "ies that weren't") + " in the index.");
+        } else {
+            console.log("All entrys exist.");
+        }
 
-    console.log("Finished integrity check.");
+        console.log("Finished integrity check.");
+    } catch (e) {
+        console.log("Failed integrity check, starting anyways.");
+    }
 }
 
 
