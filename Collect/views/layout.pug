@@ -16,8 +16,9 @@ html
     link(rel='stylesheet' href='/css/uikit.min.css')
     link(rel='stylesheet', href='/css/main.css')
     
-    script(src='/js/socket.io.js', type='text/javascript')
     script(src='/js/uikit.min.js', type='text/javascript')
+    script(src='/js/socket.io.js', defer, type='text/javascript')
+    script(src='/js/browser.js', defer, type='text/javascript')
 
     link(rel='apple-touch-icon' sizes='57x57' href='/apple-icon-57x57.png')
     link(rel='apple-touch-icon' sizes='60x60' href='/apple-icon-60x60.png')
@@ -50,4 +51,3 @@ html
             | ?
     div(id='content')
        block content
-    script(src='/js/browser.js', type='text/javascript')
