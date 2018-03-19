@@ -119,6 +119,93 @@ if (location.pathname !== "/login") {
 
 // General Methods
 
+// Source for next 5 methods: https://gist.github.com/james2doyle/5694700
+
+// easing functions http://goo.gl/5HLl8
+Math.easeInOutQuad = function (t, b, c, d) {
+    t /= d / 2;
+    if (t < 1) {
+        return c / 2 * t * t + b
+    }
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+};
+
+Math.easeInCubic = function (t, b, c, d) {
+    var tc = (t /= d) * t * t;
+    return b + c * (tc);
+};
+
+Math.inOutQuintic = function (t, b, c, d) {
+    var ts = (t /= d) * t,
+        tc = ts * t;
+    return b + c * (6 * tc * ts + -15 * ts * ts + 10 * tc);
+};
+
+// requestAnimationFrame for Smart Animating http://goo.gl/sx5sts
+var requestAnimFrame = (function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) { window.setTimeout(callback, 1000 / 60); };
+})();
+
+function scrollTo(to, callback, duration) {
+    // because it's so fucking difficult to detect the scrolling element, just move them all
+    function move(amount) {
+        document.documentElement.scrollTop = amount;
+        document.body.parentNode.scrollTop = amount;
+        document.body.scrollTop = amount;
+    }
+    function position() {
+        return document.documentElement.scrollTop || document.body.parentNode.scrollTop || document.body.scrollTop;
+    }
+    var start = position(),
+        change = to - start,
+        currentTime = 0,
+        increment = 20;
+    duration = (typeof (duration) === 'undefined') ? 500 : duration;
+    var animateScroll = function () {
+        // increment the time
+        currentTime += increment;
+        // find the value with the quadratic in-out easing function
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        // move the document.body
+        move(val);
+        // do the animation unless its over
+        if (currentTime < duration) {
+            requestAnimFrame(animateScroll);
+        } else {
+            if (callback && typeof (callback) === 'function') {
+                // the animation is done so lets callback
+                callback();
+            }
+        }
+    };
+    animateScroll();
+}
+
+// Scroll to top if on bottom of page, else it scrolls to bottom
+function scrollBottomTop(evt) {
+
+    // https://stackoverflow.com/a/8028584
+    var h = document.documentElement,
+        b = document.body,
+        st = 'scrollTop',
+        sh = 'scrollHeight';
+
+    var percent = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight);
+
+    if (percent > 0.8) {
+        // We are at the end of the page, scroll up
+        scrollTo(0);
+    }
+    else {
+        // Scroll down
+        var height = Math.max(b.scrollHeight || 0, b.clientHeight || 0, h.clientHeight || 0, h.scrollHeight || 0, h.clientHeight || 0);
+        scrollTo(height);
+    }
+
+    evt.preventDefault();
+}
+
 function humanFileSize(bytes, si) {
     // Source: https://stackoverflow.com/a/14919494/5728357
     var thresh = si ? 1000 : 1024;
@@ -310,7 +397,7 @@ function setEventListeners() {
 
         for (var i = 0; i < elements.length; i++) {
             // Update table for list urls
-            if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/') {
+            if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/' && elements[i].id !== "title") {
                 elements[i].onclick = function () {
                     var domain = getLastUrlElement(this.href);
                     LoadTable(domain);
@@ -334,6 +421,9 @@ function setEventListeners() {
                     return false;
                 };
             }
+
+            // Add title click scrolling
+            document.getElementById('title').onclick = scrollBottomTop;
         }
 
         try {
