@@ -86,7 +86,7 @@ The username that should be used to log in.
 The password for this user. [Please don't use a password you use somewhere else.](#security-considerations)
 
 ###### ID length
-The length of the ids the server should generate. If you save **a lot** of websites from the same domain (>1 billion) you should change this number.
+The length of the ids the server should generate. If you save **a lot** of websites from the same domain (> ~1 million / 16<sup>length</sup>) you should change this number.
 
 ###### API token
 If you like to play around with the API, you can set an API token. It is implemented so integrating apps like [Workflow](https://workflow.is) is easy.
