@@ -70,6 +70,9 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.locals.pretty = true;
     app.use((err: any, req, res, next) => {
+
+        if (err instanceof ReferenceError) { err["status"] = 404 };
+
         res.status(err['status'] || 500);
         if (err['api'] || false) {
             res.json({ status: err.status, message: err.message || "Unknown error" });
@@ -85,6 +88,9 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use((err: any, req, res, next) => {
+
+    if (err instanceof ReferenceError) { err["status"] = 404 };
+
     res.status(err['status'] || 500);
     if (err['api'] || false) {
         delete err.api;

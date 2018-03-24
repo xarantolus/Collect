@@ -304,9 +304,18 @@ export class ContentDescription {
                 err.message = "Error loading file";
                 return callback(err);
             }
+
+            var beforecount = result.length;
+            
             result = result.filter(function (item) {
                 return item.id !== id;
             });
+
+            if (result.length === beforecount) {
+                // We must only continue deleting if something was removed, => the id actually existed
+                return callback(new ReferenceError("There is no item with this id"));
+            }
+
             //Save list
             ContentDescription.saveFile(result, function (err) {
                 if (err) {
@@ -333,7 +342,7 @@ export class ContentDescription {
             var index = result.findIndex(item => item.id === id);
 
             if (index === -1) {
-                return callback(new RangeError("Item not found in saved sites"), null);
+                return callback(new RangeError("There is no item with this id"), null);
             }
 
             result[index].title = newtitle;

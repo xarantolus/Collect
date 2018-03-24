@@ -50,7 +50,6 @@ router.post('/site/:id/settitle', (req, res, next) => {
     }
     download.ContentDescription.setTitle(id, newtitle, function (err, item) {
         if (err) {
-            err['status'] = 500;
             err['api'] = true;
             return next(err);
         }
@@ -66,7 +65,6 @@ router.post('/site/:id/delete', (req, res, next) => {
     var id = req.params.id;
     download.ContentDescription.removeContent(id, function (err) {
         if (err) {
-            err['status'] = 500;
             err['api'] = true;
             return next(err);
         }
