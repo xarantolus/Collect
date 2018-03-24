@@ -18,6 +18,7 @@ if (location.pathname !== "/login") {
         var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
         switch (data.step) {
             case 0: {
+                // Started
                 UIkit.notification({
                     message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
                     status: 'primary',
@@ -28,6 +29,7 @@ if (location.pathname !== "/login") {
                 break;
             }
             case 2: {
+                // Finished
                 UIkit.notification({
                     message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
                     status: 'success',
@@ -35,9 +37,10 @@ if (location.pathname !== "/login") {
                     timeout: n_timeout
                 });
 
-                // Play notification                
+                // Play notification sound      
                 if (notif_sound && notif_sound.canPlayType("audio/ogg") && notif_sound.readyState > 3) {
                     notif_sound.onended = function () {
+                        // Since audio can only be played once, we need to reload it for the next notification
                         notif_sound.src = notif_sound.src;
                     }
                     notif_sound.play();
@@ -47,6 +50,7 @@ if (location.pathname !== "/login") {
                 break;
             }
             case 4: {
+                // Error
                 UIkit.notification({
                     message: 'Error while processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
                     status: 'danger',
@@ -58,7 +62,9 @@ if (location.pathname !== "/login") {
             }
         }
         setNotifications();
-        if (!state.isDetails && !state.isNew) {
+
+        // Reload if download finished and the user is viewing a relevant table
+        if (data.step === 2 && state.isTable && (data.result.domain === state.data || state.data == "")) {
             LoadTable(state.data);
         }
     });
@@ -98,6 +104,7 @@ if (location.pathname !== "/login") {
         setNotifications();
         setTitle(titleWithoutCount);
     });
+    // Display unknown notification count
     socket.on('disconnect', function () {
         notification_count = 0;
         var c_e = document.getElementById("notif_count");
@@ -105,11 +112,8 @@ if (location.pathname !== "/login") {
         c_e.style.backgroundColor = "red";
         needs_to_reload = true;
     });
+    // We are connected
     socket.on('connect', function () {
-        var c_e = document.getElementById("notif_count");
-        c_e.innerHTML = notification_count;
-        c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
-
         if (needs_to_reload) {
             // this is not the first connect. We need to reload in case anything was changed while we didn't receive events
             resolveCurrent();
@@ -249,7 +253,6 @@ function setNotifications() {
 }
 
 function setState(data, title, url, replace) {
-    replace = replace || false;
     if (replace) {
         window.history.replaceState(data, title, url);
     } else {
@@ -283,7 +286,12 @@ function createRow(site) {
     for (var i in fields) {
         var html = "";
         if (fields[i] === "title") {
-            html = '<a href="/s/' + site["pagepath"] + '">' + site["title"] + '</a>';
+            // This escapes the title
+            var t = document.createElement('a');
+            t.href = "/s/" + site["pagepath"];
+            t.innerText = site["title"];
+
+            html = t.outerHTML;
         }
         else if (fields[i] === "domain") {
             html = '<a href="/site/' + site["domain"] + '">' + site["domain"] + '</a>';
@@ -395,49 +403,60 @@ function setEventListeners() {
         var str_new = location.protocol + '//' + location.host + '/new';
         var elements = document.getElementsByTagName('a');
 
+        var loadTableHandler = function (evt) {
+            var domain = getLastUrlElement(this.href);
+            LoadTable(domain);
+            evt.preventDefault();
+        };
+
+        var loadDetailsHandler = function (evt) {
+            var id = getLastUrlElement(this.href);
+            LoadDetails(id);
+            evt.preventDefault();
+        };
+
+        var loadNewHandler = function (evt) {
+            LoadNew();
+            evt.preventDefault();
+        };
+
+        // This code uses 'inline events' so only one event of a type can be assigned to an element
+
         for (var i = 0; i < elements.length; i++) {
             // Update table for list urls
             if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/' && elements[i].id !== "title") {
-                elements[i].onclick = function () {
-                    var domain = getLastUrlElement(this.href);
-                    LoadTable(domain);
-                    return false;
-                };
+                elements[i].onclick = loadTableHandler;
+                continue;
             }
 
             // Update details for details urls
             if (elements[i].href.startsWith(str_details)) {
-                elements[i].onclick = function () {
-                    var id = getLastUrlElement(this.href);
-                    LoadDetails(id);
-                    return false;
-                };
+                elements[i].onclick = loadDetailsHandler;
+                continue;
             }
 
             // "Add" Element in header
             if (elements[i].href.startsWith(str_new)) {
-                elements[i].onclick = function () {
-                    LoadNew();
-                    return false;
-                };
+                elements[i].onclick = loadNewHandler;
+                continue;
             }
-
-            // Add title click scrolling
-            document.getElementById('title').onclick = scrollBottomTop;
         }
+
+        // Add title click scrolling
+        document.getElementById('title').onclick = scrollBottomTop;
 
         try {
             // Form on New Page
             if (location.pathname === "/new") {
-                document.getElementById("new_form").addEventListener('submit', SubmitNewForm);
+                document.getElementById("new_form").onsubmit = SubmitNewForm;
             }
         } catch (e) { }
 
         try {
             // Form on Details Page
             if (location.pathname.startsWith("/details/")) {
-                document.getElementById("delete").addEventListener('click', SubmitDeleteEntry);
-                document.getElementById("submit").addEventListener('click', SubmitChangeTitle);
+                document.getElementById("delete").onclick = SubmitDeleteEntry;
+                document.getElementById("submit").onclick = SubmitChangeTitle;
             }
         } catch (e) { }
     }
@@ -498,7 +517,7 @@ function SubmitChangeTitle(evt) {
 
     setLoading(true);
 
-    f = { "title": document.getElementById("d_title").value };
+    var f = { "title": document.getElementById("d_title").value };
 
     ajax("/api/v1/site/" + id + "/settitle", f).post(function (status, obj) {
         var error_field = document.getElementById("d_err");
@@ -596,7 +615,7 @@ function LoadTable(domain, replace) {
 function LoadDetails(id, replace) {
     replace = replace || false;
     //We need an id
-    if (id === null || id === "" || id === undefined) {
+    if (id == null || id === "") {
         throw new ReferenceError("Missing parameter id");
     }
 
@@ -728,11 +747,7 @@ function LoadDetails(id, replace) {
             content.innerHTML = "";
             content.appendChild(form);
         } else {
-            var message = "An unknown error occurred.";
-            if ((item || {}).message) {
-                message = "Error: " + item.message;
-            }
-            content.innerHTML = '<div class="uk-placeholder uk-text-center" style="color:red">' + message + '<br><a href="' + id + '">Try again</a></div>';
+            DisplayError((item || {}).message);
         }
         setLoading(false);
 
