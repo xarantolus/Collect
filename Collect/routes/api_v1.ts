@@ -151,7 +151,13 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
             return console.log(err);
         }
         console.log("Finished url " + posted_url)
-        req.app.get('socketio').emit('url', { "message": "Finished processing url", "step": 2, "url": posted_url, "result": result });
+
+        if (fromCache) {
+            req.app.get('socketio').emit('url', { "message": "This item already exists", "step": 1, "url": posted_url, "result": result });
+        } else {
+            req.app.get('socketio').emit('url', { "message": "Finished processing url", "step": 2, "url": posted_url, "result": result });
+        }
+
     });
 });
 

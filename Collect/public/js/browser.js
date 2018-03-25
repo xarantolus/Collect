@@ -28,6 +28,18 @@ if (location.pathname !== "/login") {
                 notification_count++;
                 break;
             }
+            case 1: {
+                // Already existed
+                // Started
+                UIkit.notification({
+                    message: 'The url <a href="/s/' + data.result.pagepath + '">' + parsedurl + '</a> already exists',
+                    status: 'primary',
+                    pos: n_pos,
+                    timeout: n_timeout
+                });
+                notification_count--;
+                break;
+            }
             case 2: {
                 // Finished
                 UIkit.notification({
