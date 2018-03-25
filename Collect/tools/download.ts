@@ -36,11 +36,20 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
         return callback(new ReferenceError("url is null"), null, null);
     }
     ContentDescription.contains(url, function (err, contains, item) {
-        if (err == null && contains) {
+        if (err) {
+            return callback(err, null, null);
+        }
+
+        if (contains) {
             return callback(null, item, true);
         }
 
-        findValidDir(url, function (dir: string): void {
+        // Let's grab an id for this url
+        findValidDir(url, function (err: Error, dir: string): void {
+            if (err) {
+                return callback(err, null, null);
+            }
+
             var options = {
                 urls: [
                     { url: url, filename: getFileName(url) }
@@ -51,6 +60,7 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                 httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
             };
 
+            // Start downloading
             scrape(options, function (error, results) {
                 if (error) {
                     return callback(error, null, null);
@@ -67,45 +77,84 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                     if (err == null && contains) {
                         return callback(null, item, true);
                     }
-                    getFolderSize(mpath.join("public", "s", dir), function (err, size) {
+
+                    // Rename the directory if the domain isn't the same anymore, (e.g. http://t.co - links should not be t.co-e63f3 but actualwebsite.com-e63f3)
+                    renameDir(dir, url, result.url, function (err, newId) {
                         if (err) {
                             return callback(err, null, null);
                         }
 
-                        var indexPath = mpath.join(dir,
-                            result.filename);
+                        // Apply the new name
+                        dir = newId;
 
-                        fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-                            var parser: any;
-                            try {
-                                parser = extractor.lazy(content, 'en');
-                            } catch{ }
+                        // Start getting info about size
+                        getFolderSize(mpath.join("public", "s", dir), function (err, size) {
+                            if (err) {
+                                return callback(err, null, null);
+                            }
 
-                            var title: string = "No title";
-                            try {
-                                title = parser.title();
-                            } catch{ }
+                            var indexPath = mpath.join(dir,
+                                result.filename);
 
-                            // Save to index file
-                            var cd = new ContentDescription(result.url,
-                                indexPath,
-                                dir,
-                                murl.parse(result.url, false).hostname,
-                                new Date(),
-                                title,
-                                size
-                            );
+                            fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
+                                var parser: any;
+                                try {
+                                    parser = extractor.lazy(content, 'en');
+                                } catch{ }
 
-                            ContentDescription.addContent(cd, function (err) {
-                                if (err) {
-                                    return callback(err, null, false);
-                                }
-                                return callback(null, cd, false);
+                                var title: string = "No title";
+                                try {
+                                    title = parser.title();
+                                } catch{ }
+
+                                // Save to index file
+                                var cd = new ContentDescription(result.url,
+                                    indexPath,
+                                    dir,
+                                    murl.parse(result.url, false).hostname,
+                                    new Date(),
+                                    title,
+                                    size
+                                );
+
+                                ContentDescription.addContent(cd, function (err) {
+                                    if (err) {
+                                        return callback(err, null, false);
+                                    }
+                                    return callback(null, cd, false);
+                                });
                             });
                         });
                     });
                 });
             });
+        });
+    });
+}
+
+// Renames the directory if the domain is different
+function renameDir(dir: string, originalUrl: string, newUrl: string, callback: (err: Error, newId: string) => any): void {
+    // Same domain => It's ok, there was no redirect
+    if (murl.parse(originalUrl, false).host === murl.parse(newUrl, false).host) {
+        return callback(null, dir);
+    }
+
+    // Let's get a directory name for the new url
+    findValidDir(newUrl, function (err, path) {
+        if (err) {
+            return callback(err, null);
+        }
+
+        var oldDir = mpath.join("public", "s", dir)
+        var newDir = mpath.join("public", "s", path);
+
+        // Rename
+        fs.rename(oldDir, newDir, function (err) {
+            if (err) {
+                return callback(err, null);
+            }
+
+            return callback(null, path);
         });
     });
 }
@@ -171,16 +220,19 @@ function getFileName(url: string): string {
 }
 
 
-function findValidDir(url: string, callback: (path: string) => void) {
+function findValidDir(url: string, callback: (err: Error, path: string) => void) {
     // eg 25 bytes => 50 chars
     crypto.randomBytes(Math.ceil(id_length / 2), function (err, buffer) {
+        if (err) {
+            return callback(err, null);
+        }
         // get exact length of the string
         var path = murl.parse(url, false).host + "-" + buffer.toString('hex').slice(0, id_length);
         fs.exists(mpath.join("public", "s", path), function (exists: boolean) {
             if (exists) {
                 findValidDir(url, callback);
             } else {
-                return callback(path);
+                return callback(null, path);
             }
         });
     });
@@ -306,7 +358,7 @@ export class ContentDescription {
             }
 
             var beforecount = result.length;
-            
+
             result = result.filter(function (item) {
                 return item.id !== id;
             });
