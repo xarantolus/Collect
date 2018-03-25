@@ -4,7 +4,7 @@ Collect is a server to collect & archive websites written for NodeJS.
 It is intended for people who want to archive individual websites, eg
 
 ```
-http://example.com/some/site
+https://example.com/some/page
 ```
 
 Collect stores a static copy of the url on your disk

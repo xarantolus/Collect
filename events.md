@@ -1,7 +1,7 @@
 # Socket.io Events
 
 #### Processing
-Event name: ´url´
+Event name: `url`
 
 Data:
 { "message": *string*, "step": *int*, "url": *string*, "result": *ContentDescription* }
@@ -9,14 +9,14 @@ Data:
 
 
 #### Notification count
-Event name: ´notifcount´
+Event name: `notifcount`
 
 Data: *number*
 
 
 
 #### Deletion 
-Event name: ´delete´
+Event name: `delete`
 
 Data: 
 { "message": *string*, "id": *string* }
@@ -24,7 +24,7 @@ Data:
 
 
 #### Title Change
-Event name: ´titlechange´
+Event name: `titlechange`
 
 Data: 
 { "message": *string*, "id": *string*, "newtitle": *string* }
