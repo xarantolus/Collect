@@ -5,6 +5,7 @@ import express = require('express');
 import download = require('../tools/download');
 import notif = require('../tools/notifcount');
 import url = require('url');
+import archiver = require('archiver');
 const router = express.Router();
 
 router.get('/sites/:domain?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -159,6 +160,18 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
         }
 
     });
+});
+
+router.get('/backup', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.set('Content-Type', 'application/zip');
+    res.set('Content-Disposition', 'attachment; filename=backup.zip');
+
+    var archive = archiver.create('zip', {});
+
+    archive.pipe(res);
+
+    archive.directory('./public/s', false)
+        .finalize();
 });
 
 export default router;
