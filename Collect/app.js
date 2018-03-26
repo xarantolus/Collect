@@ -15,21 +15,24 @@ var app = express();
 // Compress responses
 app.use(compression());
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false, defer: true }));
 // parse cookies
 app.use(cookieParser());
-const api_v1_1 = require("./routes/api_v1");
+// Display version on pages
+app.use(version_mw.globals);
+// Check authentication
+app.use(auth);
+const backup_1 = require("./routes/backup");
 const views_1 = require("./routes/views");
 const sites_1 = require("./routes/sites");
 const details_1 = require("./routes/details");
-// Display version on pages
-app.use(version_mw.globals);
+const api_v1_1 = require("./routes/api_v1");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('view cache', true);
-app.use(auth);
 // All routes are authorized
+app.use("/api/v1/", backup_1.default);
 app.use('/api/v1/', api_v1_1.default);
 app.use('/', views_1.default);
 app.use('/details/', details_1.default);

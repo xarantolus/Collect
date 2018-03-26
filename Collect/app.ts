@@ -23,28 +23,33 @@ var app = express()
 app.use(compression());
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false, defer: true }))
 
 // parse cookies
 app.use(cookieParser());
 
-import api from './routes/api_v1';
+// Display version on pages
+app.use(version_mw.globals)
+
+// Check authentication
+app.use(auth as express.RequestHandler);
+
+
+import backup from './routes/backup';
 import views from './routes/views';
 import site from './routes/sites';
 import details from './routes/details';
+import api from './routes/api_v1';
 
-
-// Display version on pages
-app.use(version_mw.globals)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('view cache', true);
 
-app.use(auth as express.RequestHandler);
 
 // All routes are authorized
+app.use("/api/v1/", backup)
 app.use('/api/v1/', api);
 app.use('/', views);
 app.use('/details/', details);

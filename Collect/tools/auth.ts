@@ -72,7 +72,9 @@ module.exports = function (req: express.Request, res: express.Response, next: ex
         user = { name: req.body.username, pass: req.body.password };
     }
 
-    var session_cookie = req.cookies["session_id"];
+    if (req.cookies) {
+        var session_cookie = req.cookies["session_id"];
+    }
 
     var redirect: string = req.body.redirect || req.query.redirect || "/";
 

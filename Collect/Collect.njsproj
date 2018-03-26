@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="routes\backup.ts" />
     <TypeScriptCompile Include="routes\sites.ts" />
     <TypeScriptCompile Include="tools\auth.ts" />
     <TypeScriptCompile Include="tools\download.ts" />

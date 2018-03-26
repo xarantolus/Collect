@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const download = require("../tools/download");
 const notif = require("../tools/notifcount");
-const archiver = require("archiver");
 const router = express.Router();
 router.get('/sites/:domain?', (req, res, next) => {
     var domain = req.params.domain;
@@ -142,19 +141,6 @@ router.post('/site/add', (req, res, next) => {
             req.app.get('socketio').emit('url', { "message": "Finished processing url", "step": 2, "url": posted_url, "result": result });
         }
     });
-});
-router.get('/backup', (req, res, next) => {
-    var startDate = new Date();
-    var archive = archiver.create('zip', {});
-    archive.on('error', function (err) {
-        return next(err);
-    });
-    res.set('Content-Type', 'application/zip');
-    res.set('Content-Disposition', 'attachment; filename=backup.zip');
-    archive.pipe(res);
-    archive
-        .directory('./public/s', false)
-        .finalize();
 });
 exports.default = router;
 //# sourceMappingURL=api_v1.js.map
