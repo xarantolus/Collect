@@ -186,6 +186,20 @@ If successful, the [Error](#error) object has a status of 200.
 
 ---
 
+## Backup (GET)
+To download an archive of all sites currently saved in `Collect`, visit
+
+```
+http://yourserver:port/api/v1/backup
+```
+
+The server will generate a `zip` file that can be downloaded.
+
+Note: You can download the archive if you are logged in. If you aren't logged in, you can access it by adding your `api_token` to the url.
+
+
+---
+
 To see these API requests in action, open your browser console and enable `XHR` (Firefox) or open the "Network" tab (Chrome & Firefox).
 
 You should see something like this (Firefox): 
