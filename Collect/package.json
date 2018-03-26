@@ -1,6 +1,6 @@
 {
   "name": "collect",
-  "version": "1.9.7",
+  "version": "1.10",
   "private": true,
   "scripts": {
     "start": "node app"
@@ -11,6 +11,7 @@
   },
   "main": "app.js",
   "dependencies": {
+    "archiver": "^2.1.1",
     "async": "^2.6.0",
     "basic-auth": "^2.0.0",
     "body-parser": "^1.18.2",
