@@ -144,11 +144,16 @@ router.post('/site/add', (req, res, next) => {
     });
 });
 router.get('/backup', (req, res, next) => {
+    var startDate = new Date();
+    var archive = archiver.create('zip', {});
+    archive.on('error', function (err) {
+        return next(err);
+    });
     res.set('Content-Type', 'application/zip');
     res.set('Content-Disposition', 'attachment; filename=backup.zip');
-    var archive = archiver.create('zip', {});
     archive.pipe(res);
-    archive.directory('./public/s', false)
+    archive
+        .directory('./public/s', false)
         .finalize();
 });
 exports.default = router;
