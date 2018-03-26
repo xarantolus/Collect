@@ -163,14 +163,21 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
 });
 
 router.get('/backup', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.set('Content-Type', 'application/zip');
-    res.set('Content-Disposition', 'attachment; filename=backup.zip');
+    var startDate = new Date();
 
     var archive = archiver.create('zip', {});
 
+    archive.on('error', function (err) {
+        return next(err);
+    });
+
+    res.set('Content-Type', 'application/zip');
+    res.set('Content-Disposition', 'attachment; filename=backup.zip');   
+
     archive.pipe(res);
 
-    archive.directory('./public/s', false)
+    archive
+        .directory('./public/s', false)
         .finalize();
 });
 
