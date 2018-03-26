@@ -39,6 +39,7 @@ function website(url, depth = 0, callback) {
         if (contains) {
             return callback(null, item, true);
         }
+        // Let's grab an id for this url
         findValidDir(url, function (err, dir) {
             if (err) {
                 return callback(err, null, null);
