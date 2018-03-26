@@ -25,6 +25,7 @@ Collect stores a static copy of the url on your disk
       * Add a site to the archive
 	  * Delete a site
       * Edit title of a saved page
+	  * Download all saved pages as zip archive (See [Backup](API_doc.md#backup-get))
 	  * For more, see [the API documentation](API_doc.md)
 
 
