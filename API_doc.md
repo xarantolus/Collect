@@ -197,6 +197,10 @@ The server will generate a `zip` file that can be downloaded.
 
 Note: You can download the archive if you are logged in. If you aren't logged in, you can access it by adding your `api_token` to the url.
 
+#### Common Problem
+It seems like sometimes Windows Explorer can't open these files. This is due to illegal characters in filenames.
+
+If you get an error that the file is corrupt, try using other programs to open zip files, e.g. WinRar.
 
 ---
 
