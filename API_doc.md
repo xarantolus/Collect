@@ -28,7 +28,7 @@ A `site` object describes a saved page. An example object looks like this:
 
 * `url`: The original url to the saved page
 * `pagepath`: The path where the index/main page is saved (starting at `Collect/public/s/`)
-* `id`: An unique id for this site
+* `id`: An unique id for this site (Usually, they aren't as long as in the example. You can set the length in the config file as described [here](README.md#settings).)
 * `domain`: The domain of the original url
 * `saved`: The date on which the page was saved
 * `title`: The title displayed in the listing

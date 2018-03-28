@@ -25,7 +25,7 @@ Collect stores a static copy of the url on your disk
       * Add a site to the archive
 	  * Delete a site
       * Edit title of a saved page
-	  * Download all saved pages as zip archive (See [Backup](API_doc.md#backup-get))
+	  * Download all saved pages as an archive (See [Backup](API_doc.md#backup-get))
 	  * For more, see [the API documentation](API_doc.md)
 
 
@@ -105,6 +105,8 @@ To use this, install the [`node-website-scraper-phantom` module](https://github.
 ```
 npm install website-scraper-phantom
 ```
+
+This command must be run in the directory that contains the `package.json` file.
 
 After installing, the server should output `PhantomJS will be used to process websites` when started.
 
