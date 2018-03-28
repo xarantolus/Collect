@@ -13,7 +13,8 @@ block content
           each val in list
             tr
               td
-                a(href='/s/' + val.pagepath)=val.title
+                - var pp = (val.pagepath.endsWith("/index.html") || val.pagepath.endsWith("\index.html")) ? (val.id + "/") : val.pagepath;
+                a(href='/s/' + pp)=val.title
               td=(new Date(val.saved)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/,'$2. $1 $3')
               td
                 a(href='/site/' + val.domain)=val.domain

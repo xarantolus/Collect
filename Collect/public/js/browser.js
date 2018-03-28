@@ -76,7 +76,7 @@ if (location.pathname !== "/login") {
         setNotifications();
 
         // Reload if download finished and the user is viewing a relevant table
-        if (data.step === 2 && state.isTable && (data.result.domain === state.data || state.data == "")) {
+        if (data.step === 2 && state.isTable && (data.result.domain === state.data || state.data === "")) {
             LoadTable(state.data);
         }
     });
@@ -300,7 +300,7 @@ function createRow(site) {
         if (fields[i] === "title") {
             // This escapes the title
             var t = document.createElement('a');
-            t.href = "/s/" + site["pagepath"];
+            t.href = "/s/" + ((site.pagepath.endsWith("/index.html") || site.pagepath.endsWith("\index.html")) ? (site.id + "/") : site.pagepath);
             t.innerText = site["title"];
 
             html = t.outerHTML;
@@ -457,20 +457,22 @@ function setEventListeners() {
         // Add title click scrolling
         document.getElementById('title').onclick = scrollBottomTop;
 
-        try {
-            // Form on New Page
-            if (location.pathname === "/new") {
-                document.getElementById("new_form").onsubmit = SubmitNewForm;
+        // Form on New Page
+        if (location.pathname === "/new") {
+            var new_form = document.getElementById("new_form")
+            if (new_form) {
+                new_form.onsubmit = SubmitNewForm;
             }
-        } catch (e) { }
+        }
 
-        try {
-            // Form on Details Page
-            if (location.pathname.startsWith("/details/")) {
-                document.getElementById("delete").onclick = SubmitDeleteEntry;
-                document.getElementById("submit").onclick = SubmitChangeTitle;
-            }
-        } catch (e) { }
+        // Form on Details Page
+        if (location.pathname.startsWith("/details/")) {
+            var del_button = document.getElementById("delete");
+            if (del_button) { del_button.onclick = SubmitDeleteEntry; }
+
+            var sub_button = document.getElementById("submit");
+            if (sub_button) { sub_button.onclick = SubmitChangeTitle; }
+        }
     }
 }
 
@@ -627,7 +629,7 @@ function LoadTable(domain, replace) {
 function LoadDetails(id, replace) {
     replace = replace || false;
     //We need an id
-    if (id == null || id === "") {
+    if (id === null || id === "") {
         throw new ReferenceError("Missing parameter id");
     }
 
