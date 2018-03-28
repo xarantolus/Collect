@@ -190,12 +190,18 @@ If successful, the [Error](#error) object has a status of 200.
 To download an archive of all sites currently saved in `Collect`, visit
 
 ```
-http://yourserver:port/api/v1/backup
+http://yourserver:port/api/v1/backup._extension_
 ```
 
-The server will generate a `zip` file that can be downloaded.
+The server will generate an archive that can be downloaded.
 
 Note: You can download the archive if you are logged in. If you aren't logged in, you can access it by adding your `api_token` to the url.
+
+###### extension(required)
+The parameter `extension` defines the format of the archive.
+It can be either `zip`, `tar` or `tar.gz`.
+
+Use of `tar.gz` or `zip` is recommended because `tar` files are not compressed.
 
 #### Common Problem
 It seems like sometimes Windows Explorer can't open these files. This is due to illegal characters in filenames.

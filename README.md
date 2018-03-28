@@ -122,13 +122,15 @@ npm uninstall website-scraper-phantom
 You're using this tool at your own risk. I am not responsible for any lost data like passwords or websites.
 
 ## Credits
-   [Website Scraper Module](https://github.com/website-scraper/node-website-scraper): MIT license. I really want to thank the creators. This server is mostly a user interface to this module and would never have been possible without their work.
+   [Website Scraper Module](https://github.com/website-scraper/node-website-scraper): MIT License. I really want to thank the creators. This server is mostly a user interface to this module and would never have been possible without their work.
    
-   [Website Scraper Module PhantomJS Plugin](https://github.com/website-scraper/node-website-scraper-phantom): MIT license. Makes processing dynamic pages as easy as pie.
+   [Website Scraper Module PhantomJS Plugin](https://github.com/website-scraper/node-website-scraper-phantom): MIT License. Makes processing dynamic pages as easy as pie.
 
-   [The UIkit library](https://github.com/uikit/uikit): Copyright YOOtheme GmbH under the MIT license. I really love this UI framework.
+   [The UIkit library](https://github.com/uikit/uikit): Copyright YOOtheme GmbH under the MIT License. I really love this UI framework.
 
-   [Ionicons](https://github.com/ionic-team/ionicons): MIT license. The icons are really nice. I used the `ion-ios-cloudy-outline` icon.
+   [ArchiverJS](https://github.com/archiverjs/node-archiver): Mit License. `node-archiver` is a nice module for generating all kind of archive files. It is used to [create backups](API_doc.md#backup-get).
+
+   [Ionicons](https://github.com/ionic-team/ionicons): MIT License. The icons are really nice. I used the `ion-ios-cloudy-outline` icon.
 
    [Notification Sound](https://freesound.org/people/philitup321/sounds/204369/): CC0 1.0 Universal License
 
