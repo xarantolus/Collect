@@ -31,7 +31,7 @@ try {
     }
 }
 
-export function website(url: string, depth: number = 0, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
+export function website(url: string, depth: number = 0, title: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
@@ -97,15 +97,18 @@ export function website(url: string, depth: number = 0, callback: (err: Error, r
                                 result.filename);
 
                             fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-                                var parser: any;
-                                try {
-                                    parser = extractor.lazy(content, 'en');
-                                } catch{ }
 
-                                var title: string = "No title";
-                                try {
-                                    title = parser.title();
-                                } catch{ }
+                                if ((title || "").trim() === "") {
+                                    var parser: any;
+                                    try {
+                                        parser = extractor.lazy(content, 'en');
+                                    } catch{ }
+
+                                    title = "No title";
+                                    try {
+                                        title = parser.title();
+                                    } catch{ }
+                                }
 
                                 // Save to index file
                                 var cd = new ContentDescription(result.url,

@@ -15,8 +15,15 @@ block content
     // Depth
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Depth"
+        span(class="uk-text-muted", title="If you don't set a depth, the default of zero will be used")=" (optional)"
       div(class="uk-form-controls")
-        input(class="uk-input", id="depth", type="number", step="1", min="0", max="5", name="depth", placeholder="Depth", value="0")
+        input(class="uk-input", id="depth", type="number", step="1", min="0", max="5", name="depth", placeholder="Depth", value="")
+    // Title
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Title"
+        span(class="uk-text-muted", title="If you don't enter anything here, the title will be detected automatically")=" (optional)"
+      div(class="uk-form-controls")
+        input(class="uk-input" id="n_title" type="text" name="title" placeholder="Title" value="")
     div(class="uk-margin")
          button(class="uk-button uk-button-primary button-submit", type="submit")
           | Submit

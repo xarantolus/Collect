@@ -28,7 +28,7 @@ catch (e) {
         throw e;
     }
 }
-function website(url, depth = 0, callback) {
+function website(url, depth = 0, title, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
@@ -81,16 +81,18 @@ function website(url, depth = 0, callback) {
                             }
                             var indexPath = mpath.join(dir, result.filename);
                             fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-                                var parser;
-                                try {
-                                    parser = extractor.lazy(content, 'en');
+                                if ((title || "").trim() === "") {
+                                    var parser;
+                                    try {
+                                        parser = extractor.lazy(content, 'en');
+                                    }
+                                    catch (_a) { }
+                                    title = "No title";
+                                    try {
+                                        title = parser.title();
+                                    }
+                                    catch (_b) { }
                                 }
-                                catch (_a) { }
-                                var title = "No title";
-                                try {
-                                    title = parser.title();
-                                }
-                                catch (_b) { }
                                 // Save to index file
                                 var cd = new ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title, size);
                                 ContentDescription.addContent(cd, function (err) {

@@ -45,6 +45,8 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
         return res.render('new', { title: "New Entry", error_message: errr.message });
     }
 
+    var title: string = req.body.title;
+
     try {
         if (!download.isValidUrl(posted_url))
             throw new Error("Not a valid url");
@@ -58,7 +60,7 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
     notif.increaseNotificationCount();
     req.app.get('socketio').emit('url', { "message": "Started processing url", "step": 0, "url": posted_url, "result": null });
 
-    download.website(posted_url, depth, function (err, result, fromCache) {
+    download.website(posted_url, depth, title, function (err, result, fromCache) {
         notif.decreaseNotificationCount();
         if (err) {
             console.log("Error while processing url " + posted_url + ":\n" + err.stack);

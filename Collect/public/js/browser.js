@@ -480,6 +480,7 @@ function setEventListeners() {
 function SubmitNewForm(evt) {
     // Get required data
     var f = {
+        "title": document.getElementById("n_title").value,
         "url": document.getElementById("url").value,
         "depth": document.getElementById("depth").value
     };
@@ -782,7 +783,7 @@ function LoadNew(replace) {
     state.isNew = true;
     state.isTable = false;
 
-    document.getElementById("content").innerHTML = '<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new">\n<div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div>\n<!-- Url-->\n<div class="uk-margin">\n<label class="uk-form-label" for="form-horizontal-text">Url</label>\n<div class="uk-form-controls">\n<input class="uk-input" id="url" type="url" name="url" placeholder="Url" value="">\n</div>\n</div>\n<!-- Depth-->\n<div class="uk-margin">\n<label class="uk-form-label" for="form-horizontal-text">Depth</label>\n<div class="uk-form-controls">\n<input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value="0">\n</div>\n</div>\n<div class="uk-margin">\n<button class="uk-button uk-button-primary button-submit" type="submit">Submit</button>\n<button class="uk-button uk-button-default button-reset" type="reset">Reset</button>\n</div>\n</form>';
+    document.getElementById("content").innerHTML = '<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new"> <div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div><!-- Url--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Url</label><div class="uk-form-controls"><input class="uk-input" id="url" type="url" name="url" autofocus placeholder="Url" value=""></div></div><!-- Depth--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Depth<span class="uk-text-muted" title="If you don\'t set a depth, the default of zero will be used"> (optional)</span></label><div class="uk-form-controls"><input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value=""></div></div><!-- Title--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Title<span class="uk-text-muted" title="If you don\'t enter anything here, the title will be detected automatically"> (optional)</span></label><div class="uk-form-controls"><input class="uk-input" id="n_title" type="text" name="title" placeholder="Title" value=""></div></div><div class="uk-margin"><button class="uk-button uk-button-primary button-submit" type="submit">Submit</button><button class="uk-button uk-button-default button-reset" type="reset">Reset</button></div></form>';
 
     document.getElementById("url").focus();
 
