@@ -200,7 +200,7 @@ Note: You can download the archive if you are logged in. If you aren't logged in
 #### Common Problem
 It seems like sometimes Windows Explorer can't open these files. This is due to illegal characters in filenames.
 
-If you get an error that the file is corrupt, try using other programs to open zip files, e.g. WinRar.
+If you get an error that the file is corrupt, try using other programs to open zip files, e.g. [7zip](https://www.7-zip.org/) or [WinRAR](https://www.rarlab.com/).
 
 ---
 
@@ -210,4 +210,4 @@ You should see something like this (Firefox):
 
 ![Console Screenshot (Firefox)](github/screenshot-console.png?raw=true)
 
-If you have any questions or something doesn't work the way you expected it to, feel free to open an issue.
+If you have any questions or something doesn't work the way you expect it to, feel free to open an issue.
