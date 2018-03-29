@@ -61,13 +61,13 @@ Install dependencies
 npm install
 ```
 
-To start, type
+To start in `production` mode (recommended), type
 ```
-npm start
+npm start production
 ```
 or 
 ```
-node app
+node app production
 ```
 
 When you open the website in your browser, you will notice that you need to authenticate.

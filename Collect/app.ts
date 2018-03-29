@@ -6,18 +6,21 @@ import io = require('socket.io');
 import fs = require('fs');
 import cookieParser = require('cookie-parser');
 import compression = require('compression');
-import version_mw = require('./tools/version-middleware');
 
+// Check all directories & the index file
 require('./tools/integrity').checkIntegrity();
 
+var app = express()
+
 var version = require('./package.json').version || "Unspecified Version";
+global["RUN_MODE"] = (process.argv.some(arg => arg.toUpperCase() === "PRODUCTION") ? "production" : null) || app.get('env') || "development";
+
+// this middleware needs the RUN_MODE to be set
+import version_mw = require('./tools/version-middleware');
 
 var config = require('./config.json')
-
-const user_file: string = "users.json";
-
 var bodyParser = require('body-parser')
-var app = express()
+
 
 // Compress responses
 app.use(compression());
@@ -33,7 +36,6 @@ app.use(version_mw.globals)
 
 // Check authentication
 app.use(auth as express.RequestHandler);
-
 
 import backup from './routes/backup';
 import views from './routes/views';
@@ -72,15 +74,19 @@ app.use(function (req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (global["RUN_MODE"].toUpperCase() !== 'PRODUCTION') {
     app.locals.pretty = true;
     app.use((err: any, req, res, next) => {
 
         if (err instanceof ReferenceError) { err["status"] = 404 };
 
-        res.status(err['status'] || 500);
+        err['status'] = err['status'] || 500;
+        err['message'] = err['message'] || "Unknown error";
+
+        res.status(err['status']);
+
         if (err['api'] || false) {
-            res.json({ status: err.status, message: err.message || "Unknown error" });
+            res.json({ status: err.status, message: err.message});
         } else {
             res.render('error', {
                 message: err.message,
@@ -96,23 +102,23 @@ app.use((err: any, req, res, next) => {
 
     if (err instanceof ReferenceError) { err["status"] = 404 };
 
-    res.status(err['status'] || 500);
+    err['status'] = err['status'] || 500;
+    err['message'] = err['message'] || "Unknown error";
+
+    res.status(err['status']);
+
     if (err['api'] || false) {
-        delete err.api;
-        if (err.stack) {
-            delete err.stack;
-        }
-        res.json({ status: err.status || 500, message: err.message || "Unknown error" });
+        res.json({ status: err.status, message: err.message });
     } else {
         res.render('error', {
             message: err.message,
-            error: {} //Don't print stack trace
+            status: err.status
         });
     }
 });
 
 var port = app.get('port') || process.env.PORT || config.port;
-console.log("Collect-Server(" + version + ") listening on port " + port);
+console.log("Collect-Server(" + version + (global["RUN_MODE"].toUpperCase() === "PRODUCTION" ? "-production" : "-development") + ") listening on port " + port);
 var server = app.listen(port);
 
 //Set variables

@@ -1,7 +1,7 @@
 ﻿extends layout 
 
 block content 
-  h1= "Error " + error.status 
-  h2= message 
-  -if(error.stack)
+  h1="Error " + status || error.status || "(unknown)"
+  h2=message 
+  -if(error && error.stack)
     pre #{error.stack}
