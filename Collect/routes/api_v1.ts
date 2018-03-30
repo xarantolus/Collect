@@ -127,6 +127,8 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
 
     var title: string = req.body.title;
 
+    var sameDomain: boolean = (req.body.samedomain || "").toUpperCase() === "TRUE";
+
     try {
         if (!download.isValidUrl(posted_url))
             throw new Error("Not a valid url");
@@ -145,7 +147,7 @@ router.post('/site/add', (req: express.Request, res: express.Response, next: exp
     notif.increaseNotificationCount();
     req.app.get('socketio').emit('url', { "message": "Started processing url", "step": 0, "url": posted_url, "result": null });
 
-    download.website(posted_url, depth, title, function (err, result, fromCache) {
+    download.website(posted_url, depth, sameDomain, title, function (err, result, fromCache) {
         notif.decreaseNotificationCount();
         if (err) {
             console.log("Error while processing url " + posted_url + ":\n" + err.stack);

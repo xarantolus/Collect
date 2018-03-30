@@ -28,7 +28,7 @@ catch (e) {
         throw e;
     }
 }
-function website(url, depth = 0, title, callback) {
+function website(url, depth = 0, sameDomain, title, callback) {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
@@ -44,10 +44,17 @@ function website(url, depth = 0, title, callback) {
             if (err) {
                 return callback(err, null, null);
             }
+            // Follow the same domain
+            var originalUrl = murl.parse(url);
+            var urlFilterFunc = function (filterUrl) {
+                var parsed = murl.parse(filterUrl, false);
+                return parsed.host === originalUrl.host;
+            };
             var options = {
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
+                urlFilter: sameDomain ? urlFilterFunc : null,
                 directory: mpath.join("public", "s", dir),
                 recursive: depth !== 0,
                 maxDepth: depth > 1 ? depth : null,

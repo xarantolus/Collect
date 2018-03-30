@@ -31,7 +31,7 @@ try {
     }
 }
 
-export function website(url: string, depth: number = 0, title: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
+export function website(url: string, depth: number = 0, sameDomain: boolean, title: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
@@ -50,10 +50,19 @@ export function website(url: string, depth: number = 0, title: string, callback:
                 return callback(err, null, null);
             }
 
+            // Follow the same domain
+            var originalUrl = murl.parse(url);
+            var urlFilterFunc = function (filterUrl) {
+                var parsed = murl.parse(filterUrl, false);
+
+                return parsed.host === originalUrl.host;
+            }
+
             var options = {
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
+                urlFilter: sameDomain ? urlFilterFunc : null,
                 directory: mpath.join("public", "s", dir),
                 recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
                 maxDepth: depth > 1 ? depth : null, // null == No limit
