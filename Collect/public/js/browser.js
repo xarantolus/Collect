@@ -484,9 +484,7 @@ function setEventListeners() {
                 // Enable the sameDomain element if there is a depth
 
                 var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
-
-                console.log(samedomain_elem.children.length);
-
+                
                 if (is_disabled && samedomain_elem.children.length === 2) {
                     samedomain_elem.appendChild(followNone);
                     samedomain_elem.value = "followNone";
@@ -495,13 +493,13 @@ function setEventListeners() {
                 }
 
                 samedomain_elem.disabled = is_disabled;
-            }
+            };
+
+            // Run this
+            changeDepthHandler();
+
+            depth_elem.onchange = changeDepthHandler;
         }
-
-        // Run this
-        changeDepthHandler();
-
-        depth_elem.onchange = changeDepthHandler;
     }
 
     // Form on Details Page
@@ -519,7 +517,8 @@ function SubmitNewForm(evt) {
     var f = {
         "title": document.getElementById("n_title").value,
         "url": document.getElementById("url").value,
-        "depth": document.getElementById("depth").value
+        "depth": document.getElementById("depth").value,
+        "samedomain": document.getElementById("samedomain").value === "followSame"
     };
 
     setLoading(true);
