@@ -18,6 +18,13 @@ block content
         span(class="uk-text-muted", title="If you don't set a depth, the default of zero will be used")=" (optional)"
       div(class="uk-form-controls")
         input(class="uk-input", id="depth", type="number", step="1", min="0", max="5", name="depth", placeholder="Depth", value="")
+    // SameDomain
+    div(class="uk-margin")
+      label(class="uk-form-label" for="form-horizontal-text")="Following Behaviour"
+      div(class="uk-form-controls")
+        select(class="uk-select", name="samedomain", id="samedomain", placeholder="Following Behaviour")
+          option(value="followAll")="Follow all hyperlinks"
+          option(value="followSame")="Only follow hyperlinks to the same domain"
     // Title
     div(class="uk-margin")
       label(class="uk-form-label" for="form-horizontal-text")="Title"
