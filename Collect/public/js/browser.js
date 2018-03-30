@@ -874,4 +874,6 @@ if (window.location.pathname.startsWith("/new")) {
     state.isTable = true;
 }
 
+setState(state, document.title, location, true);
+
 setEventListeners();
