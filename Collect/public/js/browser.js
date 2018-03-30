@@ -135,6 +135,11 @@ if (location.pathname !== "/login") {
 
 // General Methods
 
+// Source: https://stackoverflow.com/a/9716515/5728357
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 // Source for next 5 methods: https://gist.github.com/james2doyle/5694700
 
 // easing functions http://goo.gl/5HLl8
@@ -463,19 +468,51 @@ function setEventListeners() {
             if (new_form) {
                 new_form.onsubmit = SubmitNewForm;
             }
+
+            // onchange function for depth
+            var depth_elem = document.getElementById('depth');
+            var samedomain_elem = document.getElementById('samedomain');
+
+            // Disabled element in select
+            var followNone = document.createElement("option");
+            followNone.hidden = true;
+            followNone.disabled = true;
+            followNone.value = "followNone";
+            followNone.innerText = "Don't follow any hyperlinks";
+
+            var changeDepthHandler = function () {
+                // Enable the sameDomain element if there is a depth
+
+                var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
+
+                console.log(samedomain_elem.children.length);
+
+                if (is_disabled && samedomain_elem.children.length === 2) {
+                    samedomain_elem.appendChild(followNone);
+                    samedomain_elem.value = "followNone";
+                } else if (samedomain_elem.children.length === 3) {
+                    samedomain_elem.removeChild(followNone);
+                }
+
+                samedomain_elem.disabled = is_disabled;
+            }
         }
 
-        // Form on Details Page
-        if (location.pathname.startsWith("/details/")) {
-            var del_button = document.getElementById("delete");
-            if (del_button) { del_button.onclick = SubmitDeleteEntry; }
+        // Run this
+        changeDepthHandler();
 
-            var sub_button = document.getElementById("submit");
-            if (sub_button) { sub_button.onclick = SubmitChangeTitle; }
-        }
+        depth_elem.onchange = changeDepthHandler;
+    }
+
+    // Form on Details Page
+    if (location.pathname.startsWith("/details/")) {
+        var del_button = document.getElementById("delete");
+        if (del_button) { del_button.onclick = SubmitDeleteEntry; }
+
+        var sub_button = document.getElementById("submit");
+        if (sub_button) { sub_button.onclick = SubmitChangeTitle; }
     }
 }
-
 // Event Methods
 function SubmitNewForm(evt) {
     // Get required data
@@ -783,7 +820,7 @@ function LoadNew(replace) {
     state.isNew = true;
     state.isTable = false;
 
-    document.getElementById("content").innerHTML = '<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new"> <div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div><!-- Url--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Url</label><div class="uk-form-controls"><input class="uk-input" id="url" type="url" name="url" autofocus placeholder="Url" value=""></div></div><!-- Depth--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Depth<span class="uk-text-muted" title="If you don\'t set a depth, the default of zero will be used"> (optional)</span></label><div class="uk-form-controls"><input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value=""></div></div><!-- Title--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Title<span class="uk-text-muted" title="If you don\'t enter anything here, the title will be detected automatically"> (optional)</span></label><div class="uk-form-controls"><input class="uk-input" id="n_title" type="text" name="title" placeholder="Title" value=""></div></div><div class="uk-margin"><button class="uk-button uk-button-primary button-submit" type="submit">Submit</button><button class="uk-button uk-button-default button-reset" type="reset">Reset</button></div></form>';
+    document.getElementById("content").innerHTML = '<form class="uk-form-horizontal uk-margin-large" id="new_form" method="POST" action="/new"> <div class="uk-alert-danger" uk-alert id="error_field" style="visibility:hidden;"></div><!-- Url--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Url</label><div class="uk-form-controls"><input class="uk-input" id="url" type="url" name="url" autofocus placeholder="Url" value=""></div></div><!-- Depth--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Depth<span class="uk-text-muted" title="If you don\'t set a depth, the default of zero will be used"> (optional)</span></label><div class="uk-form-controls"><input class="uk-input" id="depth" type="number" step="1" min="0" max="5" name="depth" placeholder="Depth" value=""></div></div><!-- SameDomain--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Following Behaviour</label><div class="uk-form-controls"><select class="uk-select" name="samedomain" id="samedomain" placeholder="Following Behaviour"><option value="followAll">Follow all hyperlinks</option><option value="followSame">Only follow hyperlinks to the same domain</option></select></div></div><!-- Title--><div class="uk-margin"><label class="uk-form-label" for="form-horizontal-text">Title<span class="uk-text-muted" title="If you don\'t enter anything here, the title will be detected automatically"> (optional)</span></label><div class="uk-form-controls"><input class="uk-input" id="n_title" type="text" name="title" placeholder="Title" value=""></div></div><div class="uk-margin"><button class="uk-button uk-button-primary button-submit" type="submit">Submit</button><button class="uk-button uk-button-default button-reset" type="reset">Reset</button></div></form>';
 
     document.getElementById("url").focus();
 
