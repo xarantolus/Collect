@@ -485,9 +485,11 @@ function setEventListeners() {
 
                 var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
                 
-                if (is_disabled && samedomain_elem.children.length === 2) {
-                    samedomain_elem.appendChild(followNone);
-                    samedomain_elem.value = "followNone";
+                if (is_disabled) {
+                    if (samedomain_elem.children.length === 2) {
+                        samedomain_elem.appendChild(followNone);
+                        samedomain_elem.value = "followNone";
+                    }
                 } else if (samedomain_elem.children.length === 3) {
                     samedomain_elem.removeChild(followNone);
                 }
