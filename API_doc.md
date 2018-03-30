@@ -134,6 +134,13 @@ The parameter `url` is the link to the site you want to save, eg `https://exampl
 The parameter `depth` is the number of hyperlinks to follow on the specified url. It must be a number between 0 and 5.
 If omitted, `depth` is 0.
 
+###### title(optional)
+The parameter `title` is the title of the site. If omitted, Collect will use the title in the html file.
+
+###### samedomain(optional)
+The parameter `samedomain` sets whether hyperlinks to other domains should be followed. 
+If `true`, only links to the same domain will be followed.
+
 #### Result
 This method returns a [Processing](#processing) object or an [Error](#error)
 
