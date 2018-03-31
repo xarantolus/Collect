@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "public/js/browser.min.js",
+    "inputFiles": [
+      "public/js/browser.js"
+    ]
+  },
+  {
+    "outputFileName": "public/css/main.min.css",
+    "inputFiles": [
+      "public/css/main.css"
+    ]
+  }
+]

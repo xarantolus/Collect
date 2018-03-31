@@ -120,6 +120,12 @@ npm uninstall website-scraper-phantom
 ## Security considerations
    * The login system uses plain text
 
+## Tools
+This project is being developed in Visual Studio 2017.
+
+The following extension(s) are used:
+* [Bundler & Minifier](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.BundlerMinifier)
+
 ## Warning
 You're using this tool at your own risk. I am not responsible for any lost data like passwords or websites.
 

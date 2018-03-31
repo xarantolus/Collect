@@ -25,7 +25,7 @@
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
     <TypeScriptToolsVersion>2.5</TypeScriptToolsVersion>
     <EnableTypeScript>true</EnableTypeScript>
-    <StartWebBrowser>true</StartWebBrowser>
+    <StartWebBrowser>True</StartWebBrowser>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,8 +41,13 @@
     <TypeScriptCompile Include="tools\download.ts" />
     <TypeScriptCompile Include="routes\views.ts" />
     <TypeScriptCompile Include="routes\api_v1.ts" />
+    <None Include="bundleconfig.json" />
     <Content Include="config.json" />
     <Content Include="cookies.json" />
+    <Content Include="public\css\main.min.css">
+      <SubType>Content</SubType>
+      <DependentUpon>public\css\main.css</DependentUpon>
+    </Content>
     <Content Include="public\css\uikit-rtl.css" />
     <Content Include="public\css\uikit-rtl.min.css" />
     <Content Include="public\css\uikit.css" />
@@ -104,6 +109,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="public\js\browser.js" />
+    <Compile Include="public\js\browser.min.js">
+      <SubType>Code</SubType>
+      <DependentUpon>public\js\browser.js</DependentUpon>
+    </Compile>
     <Compile Include="public\js\socket.io.js" />
     <Compile Include="public\js\uikit-icons.js" />
     <Compile Include="public\js\uikit-icons.min.js" />
