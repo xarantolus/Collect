@@ -160,6 +160,13 @@ function getFileName(url) {
         base = remove_anchor.join('');
     }
     remove_anchor = null;
+    // Remove query from filename
+    var remove_query = base.split('?');
+    if (remove_query.length > 1) {
+        remove_query.pop();
+        base = remove_query.join('');
+    }
+    remove_query = null;
     if (base === "" || base === null) {
         // In case we don't have a basename
         return INDEX_NAME;
