@@ -15,6 +15,12 @@ if (location.pathname !== "/login") {
     //Url event handling
     socket.on('url', function (data) {
         var url = new URL(data.url);
+
+        if (!isNumber(notification_count)) {
+            // In case we haven't yet receive the 'notifcount' event
+            notification_count = 0;
+        }
+
         var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
         switch (data.step) {
             case 0: {
@@ -118,11 +124,10 @@ if (location.pathname !== "/login") {
     });
     // Display unknown notification count
     socket.on('disconnect', function () {
-        notification_count = 0;
-        var c_e = document.getElementById("notif_count");
-        c_e.innerText = "?";
-        c_e.style.backgroundColor = "red";
+        notification_count = "?";
         needs_to_reload = true;
+        setNotifications();
+        setTitle(titleWithoutCount);
     });
     // We are connected
     socket.on('connect', function () {
@@ -258,14 +263,22 @@ function setLoading(bool) {
 
 function setTitle(title) {
     titleWithoutCount = title;
-    document.title = notification_count > 0 ? '(' + notification_count + ') ' + title : title;
+    if (isNumber(notification_count)) {
+        document.title = notification_count > 0 ? '(' + notification_count + ') ' + title : title;
+    } else {
+        document.title = '(' + notification_count + ') ' + title; // It is the 'unknown' character
+    }
 }
 
 function setNotifications() {
     notification_count = notification_count < 0 ? 0 : notification_count;
     var c_e = document.getElementById("notif_count");
     c_e.innerHTML = notification_count;
-    c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    if (isNumber(notification_count)) {
+        c_e.style.backgroundColor = notification_count === 0 ? "green" : "orange";
+    } else {
+        c_e.style.backgroundColor = "red";
+    }
     setTitle(titleWithoutCount);
 }
 
@@ -484,7 +497,7 @@ function setEventListeners() {
                 // Enable the sameDomain element if there is a depth
 
                 var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
-                
+
                 if (is_disabled) {
                     if (samedomain_elem.children.length === 2) {
                         samedomain_elem.appendChild(followNone);
