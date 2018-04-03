@@ -32,13 +32,13 @@ Collect stores a static copy of the url on your disk
 ### Screenshots
 
 ##### Main Page
-  ![Main Page Screenshot](github/screenshot-main.png?raw=true)
+  ![Main Page Screenshot](.github/screenshot-main.png?raw=true)
 
 ##### New Page
-  ![New Page Screenshot](github/screenshot-new.png?raw=true)
+  ![New Page Screenshot](.github/screenshot-new.png?raw=true)
 
 ##### Details Page
-  ![Details Page Screenshot](github/screenshot-details.png?raw=true)
+  ![Details Page Screenshot](.github/screenshot-details.png?raw=true)
 
 
 ### Installation
@@ -121,7 +121,7 @@ npm uninstall website-scraper-phantom
    * The login system uses plain text
 
 ## Contributing
-See the [contributing file](github/CONTRIBUTING.md).
+See the [contributing file](.github/CONTRIBUTING.md).
 
 #### Tools
 This project is being developed in Visual Studio 2017.
