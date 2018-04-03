@@ -75,6 +75,7 @@ app.use(function (req, res, next) {
 // development error handler
 // will print stacktrace
 if (global["RUN_MODE"].toUpperCase() !== 'PRODUCTION') {
+    app.set('view cache', false);
     app.locals.pretty = true;
     app.use((err: any, req, res, next) => {
 
