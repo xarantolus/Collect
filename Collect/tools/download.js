@@ -121,14 +121,14 @@ function website(url, depth = 0, sameDomain, title, callback) {
                                     catch (_b) { }
                                 }
                                 // Create the item
-                                var cd = new cd.ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title, size);
+                                var item = new cd.ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title, size);
                                 // Save it to the index file
-                                cd.ContentDescription.addContent(cd, function (err) {
+                                cd.ContentDescription.addContent(item, function (err) {
                                     if (err) {
                                         return callback(err, null, false);
                                     }
                                     // We did it!
-                                    return callback(null, cd, false);
+                                    return callback(null, item, false);
                                 });
                             });
                         });

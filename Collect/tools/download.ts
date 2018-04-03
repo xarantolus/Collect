@@ -142,7 +142,7 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                                 }
 
                                 // Create the item
-                                var cd = new cd.ContentDescription(result.url,
+                                var item = new cd.ContentDescription(result.url,
                                     indexPath,
                                     dir,
                                     murl.parse(result.url, false).hostname,
@@ -152,13 +152,13 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                                 );
 
                                 // Save it to the index file
-                                cd.ContentDescription.addContent(cd, function (err) {
+                                cd.ContentDescription.addContent(item, function (err) {
                                     if (err) {
                                         return callback(err, null, false);
                                     }
 
                                     // We did it!
-                                    return callback(null, cd, false);
+                                    return callback(null, item, false);
                                 });
                             });
                         });
