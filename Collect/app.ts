@@ -1,4 +1,7 @@
-﻿import debug = require('debug');
+﻿// Run the integrity check before importing anything
+require('./tools/integrity').checkIntegrity();
+
+import debug = require('debug');
 import express = require('express');
 import path = require('path');
 import auth = require('./tools/auth');
@@ -8,7 +11,6 @@ import cookieParser = require('cookie-parser');
 import compression = require('compression');
 
 // Check all directories & the index file
-require('./tools/integrity').checkIntegrity();
 
 var app = express()
 

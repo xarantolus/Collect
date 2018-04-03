@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// Run the integrity check before importing anything
+require('./tools/integrity').checkIntegrity();
 const express = require("express");
 const path = require("path");
 const auth = require("./tools/auth");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 // Check all directories & the index file
-require('./tools/integrity').checkIntegrity();
 var app = express();
 var version = require('./package.json').version || "Unspecified Version";
 global["RUN_MODE"] = (process.argv.some(arg => arg.toUpperCase() === "PRODUCTION") ? "production" : null) || app.get('env') || "development";
