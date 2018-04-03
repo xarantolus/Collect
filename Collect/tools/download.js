@@ -8,7 +8,9 @@ const mpath = require("path");
 const extractor = require("unfluff");
 const getFolderSize = require("get-folder-size");
 const async = require("async");
+// the id_length is used when generating an id
 var id_length = require('../config.json').id_length;
+// warn, but use default
 if (id_length === null) {
     id_length = 5;
     console.log("[warn] 'id_length' is not set in config. The default of 5 will be used.");
@@ -16,36 +18,49 @@ if (id_length === null) {
 if (id_length < 5) {
     console.log("[warn] 'id_length' cannot be smaller than 5. The default of 5 will be used.");
 }
+// Check if the 'PhantomJS' plugin is installed
 var usePhantom = false;
 var phantomHtml;
 try {
     phantomHtml = require('website-scraper-phantom');
     usePhantom = true;
+    // Let the user know
     console.log("PhantomJS will be used to process websites");
 }
 catch (e) {
+    // Ignore only if we didn't find a module
     if (e.code !== 'MODULE_NOT_FOUND') {
         throw e;
     }
 }
+// This function downloads a website
+// Parameters:
+// url: the url to download
+// depth: how many hyperlinks to follow
+// samedomain: whether to only follow hyperlinks to the same domain (if depth > 0)
+// title: the title that should be displayed in the listing
 function website(url, depth = 0, sameDomain, title, callback) {
+    // we need an url
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
+    // Do we already have it?
     ContentDescription.contains(url, function (err, contains, item) {
         if (err) {
             return callback(err, null, null);
         }
         if (contains) {
+            // we already have it in our index file. the user should delete it before downloading again
             return callback(null, item, true);
         }
-        // Let's grab an id for this url
+        // Let's grab an id & directory name for this url
         findValidDir(url, function (err, dir) {
             if (err) {
                 return callback(err, null, null);
             }
-            // Follow the same domain
+            // Follow the same domain ?
             var originalUrl = murl.parse(url);
+            // The urlFilter function passed to website-scraper
             var urlFilterFunc = function (filterUrl) {
                 var parsed = murl.parse(filterUrl, false);
                 return parsed.host === originalUrl.host;
@@ -57,7 +72,7 @@ function website(url, depth = 0, sameDomain, title, callback) {
                 urlFilter: sameDomain ? urlFilterFunc : null,
                 directory: mpath.join("public", "s", dir),
                 recursive: depth !== 0,
-                maxDepth: depth > 1 ? depth : null,
+                maxDepth: depth !== 0 ? depth : null,
                 httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
             };
             // Start downloading
@@ -65,8 +80,9 @@ function website(url, depth = 0, sameDomain, title, callback) {
                 if (error) {
                     return callback(error, null, null);
                 }
-                var result = results[0]; // Because we only download one
+                var result = results[0]; // Because we only download one url (see 'urls' array in options)
                 if (!result.saved) {
+                    // website-scraper couldn't save the file
                     return callback(new Error("Couldn't save file"), null, null);
                 }
                 //Check again, maybe there was a redirect 
@@ -86,8 +102,11 @@ function website(url, depth = 0, sameDomain, title, callback) {
                             if (err) {
                                 return callback(err, null, null);
                             }
+                            // prepare the 'pagepath'
                             var indexPath = mpath.join(dir, result.filename);
+                            // This could be refactored to only read the file if the title is not set
                             fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
+                                // extract the title if we don't have it
                                 if ((title || "").trim() === "") {
                                     var parser;
                                     try {
@@ -100,12 +119,14 @@ function website(url, depth = 0, sameDomain, title, callback) {
                                     }
                                     catch (_b) { }
                                 }
-                                // Save to index file
+                                // Create the item
                                 var cd = new ContentDescription(result.url, indexPath, dir, murl.parse(result.url, false).hostname, new Date(), title, size);
+                                // Save it to the index file
                                 ContentDescription.addContent(cd, function (err) {
                                     if (err) {
                                         return callback(err, null, false);
                                     }
+                                    // We did it!
                                     return callback(null, cd, false);
                                 });
                             });
@@ -141,7 +162,9 @@ function renameDir(dir, originalUrl, newUrl, callback) {
 }
 //We assume that urls with these extensions return html
 const html_exts = [".asp", ".php", ".html", ".jsp", ".aspx"];
+// This is the default name for the index page
 const INDEX_NAME = "index.html";
+// gets a file name from the url (e.g. http://example.com/test.png => test.png)
 function getFileName(url) {
     if (url.endsWith("/")) {
         // Index of a directory or home page
@@ -149,9 +172,10 @@ function getFileName(url) {
     }
     var urlobj = murl.parse(url, false);
     if (urlobj.protocol + "//" + urlobj.host === url) {
-        // Home page
+        // Home page (without trailing slash)
         return INDEX_NAME;
     }
+    // get the file name
     var base = mpath.basename(url);
     // Remove achor from url if there is one
     var remove_anchor = base.split('#');
@@ -168,7 +192,7 @@ function getFileName(url) {
     }
     remove_query = null;
     if (base === "" || base === null) {
-        // In case we don't have a basename
+        // In case we don't have a basename after everything was removed
         return INDEX_NAME;
     }
     var ext = mpath.extname(base);
@@ -190,14 +214,17 @@ function getFileName(url) {
     bsplit.push(ext);
     return bsplit.join('.');
 }
+// Searches a directory for the url
 function findValidDir(url, callback) {
-    // eg 25 bytes => 50 chars
+    // eg 25 bytes => 50 chars ( we need the halt id length)
     crypto.randomBytes(Math.ceil(id_length / 2), function (err, buffer) {
         if (err) {
             return callback(err, null);
         }
         // get exact length of the string
         var path = murl.parse(url, false).host + "-" + buffer.toString('hex').slice(0, id_length);
+        // If it exists, we just call this function again.
+        // This has the risk of running thousands of times if it is always the same id
         fs.exists(mpath.join("public", "s", path), function (exists) {
             if (exists) {
                 findValidDir(url, callback);
@@ -231,6 +258,7 @@ function isValidUrl(value) {
 }
 exports.isValidUrl = isValidUrl;
 // Source: https://stackoverflow.com/a/25069828/5728357
+// This is different from the 'rimraf' function found in 'tools/integrity.ts' because it is asynchronus
 function removeFolder(location, next) {
     fs.readdir(location, function (err, files) {
         async.each(files, function (file, cb) {
@@ -260,7 +288,9 @@ function removeFolder(location, next) {
         });
     });
 }
+// This class describes a saved page
 class ContentDescription {
+    // Creates a new ContentDescription object
     constructor(_url, _pagepath, _id, _domain, _date, _title, _size) {
         this.url = _url;
         this.pagepath = _pagepath || "";
@@ -273,6 +303,7 @@ class ContentDescription {
         this.title = _title || "No title";
         this.size = _size;
     }
+    // Loads the content file
     static loadFile(callback) {
         fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
             if (err) {
@@ -281,6 +312,7 @@ class ContentDescription {
                     return callback(null, []);
                 }
                 else {
+                    // another error
                     return callback(err, null);
                 }
             }
@@ -292,12 +324,15 @@ class ContentDescription {
             }
         });
     }
+    // Saves the specified data in the content file
     static saveFile(data, callback) {
         fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", callback);
     }
+    // Returns all saved sites
     static getSaved(callback) {
         ContentDescription.loadFile(callback);
     }
+    // Adds a site to the index file
     static addContent(desc, callback) {
         ContentDescription.loadFile(function (err, result) {
             if (err) {
@@ -307,6 +342,7 @@ class ContentDescription {
             ContentDescription.saveFile(result, callback);
         });
     }
+    // Removes a site from the index file
     static removeContent(id, callback) {
         //Remove from file
         ContentDescription.loadFile(function (err, result) {
@@ -315,6 +351,7 @@ class ContentDescription {
                 return callback(err);
             }
             var beforecount = result.length;
+            // Filter all items with this id (the count of removed items should be 0 or 1)
             result = result.filter(function (item) {
                 return item.id !== id;
             });
@@ -339,29 +376,37 @@ class ContentDescription {
             });
         });
     }
+    // Sets the title of a saved page
     static setTitle(id, newtitle, callback) {
         ContentDescription.loadFile(function (err, result) {
             if (err) {
                 return callback(err, null);
             }
+            // find the item's index
             var index = result.findIndex(item => item.id === id);
             if (index === -1) {
-                return callback(new RangeError("There is no item with this id"), null);
+                // it doesn't exist
+                return callback(new ReferenceError("There is no item with this id"), null);
             }
+            // Actually set the title
             result[index].title = newtitle;
+            // Save with new title
             ContentDescription.saveFile(result, function (err) {
                 if (err) {
                     return callback(err, null);
                 }
+                // return callback with new item
                 callback(null, result[index]);
             });
         });
     }
+    // Checks whether the index file contains an url
     static contains(url, callback) {
         ContentDescription.loadFile(function (err, result) {
             if (err) {
                 return callback(err, null, null);
             }
+            // filter by url
             var index = result.findIndex(item => item.url === url);
             if (index != -1) {
                 return callback(null, true, result[index]);
@@ -371,6 +416,7 @@ class ContentDescription {
             }
         });
     }
+    // Gets an item by its id
     static getById(id, callback) {
         if (!id) {
             return callback(new ReferenceError("No id given"), null);
@@ -381,6 +427,7 @@ class ContentDescription {
             }
             var item = null;
             if (id) {
+                // filter by id
                 var index = result.findIndex(item => item.id === id);
                 if (index !== -1) {
                     item = result[index];
@@ -393,6 +440,7 @@ class ContentDescription {
         });
     }
 }
+// This is where all information is saved
 ContentDescription.CONTENT_FILE = mpath.join("public", "s", "content.json");
 exports.ContentDescription = ContentDescription;
 //# sourceMappingURL=download.js.map

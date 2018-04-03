@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// This module enables us to set, increase or decrease the server-wide notification count
 function setNotificationCount(count) {
     global["notif_count"] = count;
 }
