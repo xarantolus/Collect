@@ -15,7 +15,11 @@ If everyone is content with the proposal, the change will be merged into the `ma
 To work on this project, you need to install the [TypeScript](http://www.typescriptlang.org/) compiler `tsc`. To compile the project, run `tsc` in the directory that contains `tsconfig.json`.
 
 You can also open the `Collect.sln` file in [Visual Studio](https://www.visualstudio.com/) if you installed the `TypeScript SDK` and the `Node.js development` workload using the Visual Studio Installer.
- 
+
+The following extension(s) for Visual Studio are used:
+* [Bundler & Minifier](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.BundlerMinifier)
+
+
 #### Installing
 If you want to edit this project, you need to install it first. This can be done as described in the [installation section in the readme](README.md#installation).
 

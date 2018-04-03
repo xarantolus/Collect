@@ -120,7 +120,10 @@ npm uninstall website-scraper-phantom
 ## Security considerations
    * The login system uses plain text
 
-## Tools
+## Contributing
+See the [contributing file](github/CONTRIBUTING.md).
+
+#### Tools
 This project is being developed in Visual Studio 2017.
 
 The following extension(s) are used:

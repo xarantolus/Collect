@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CA976C32-7F29-4763-8772-EABF8628E73A}"
 	ProjectSection(SolutionItems) = preProject
 		API_doc.md = API_doc.md
+		github\CONTRIBUTING.md = github\CONTRIBUTING.md
 		events.md = events.md
 		LICENSE = LICENSE
 		README.md = README.md
