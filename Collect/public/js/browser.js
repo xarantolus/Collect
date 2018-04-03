@@ -25,7 +25,7 @@ if (location.pathname !== "/login") {
         var url = new URL(data.url);
 
         if (!isNumber(notification_count)) {
-            // In case we haven't yet receive the 'notifcount' event
+            // In case we haven't yet received the 'notifcount' event
             notification_count = 0;
         }
 
