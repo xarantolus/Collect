@@ -173,7 +173,12 @@ Linux/Unix:
 mv ../config.json Collect/config.json
 ```
 
-Install all required packages
+Go to the directory that contains `package.json`.
+```
+cd Collect
+```
+
+Install all required packages.
 ```
 npm install
 ```
