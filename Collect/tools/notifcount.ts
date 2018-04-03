@@ -1,3 +1,4 @@
+// This module enables us to set, increase or decrease the server-wide notification count
 export function setNotificationCount(count: number): void {
     global["notif_count"] = count;
 }
