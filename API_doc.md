@@ -141,6 +141,12 @@ The parameter `title` is the title of the site. If omitted, Collect will use the
 The parameter `samedomain` sets whether hyperlinks to other domains should be followed. 
 If `true`, only links to the same domain will be followed.
 
+###### cookies(required)
+The parameter `cookies` defines cookies that should be sent with the request, eg `cookie1=value1;cookie2=value2`. By default, no cookies are sent.
+
+###### useragent(required)
+The parameter `useragent` defines the `User-Agent` header that will be sent with the request, eg `cookie1=value1;cookie2=value2`. By default, no user-agent will be sent.
+
 #### Result
 This method returns a [Processing](#processing) object or an [Error](#error)
 
