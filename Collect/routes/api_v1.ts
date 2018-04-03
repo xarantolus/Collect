@@ -4,6 +4,7 @@
 import express = require('express');
 import download = require('../tools/download');
 import notif = require('../tools/notifcount');
+import cd = require('../tools/ContentDescription');
 import url = require('url');
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
 router.get('/sites/:domain?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var domain = req.params.domain;
 
-    download.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSaved(function (err, result) {
         if (err) {
             err['status'] = 500;
             err['api'] = true;
@@ -34,7 +35,7 @@ router.get('/details/:id', (req: express.Request, res: express.Response, next: e
     var id = req.params.id;
 
     // Load item with the specified id
-    download.ContentDescription.getById(id, function (err, item) {
+    cd.ContentDescription.getById(id, function (err, item) {
         if (err) {
             err['status'] = (err instanceof ReferenceError) ? 404 : 500;
             err['api'] = true;
@@ -63,7 +64,7 @@ router.post('/site/:id/settitle', (req: express.Request, res: express.Response, 
     }
 
 
-    download.ContentDescription.setTitle(id, newtitle, function (err, item) {
+    cd.ContentDescription.setTitle(id, newtitle, function (err, item) {
         if (err) {
             err['api'] = true;
             return next(err);
@@ -84,7 +85,7 @@ router.post('/site/:id/delete', (req: express.Request, res: express.Response, ne
     var id: string = req.params.id;
 
     // we don't need to check for null because the removeContent function checks if it removed anything
-    download.ContentDescription.removeContent(id, function (err) {
+    cd.ContentDescription.removeContent(id, function (err) {
         if (err) {
             err['api'] = true;
             return next(err);

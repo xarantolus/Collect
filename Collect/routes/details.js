@@ -5,11 +5,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express = require("express");
 const download = require("../tools/download");
+const cd = require("../tools/ContentDescription");
 const router = express.Router();
 // Get the details page for an item
 router.get('/:id?', (req, res, next) => {
     var id = req.params.id;
-    download.ContentDescription.getById(id, function (err, item) {
+    cd.ContentDescription.getById(id, function (err, item) {
         if (err) {
             err['status'] = 500;
             err['api'] = false;
@@ -23,7 +24,7 @@ router.get('/:id?', (req, res, next) => {
 // We get an id and the name of the button that was pressed
 router.post('/:id?', (req, res, next) => {
     var id = req.params.id;
-    download.ContentDescription.getById(id, function (err, item) {
+    cd.ContentDescription.getById(id, function (err, item) {
         if (err) {
             err['status'] = 500;
             err['api'] = false;
@@ -33,7 +34,7 @@ router.post('/:id?', (req, res, next) => {
         if (req.body.submit !== undefined && req.body.submit != null) {
             // We can't do anything without an title
             if (req.body.title) {
-                download.ContentDescription.setTitle(item.id, req.body.title, function (err, item) {
+                cd.ContentDescription.setTitle(item.id, req.body.title, function (err, item) {
                     if (err) {
                         err['status'] = 500;
                         err['api'] = false;
@@ -52,7 +53,7 @@ router.post('/:id?', (req, res, next) => {
             }
         } // User pressed the 'delete' button
         else if (req.body.delete !== undefined && req.body.delete != null) {
-            download.ContentDescription.removeContent(id, function (err) {
+            cd.ContentDescription.removeContent(id, function (err) {
                 if (err) {
                     err['status'] = 500;
                     err['api'] = false;

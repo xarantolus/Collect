@@ -1,4 +1,5 @@
 import dl = require('./download');
+import cd = require('./ContentDescription');
 import fs = require('fs');
 import path = require('path');
 
@@ -10,7 +11,7 @@ export function checkIntegrity(): void {
 
     // Get the index file
     try {
-        var content = fs.readFileSync(dl.ContentDescription.CONTENT_FILE, 'utf-8');
+        var content = fs.readFileSync(cd.ContentDescription.CONTENT_FILE, 'utf-8');
     } catch (e) {
         console.error("Failed loading the content file. If you are starting for the first time, this is no problem.");
         return;
@@ -18,8 +19,8 @@ export function checkIntegrity(): void {
 
     try {
         // Load lists
-        var list: dl.ContentDescription[] = JSON.parse(content);
-        var newlist: dl.ContentDescription[] = [];
+        var list: cd.ContentDescription[] = JSON.parse(content);
+        var newlist: cd.ContentDescription[] = [];
 
         console.log("Checking if folders for ids exist...");
 
@@ -36,7 +37,7 @@ export function checkIntegrity(): void {
 
         if (list.length > newlist.length) {
             // Save without old items
-            fs.writeFileSync(dl.ContentDescription.CONTENT_FILE, JSON.stringify(newlist), 'utf-8');
+            fs.writeFileSync(cd.ContentDescription.CONTENT_FILE, JSON.stringify(newlist), 'utf-8');
 
             var delcount = list.length - newlist.length;
             console.log("Deleted " + delcount.toString() + " entry" + (delcount === 1 ? "" : "s") + " from the index because " + (delcount === 1 ? "its directory does" : "their directories do") + " not exist.");

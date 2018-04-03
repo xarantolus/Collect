@@ -3,6 +3,7 @@
  */
 import express = require('express');
 import download = require('../tools/download');
+import cd = require('../tools/ContentDescription');
 const router = express.Router();
 
 
@@ -10,7 +11,7 @@ const router = express.Router();
 router.get('/:domain?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var domain = req.params.domain;
 
-    download.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSaved(function (err, result) {
         if (err) {
             return res.render('error', { error: err });
         }

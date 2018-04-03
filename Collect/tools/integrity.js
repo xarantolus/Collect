@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const dl = require("./download");
+const cd = require("./ContentDescription");
 const fs = require("fs");
 const path = require("path");
 // Checks for file integrity
@@ -10,7 +10,7 @@ function checkIntegrity() {
     console.log("Preparing integrity check...");
     // Get the index file
     try {
-        var content = fs.readFileSync(dl.ContentDescription.CONTENT_FILE, 'utf-8');
+        var content = fs.readFileSync(cd.ContentDescription.CONTENT_FILE, 'utf-8');
     }
     catch (e) {
         console.error("Failed loading the content file. If you are starting for the first time, this is no problem.");
@@ -33,7 +33,7 @@ function checkIntegrity() {
         }
         if (list.length > newlist.length) {
             // Save without old items
-            fs.writeFileSync(dl.ContentDescription.CONTENT_FILE, JSON.stringify(newlist), 'utf-8');
+            fs.writeFileSync(cd.ContentDescription.CONTENT_FILE, JSON.stringify(newlist), 'utf-8');
             var delcount = list.length - newlist.length;
             console.log("Deleted " + delcount.toString() + " entry" + (delcount === 1 ? "" : "s") + " from the index because " + (delcount === 1 ? "its directory does" : "their directories do") + " not exist.");
         }

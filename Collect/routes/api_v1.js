@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const download = require("../tools/download");
 const notif = require("../tools/notifcount");
+const cd = require("../tools/ContentDescription");
 const router = express.Router();
 // Get all sites by domain (if domain is null / "", we return all sites)
 router.get('/sites/:domain?', (req, res, next) => {
     var domain = req.params.domain;
-    download.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSaved(function (err, result) {
         if (err) {
             err['status'] = 500;
             err['api'] = true;
@@ -29,7 +30,7 @@ router.get('/sites/:domain?', (req, res, next) => {
 router.get('/details/:id', (req, res, next) => {
     var id = req.params.id;
     // Load item with the specified id
-    download.ContentDescription.getById(id, function (err, item) {
+    cd.ContentDescription.getById(id, function (err, item) {
         if (err) {
             err['status'] = (err instanceof ReferenceError) ? 404 : 500;
             err['api'] = true;
@@ -54,7 +55,7 @@ router.post('/site/:id/settitle', (req, res, next) => {
         delete err.stack;
         return next(err);
     }
-    download.ContentDescription.setTitle(id, newtitle, function (err, item) {
+    cd.ContentDescription.setTitle(id, newtitle, function (err, item) {
         if (err) {
             err['api'] = true;
             return next(err);
@@ -71,7 +72,7 @@ router.post('/site/:id/settitle', (req, res, next) => {
 router.post('/site/:id/delete', (req, res, next) => {
     var id = req.params.id;
     // we don't need to check for null because the removeContent function checks if it removed anything
-    download.ContentDescription.removeContent(id, function (err) {
+    cd.ContentDescription.removeContent(id, function (err) {
         if (err) {
             err['api'] = true;
             return next(err);
