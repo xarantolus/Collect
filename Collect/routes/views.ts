@@ -89,7 +89,7 @@ router.post('/new', (req: express.Request, res: express.Response, next: express.
     req.app.get('socketio').emit('url', { "message": "Started processing url", "step": 0, "url": posted_url, "result": null });
 
     // Now let's start the process
-    download.website(posted_url, depth, followSameDomain, title, function (err, result, fromCache) {
+    download.website(posted_url, depth, followSameDomain, title, req.body.cookies, req.body.useragent, function (err, result, fromCache) {
         // Finished, decrease the notification count
         notif.decreaseNotificationCount();
         if (err) {
