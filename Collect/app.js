@@ -7,7 +7,6 @@ const path = require("path");
 const auth = require("./tools/auth");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
-// Check all directories & the index file
 var app = express();
 var version = require('./package.json').version || "Unspecified Version";
 global["RUN_MODE"] = (process.argv.some(arg => arg.toUpperCase() === "PRODUCTION") ? "production" : null) || app.get('env') || "development";
