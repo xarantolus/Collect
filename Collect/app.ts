@@ -10,8 +10,6 @@ import fs = require('fs');
 import cookieParser = require('cookie-parser');
 import compression = require('compression');
 
-// Check all directories & the index file
-
 var app = express()
 
 var version = require('./package.json').version || "Unspecified Version";
