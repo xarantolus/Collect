@@ -9,7 +9,7 @@ https://example.com
 
 Collect stores a static copy of the url on your disk
 
-- Table of contents
+## Table of contents
   * [Features](#features)
     + [Screenshots](#screenshots)
     + [Installation](#installation)
