@@ -40,7 +40,7 @@ catch (e) {
 // depth: how many hyperlinks to follow
 // samedomain: whether to only follow hyperlinks to the same domain (if depth > 0)
 // title: the title that should be displayed in the listing
-function website(url, depth = 0, sameDomain, title, callback) {
+function website(url, depth = 0, sameDomain, title, cookies, useragent, callback) {
     // we need an url
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -66,6 +66,16 @@ function website(url, depth = 0, sameDomain, title, callback) {
                 var parsed = murl.parse(filterUrl, false);
                 return parsed.host === originalUrl.host;
             };
+            // Build request options (see https://github.com/website-scraper/node-website-scraper#request)
+            var requestOptions = {
+                headers: {}
+            };
+            if (useragent) {
+                requestOptions.headers["User-Agent"] = useragent;
+            }
+            if (cookies) {
+                requestOptions.headers["Cookie"] = cookies;
+            }
             var options = {
                 urls: [
                     { url: url, filename: getFileName(url) }

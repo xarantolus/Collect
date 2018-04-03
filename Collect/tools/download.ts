@@ -44,7 +44,7 @@ try {
 // depth: how many hyperlinks to follow
 // samedomain: whether to only follow hyperlinks to the same domain (if depth > 0)
 // title: the title that should be displayed in the listing
-export function website(url: string, depth: number = 0, sameDomain: boolean, title: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
+export function website(url: string, depth: number = 0, sameDomain: boolean, title: string, cookies: string, useragent: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
     // we need an url
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -75,6 +75,19 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                 var parsed = murl.parse(filterUrl, false);
 
                 return parsed.host === originalUrl.host;
+            }
+
+            // Build request options (see https://github.com/website-scraper/node-website-scraper#request)
+            var requestOptions = {
+                headers: {}
+            }
+
+            if (useragent) {
+                requestOptions.headers["User-Agent"] = useragent;
+            }
+
+            if (cookies) {
+                requestOptions.headers["Cookie"] = cookies;
             }
 
             var options = {
