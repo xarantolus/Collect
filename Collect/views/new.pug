@@ -25,12 +25,29 @@ block content
         select(class="uk-select", name="samedomain", id="samedomain", placeholder="Following Behaviour")
           option(value="followAll")="Follow all hyperlinks"
           option(value="followSame")="Only follow hyperlinks to the same domain"
-    // Title
-    div(class="uk-margin")
-      label(class="uk-form-label" for="form-horizontal-text")="Title"
-        span(class="uk-text-muted", title="If you don't enter anything here, the title will be detected automatically")=" (optional)"
-      div(class="uk-form-controls")
-        input(class="uk-input" id="n_title" type="text" name="title" placeholder="Title" value="")
+    // Advanced options
+    details
+      summary(style="cursor: pointer")
+       | Advanced options
+      // Title
+      div(class="uk-margin")
+        label(class="uk-form-label" for="form-horizontal-text")="Title"
+          span(class="uk-text-muted", title="If you don't enter anything here, the title will be detected automatically")=" (optional)"
+        div(class="uk-form-controls")
+          input(class="uk-input" id="n_title" type="text" name="title" placeholder="Title" value="")
+      // Cookies
+      div(class="uk-margin")
+         label(class="uk-form-label" for="form-horizontal-text")="Cookies"
+           span(class="uk-text-muted", title="If you don't enter anything here, the request will be sent without any cookies")=" (optional)"
+         div(class="uk-form-controls")
+           input(class="uk-input" id="cookies" type="text" name="cookies" placeholder="cookie1=value1&cookie2=value2" value="")
+      // User-Agent
+      div(class="uk-margin")
+         label(class="uk-form-label" for="form-horizontal-text")="User-Agent"
+           span(class="uk-text-muted", title="If you don't enter anything here, the default user agent will be used")=" (optional)"
+         div(class="uk-form-controls")
+           // I'm sure that this is not the user agent used by the 'requests' module, but I couldn't find which one is used
+           input(class="uk-input" id="useragent" type="text" name="useragent" placeholder="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1" value="")
     div(class="uk-margin")
          button(class="uk-button uk-button-primary button-submit", type="submit")
           | Submit
