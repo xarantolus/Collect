@@ -1,11 +1,19 @@
 // Variables
 var notification_count = 0;
+// We need to reload if an error happened in a XMLHttpRequest
+// if this is true and we reconnect to the server, we reload automatically (see socket.on('connect'... )
 var needs_to_reload = false;
+// This object describes the current state
 var state = { data: "", isTable: false, isNew: false, isDetails: false };
+// The title without notification count (needed when the notification count changes)
 var titleWithoutCount = document.title;
+// Prevent reloading our own page when we set the title
 var t_prevent_reload = false;
+// The timeout for notifications and error messages
 var n_timeout = 3500;
+// The position of the notification (Docs: https://getuikit.com/docs/notification#position)
 var n_pos = "bottom-right";
+// If audio is available, we play a sound when we receive an 'download finished' event (see socket.on('url'... , step 2))
 var notif_sound = (Audio) ? new Audio("/notification_sound.ogg") : null;
 
 //Socket.io, but only if not logging in
@@ -863,7 +871,9 @@ function resolveCurrent(replace) {
     }
 }
 
+// This happens when the user presses the 'back' / 'next' button in their browser
 window.onpopstate = function (event) {
+    // we should get a state
     if (event && event.state) {
         state = event.state;
     }
@@ -887,6 +897,7 @@ if (window.location.pathname.startsWith("/new")) {
     state.isTable = true;
 }
 
+// Set the initial state of the page
 setState(state, document.title, location, true);
 
 setEventListeners();

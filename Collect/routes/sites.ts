@@ -15,11 +15,13 @@ router.get('/:domain?', (req: express.Request, res: express.Response, next: expr
             return res.render('error', { error: err });
         }
 
-        if (domain) {
+        if (domain && domain.trim() !== "") {
             result = result.filter(item => item.domain === domain);
         }
 
-        var isDomain = (domain || "") === "";
+        // Check which title we need to display ('All Sites' or domain)
+        var isDomain = (domain || "").trim() === "";
+
         res.render('table', { title: isDomain ? "All Sites" : domain, list: result, domain: domain });
     });
 });

@@ -127,7 +127,7 @@ app.set('socketio', io);
 
 global["notif_count"] = 0;
 
-//Socket.io response
+//Socket.io: Respond with notification count on connect
 io.sockets.on('connection', function (socket) {
     socket.emit('notifcount', global["notif_count"])
 });

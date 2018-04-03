@@ -7,8 +7,11 @@ import extractor = require('unfluff');
 import getFolderSize = require('get-folder-size');
 import async = require('async');
 
+
+// the id_length is used when generating an id
 var id_length: number = require('../config.json').id_length;
 
+// warn, but use default
 if (id_length === null) {
     id_length = 5;
     console.log("[warn] 'id_length' is not set in config. The default of 5 will be used.");
@@ -19,39 +22,54 @@ if (id_length < 5) {
 }
 
 
+// Check if the 'PhantomJS' plugin is installed
 var usePhantom = false;
 var phantomHtml;
 try {
     phantomHtml = require('website-scraper-phantom');
     usePhantom = true;
+    // Let the user know
     console.log("PhantomJS will be used to process websites");
 } catch (e) {
+    // Ignore only if we didn't find a module
     if (e.code !== 'MODULE_NOT_FOUND') {
         throw e;
     }
 }
 
+// This function downloads a website
+// Parameters:
+// url: the url to download
+// depth: how many hyperlinks to follow
+// samedomain: whether to only follow hyperlinks to the same domain (if depth > 0)
+// title: the title that should be displayed in the listing
 export function website(url: string, depth: number = 0, sameDomain: boolean, title: string, callback: (err: Error, result: ContentDescription, fromCache: boolean) => void): void {
+    // we need an url
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
     }
+
+    // Do we already have it?
     ContentDescription.contains(url, function (err, contains, item) {
         if (err) {
             return callback(err, null, null);
         }
 
         if (contains) {
+            // we already have it in our index file. the user should delete it before downloading again
             return callback(null, item, true);
         }
 
-        // Let's grab an id for this url
+        // Let's grab an id & directory name for this url
         findValidDir(url, function (err: Error, dir: string): void {
             if (err) {
                 return callback(err, null, null);
             }
 
-            // Follow the same domain
+            // Follow the same domain ?
             var originalUrl = murl.parse(url);
+
+            // The urlFilter function passed to website-scraper
             var urlFilterFunc = function (filterUrl) {
                 var parsed = murl.parse(filterUrl, false);
 
@@ -62,10 +80,10 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                 urls: [
                     { url: url, filename: getFileName(url) }
                 ],
-                urlFilter: sameDomain ? urlFilterFunc : null,
-                directory: mpath.join("public", "s", dir),
+                urlFilter: sameDomain ? urlFilterFunc : null, // don't pass anything if we should download all hyperlinks
+                directory: mpath.join("public", "s", dir), // the directory name we generated
                 recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
-                maxDepth: depth > 1 ? depth : null, // null == No limit
+                maxDepth: depth !== 0 ? depth : null, // null == No limit (only if depth === 0)
                 httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
             };
 
@@ -75,9 +93,10 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                     return callback(error, null, null);
                 }
 
-                var result = results[0];// Because we only download one
+                var result = results[0]; // Because we only download one url (see 'urls' array in options)
 
                 if (!result.saved) {
+                    // website-scraper couldn't save the file
                     return callback(new Error("Couldn't save file"), null, null);
                 }
 
@@ -102,11 +121,13 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                                 return callback(err, null, null);
                             }
 
+                            // prepare the 'pagepath'
                             var indexPath = mpath.join(dir,
                                 result.filename);
 
+                            // This could be refactored to only read the file if the title is not set
                             fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-
+                                // extract the title if we don't have it
                                 if ((title || "").trim() === "") {
                                     var parser: any;
                                     try {
@@ -119,7 +140,7 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                                     } catch{ }
                                 }
 
-                                // Save to index file
+                                // Create the item
                                 var cd = new ContentDescription(result.url,
                                     indexPath,
                                     dir,
@@ -129,10 +150,13 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                                     size
                                 );
 
+                                // Save it to the index file
                                 ContentDescription.addContent(cd, function (err) {
                                     if (err) {
                                         return callback(err, null, false);
                                     }
+
+                                    // We did it!
                                     return callback(null, cd, false);
                                 });
                             });
@@ -174,9 +198,10 @@ function renameDir(dir: string, originalUrl: string, newUrl: string, callback: (
 
 //We assume that urls with these extensions return html
 const html_exts = [".asp", ".php", ".html", ".jsp", ".aspx"]
-
+// This is the default name for the index page
 const INDEX_NAME = "index.html";
 
+// gets a file name from the url (e.g. http://example.com/test.png => test.png)
 function getFileName(url: string): string {
 
     if (url.endsWith("/")) {
@@ -187,10 +212,11 @@ function getFileName(url: string): string {
     var urlobj = murl.parse(url, false);
 
     if (urlobj.protocol + "//" + urlobj.host === url) {
-        // Home page
+        // Home page (without trailing slash)
         return INDEX_NAME;
     }
 
+    // get the file name
     var base = mpath.basename(url);
 
     // Remove achor from url if there is one
@@ -211,7 +237,7 @@ function getFileName(url: string): string {
 
 
     if (base === "" || base === null) {
-        // In case we don't have a basename
+        // In case we don't have a basename after everything was removed
         return INDEX_NAME;
     }
 
@@ -239,15 +265,18 @@ function getFileName(url: string): string {
     return bsplit.join('.');
 }
 
-
+// Searches a directory for the url
 function findValidDir(url: string, callback: (err: Error, path: string) => void) {
-    // eg 25 bytes => 50 chars
+    // eg 25 bytes => 50 chars ( we need the halt id length)
     crypto.randomBytes(Math.ceil(id_length / 2), function (err, buffer) {
         if (err) {
             return callback(err, null);
         }
         // get exact length of the string
         var path = murl.parse(url, false).host + "-" + buffer.toString('hex').slice(0, id_length);
+
+        // If it exists, we just call this function again.
+        // This has the risk of running thousands of times if it is always the same id
         fs.exists(mpath.join("public", "s", path), function (exists: boolean) {
             if (exists) {
                 findValidDir(url, callback);
@@ -281,6 +310,7 @@ export function isValidUrl(value): boolean {
 }
 
 // Source: https://stackoverflow.com/a/25069828/5728357
+// This is different from the 'rimraf' function found in 'tools/integrity.ts' because it is asynchronus
 function removeFolder(location: string, next: (err: Error) => void): void {
     fs.readdir(location, function (err, files) {
         async.each(files, function (file, cb) {
@@ -309,29 +339,44 @@ function removeFolder(location: string, next: (err: Error) => void): void {
     })
 }
 
+
+// This class describes a saved page
 export class ContentDescription {
+    // The url we downloaded
     public url: string;
+    // The title of this item
     public title: string;
+    // The id (same to directory name in 'public/s/')
     public id: string;
+    // The pagepath (usually something like 'public/s/_id_/index.html')
     public pagepath: string;
+    // The domain of the url
     public domain: string;
+    // The date when we saved the page
     public saved: Date;
+    // The size of the directory in bytes
     public size: number;
+
+    // Creates a new ContentDescription object
     constructor(_url: string, _pagepath: string, _id: string, _domain: string, _date: Date, _title: string, _size: number) {
         this.url = _url;
         this.pagepath = _pagepath || "";
         this.id = _id;
+
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
         if (_domain.startsWith("www."))
             _domain = _domain.substr(4, _domain.length - 4);
+
         this.domain = _domain;
         this.saved = _date || new Date();
         this.title = _title || "No title";
         this.size = _size;
     }
 
+    // This is where all information is saved
     static readonly CONTENT_FILE = mpath.join("public", "s", "content.json");
 
+    // Loads the content file
     private static loadFile(callback: (err: Error, result: Array<ContentDescription>) => void): void {
         fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
             if (err) {
@@ -339,9 +384,11 @@ export class ContentDescription {
                 if (err.errno === -4058) {
                     return callback(null, []);
                 } else {
+                    // another error
                     return callback(err, null);
                 }
             }
+
             try {
                 return callback(null,
                     JSON.parse(file_content));
@@ -351,14 +398,17 @@ export class ContentDescription {
         });
     }
 
+    // Saves the specified data in the content file
     private static saveFile(data: Array<ContentDescription>, callback: (err: Error) => void): void {
         fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", callback);
     }
 
+    // Returns all saved sites
     public static getSaved(callback: (err: Error, result: Array<ContentDescription>) => void): void {
         ContentDescription.loadFile(callback);
     }
 
+    // Adds a site to the index file
     public static addContent(desc: ContentDescription, callback: (err: Error) => void): void {
         ContentDescription.loadFile(function (err, result) {
             if (err) {
@@ -369,6 +419,7 @@ export class ContentDescription {
         });
     }
 
+    // Removes a site from the index file
     public static removeContent(id: string, callback: (err: Error) => void): void {
         //Remove from file
         ContentDescription.loadFile(function (err, result) {
@@ -379,6 +430,7 @@ export class ContentDescription {
 
             var beforecount = result.length;
 
+            // Filter all items with this id (the count of removed items should be 0 or 1)
             result = result.filter(function (item) {
                 return item.id !== id;
             });
@@ -394,45 +446,58 @@ export class ContentDescription {
                     err.message = "Error saving file";
                     return callback(err);
                 }
+
                 //Now we need to remove the directory
                 removeFolder(mpath.join('public', 's', id), function (err) {
                     if (err) {
                         err.message = "Error while removing directory";
                         return callback(err);
                     }
+
                     return callback(null);
                 });
             });
         });
     }
 
+    // Sets the title of a saved page
     public static setTitle(id: string, newtitle: string, callback: (err: Error, item: ContentDescription) => void): void {
         ContentDescription.loadFile(function (err, result) {
             if (err) {
                 return callback(err, null);
             }
+            // find the item's index
             var index = result.findIndex(item => item.id === id);
 
             if (index === -1) {
-                return callback(new RangeError("There is no item with this id"), null);
+                // it doesn't exist
+                return callback(new ReferenceError("There is no item with this id"), null);
             }
 
+            // Actually set the title
             result[index].title = newtitle;
+
+            // Save with new title
             ContentDescription.saveFile(result, function (err) {
                 if (err) {
                     return callback(err, null);
                 }
+
+                // return callback with new item
                 callback(null, result[index]);
             });
         });
     }
 
+    // Checks whether the index file contains an url
     public static contains(url: string, callback: (err: Error, result: boolean, item: ContentDescription) => void): void {
         ContentDescription.loadFile(function (err, result) {
             if (err) {
                 return callback(err, null, null);
             }
+            // filter by url
             var index = result.findIndex(item => item.url === url);
+
             if (index != -1) {
                 return callback(null, true, result[index]);
             } else {
@@ -441,6 +506,7 @@ export class ContentDescription {
         });
     }
 
+    // Gets an item by its id
     public static getById(id: string, callback: (err: Error, result: ContentDescription) => void): void {
         if (!id) {
             return callback(new ReferenceError("No id given"), null);
@@ -452,8 +518,11 @@ export class ContentDescription {
             }
 
             var item = null;
+
             if (id) {
+                // filter by id
                 var index = result.findIndex(item => item.id === id);
+
                 if (index !== -1) {
                     item = result[index];
                 }
