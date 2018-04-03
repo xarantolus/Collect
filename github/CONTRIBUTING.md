@@ -21,7 +21,7 @@ The following extension(s) for Visual Studio are used:
 
 
 #### Installing
-If you want to edit this project, you need to install it first. This can be done as described in the [installation section in the readme](README.md#installation).
+If you want to edit this project, you need to install it first. This can be done as described in the [installation section in the readme](../README.md#installation).
 
 In order to start the server in debug mode, start it without the `production` parameter:
 ```
