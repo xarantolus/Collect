@@ -117,9 +117,6 @@ If you cannot save any pages after installing, remove the module by running
 npm uninstall website-scraper-phantom
 ```
 
-## Security considerations
-   * The login system uses plain text
-
 ## Contributing
 See the [contributing file](.github/CONTRIBUTING.md).
 
@@ -128,6 +125,13 @@ This project is being developed in Visual Studio 2017.
 
 The following extension(s) are used:
 * [Bundler & Minifier](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.BundlerMinifier)
+
+## Security considerations
+   * The login system uses plain text. Anyone with (e.g. `SSH`) access to your server can read it.
+   * Any site you download can read & set cookies. A downloaded website could send your login cookie to another server. If you host this software in your private network without outside access, everything should be fine even if a cookie gets stolen, but don't take my word for it.
+   * Any client can connect to the `Socket.IO` endpoint on the server.
+   * The connection does by default not use `HTTPS`.
+
 
 ## Warning
 You're using this tool at your own risk. I am not responsible for any lost data like passwords or websites.
