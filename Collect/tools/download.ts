@@ -98,7 +98,8 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                 directory: mpath.join("public", "s", dir), // the directory name we generated
                 recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
                 maxDepth: depth !== 0 ? depth : null, // null == No limit (only if depth === 0)
-                httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
+                httpResponseHandler: usePhantom ? phantomHtml : null, // Use PhantomJS for processing if available
+                request: requestOptions // Cookies and User-Agent
             };
 
             // Start downloading
