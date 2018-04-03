@@ -3,8 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dl = require("./download");
 const fs = require("fs");
 const path = require("path");
+// Checks for file integrity
+// WARNING: this function deletes everything it doesn't know from the 'public/s/' directory
+// Errors in this function don't necessarily say if the server can start correctly
 function checkIntegrity() {
     console.log("Preparing integrity check...");
+    // Get the index file
     try {
         var content = fs.readFileSync(dl.ContentDescription.CONTENT_FILE, 'utf-8');
     }
@@ -38,6 +42,7 @@ function checkIntegrity() {
         }
         // Clean up
         list = null;
+        // Now the same thing, but in reverse
         console.log("Checking if ids for folders exist...");
         // If item exists, the folder can stay (In case the item was deleted/not saved but the folder is on disk)
         var content_dirs = dirs(path.join('public', 's'));
@@ -45,6 +50,7 @@ function checkIntegrity() {
         for (var i = 0; i < content_dirs.length; i++) {
             if (!newlist.some(item => item.id === content_dirs[i])) {
                 console.log(content_dirs[i], "is not in list");
+                // we need to delete this directory
                 rimraf(path.join('public', 's', content_dirs[i]));
                 deleted_count++;
             }

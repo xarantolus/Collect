@@ -14,20 +14,25 @@ class Cookie {
 }
 // cookies last one week
 const cookie_maxage = 7 * 24 * 60 * 60 * 1000;
+// Check if a cookie is in the cookies array
 function isValidCookie(cookie_value) {
     var index = cookies.findIndex(item => item.value === cookie_value);
     if (index === -1) {
+        // The list doesn't contain the cookie
         return false;
     }
     var is_expired = cookies[index].expires < new Date();
     if (is_expired) {
+        // remove the cookie
         cookies.splice(index, 1);
         return false;
     }
     else {
+        // valid
         return true;
     }
 }
+// generates a 50 chars long cookie and adds it to the cookie array & file
 function generateCookie(cb) {
     crypto.randomBytes(25, function (err, buffer) {
         if (err) {
@@ -38,6 +43,8 @@ function generateCookie(cb) {
         cb(null, cookie);
         // Save the cookies!
         cookies.push(cookie);
+        // The path for the cookies.json file is correct because node is started in the Collect directory
+        // it seems like 'require()' and 'writeFile()' use different paths(relative to file & relative to working dir)
         fs.writeFile('cookies.json', JSON.stringify(cookies), function (err) {
             if (err) {
                 console.log(err);
@@ -45,10 +52,12 @@ function generateCookie(cb) {
         });
     });
 }
+// These routes can be accessed if you are not logged in (resources for login screen)
 const resWhitelist = ["/android-icon-144x144.png", "/android-icon-192x192.png", "/android-icon-36x36.png", "/android-icon-48x48.png", "/android-icon-72x72.png", "/android-icon-96x96.png", "/apple-icon-114x114.png", "/apple-icon-120x120.png", "/apple-icon-144x144.png", "/apple-icon-152x152.png", "/apple-icon-180x180.png", "/apple-icon-57x57.png", "/apple-icon-60x60.png", "/apple-icon-72x72.png", "/apple-icon-76x76.png", "/apple-icon-precomposed.png", "/apple-icon.png", "/browserconfig.xml", "/css/main.min.css", "/css/main.css", "/css/uikit-rtl.css", "/css/uikit-rtl.min.css", "/css/uikit.css", "/css/uikit.min.css", "/favicon-16x16.png", "/favicon-32x32.png", "/favicon-96x96.png", "/favicon.ico", "/icon.svg", "/js/browser.min.js", "/js/browser.js", "/js/socket.io.js", "/js/socket.io.js.map", "/js/uikit-icons.js", "/js/uikit-icons.min.js", "/js/uikit.js", "/js/uikit.min.js", "/manifest.json", "/ms-icon-144x144.png", "/ms-icon-150x150.png", "/ms-icon-310x310.png", "/ms-icon-70x70.png"];
 function isResourceRequest(path) {
     return resWhitelist.some(item => path === item);
 }
+// Auth middleware
 module.exports = function (req, res, next) {
     var user = null;
     if (req.body && req.body.username && req.body.password) {
