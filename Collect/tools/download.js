@@ -84,7 +84,8 @@ function website(url, depth = 0, sameDomain, title, cookies, useragent, callback
                 directory: mpath.join("public", "s", dir),
                 recursive: depth !== 0,
                 maxDepth: depth !== 0 ? depth : null,
-                httpResponseHandler: usePhantom ? phantomHtml : null // Use PhantomJS for processing if available
+                httpResponseHandler: usePhantom ? phantomHtml : null,
+                request: requestOptions // Cookies and User-Agent
             };
             // Start downloading
             scrape(options, function (error, results) {
