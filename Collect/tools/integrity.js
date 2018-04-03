@@ -8,6 +8,24 @@ const path = require("path");
 // Errors in this function don't necessarily say if the server can start correctly
 function checkIntegrity() {
     console.log("Preparing integrity check...");
+    // Check cookie file
+    try {
+        console.log("Checking cookie file...");
+        // Check if file exists
+        var cookie_content = fs.readFileSync('cookies.json', 'utf-8');
+        // Check if it is valid json and an array
+        if (!Array.isArray(JSON.parse(cookie_content))) {
+            throw new TypeError("Cookies should be an array");
+        }
+    }
+    catch (e) {
+        // Something is wrong with the file. We just reset it to an empty array
+        try {
+            fs.writeFileSync('cookies.json', '[]', 'utf-8');
+            console.log("Replaced invalid cookie file");
+        }
+        catch (e) { }
+    }
     // Get the index file
     try {
         var content = fs.readFileSync(cd.ContentDescription.CONTENT_FILE, 'utf-8');
