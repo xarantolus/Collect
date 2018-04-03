@@ -4,10 +4,24 @@ Collect is a server to collect & archive websites written for NodeJS.
 It is intended for people who want to archive individual websites, eg
 
 ```
-https://example.com/some/page
+https://example.com
 ```
 
 Collect stores a static copy of the url on your disk
+
+- Table of contents
+  * [Features](#features)
+    + [Screenshots](#screenshots)
+    + [Installation](#installation)
+      - [Settings](#settings)
+      - [Plugins](#plugins)
+    + [Updating](#updating)
+  * [Contributing](#contributing)
+  * [Security considerations](#security-considerations)
+  * [Warning](#warning)
+  * [Credits](#credits)
+  * [License](#license)
+
 
 ## Features
    * General
@@ -96,7 +110,7 @@ If you don't want to use the API, it is recommended to set the token to a long r
 </p></details>
  
 
-### Plugins
+#### Plugins
 It is recommended to use [`PhantomJS`](http://phantomjs.org/) to process the websites after downloading.
 This ensures that dynamically loaded content is also saved.
 
@@ -116,6 +130,55 @@ If you cannot save any pages after installing, remove the module by running
 ```
 npm uninstall website-scraper-phantom
 ```
+
+### Updating
+If you already have Collect installed on your computer/server and want to update to the latest version, follow these steps.
+
+Go in the directory where Collect is installed.
+```
+cd /path/to/Collect
+```
+
+You might want to back up your settings file.
+
+Windows:
+```
+move Collect\config.json ..\
+```
+
+Linux/Unix:
+```
+mv Collect/config.json ../config.json
+```
+
+Download the latest version:
+```
+git fetch --all
+```
+
+Apply all changes (this usually overwrites your cookies file, but not the directory where your sites are saved.)
+```
+git reset --hard origin/master
+```
+
+Restore the settings file.
+
+Windows:
+```
+move ..\config.json Collect\
+```
+
+Linux/Unix:
+```
+mv ../config.json Collect/config.json
+```
+
+Install all required packages
+```
+npm install
+```
+
+After restarting your server, the new version should be up & running.
 
 ## Contributing
 See the [contributing file](.github/CONTRIBUTING.md).
