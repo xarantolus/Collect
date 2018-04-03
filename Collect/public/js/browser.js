@@ -541,7 +541,9 @@ function SubmitNewForm(evt) {
         "title": document.getElementById("n_title").value,
         "url": document.getElementById("url").value,
         "depth": document.getElementById("depth").value,
-        "samedomain": document.getElementById("samedomain").value === "followSame"
+        "samedomain": document.getElementById("samedomain").value === "followSame",
+        "cookies": document.getElementById("cookies").value,
+        "useragent": document.getElementById("useragent").value
     };
 
     setLoading(true);
