@@ -83,6 +83,7 @@
     <Content Include="public\ms-icon-70x70.png" />
     <Content Include="public\notification_sound.ogg" />
     <Content Include="start.sh" />
+    <Content Include="tools\ContentDescription.ts" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="public\css\main.css" />

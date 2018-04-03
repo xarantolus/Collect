@@ -5,11 +5,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express = require("express");
 const download = require("../tools/download");
+const cd = require("../tools/ContentDescription");
 const notif = require("../tools/notifcount");
 const router = express.Router();
 // Show all archived domains
 router.get('/', (req, res, next) => {
-    download.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSaved(function (err, result) {
         if (err) {
             return next(err);
         }

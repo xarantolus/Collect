@@ -3,13 +3,14 @@
  */
 import express = require('express');
 import download = require('../tools/download');
+import cd = require('../tools/ContentDescription');
 import notif = require('../tools/notifcount');
 import url = require('url');
 const router = express.Router();
 
 // Show all archived domains
 router.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    download.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSaved(function (err, result) {
         if (err) {
             return next(err);
         }
