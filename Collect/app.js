@@ -102,13 +102,12 @@ app.set('socketio', io);
 // Middleware for authorization
 io.use(function (socket, next) {
     var session_id = ((socket.handshake || {}).query || {}).session_id;
-    console.log(session_id);
-    if (auth.isValidCookie(session_id)) {
-        console.log("Accepted");
+    var api_token = ((socket.handshake || {}).query || {}).api_token;
+    // Accept either a valid session cookie or the api_token
+    if (auth.isValidCookie(session_id) || api_token === config.api_token) {
         next();
     }
     else {
-        console.log("Reject");
         next(new Error('Authentication error'));
     }
     return;
