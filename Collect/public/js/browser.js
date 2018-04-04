@@ -16,9 +16,12 @@ var n_pos = "bottom-right";
 // If audio is available, we play a sound when we receive an 'download finished' event (see socket.on('url'... , step 2))
 var notif_sound = (Audio) ? new Audio("/notification_sound.ogg") : null;
 
+
 //Socket.io, but only if not logging in
 if (location.pathname !== "/login") {
-    var socket = io();
+
+    var sess_cookie = getCookie('session_id');
+    var socket = io(location.protocol + "//" + location.host, { query: { session_id: sess_cookie } });
 
     //Url event handling
     socket.on('url', function (data) {
@@ -147,6 +150,13 @@ if (location.pathname !== "/login") {
 }
 
 // General Methods
+
+// Source: https://stackoverflow.com/a/15724300
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+}
 
 // Source: https://stackoverflow.com/a/9716515/5728357
 function isNumber(n) {

@@ -126,6 +126,20 @@ var server = app.listen(port);
 var io = require('socket.io')(server);
 app.set('socketio', io);
 
+// Middleware for authorization
+io.use(function (socket, next) {
+    console.log(socket.handshake.query.session_id)
+    next();
+    /*
+    if () {
+        next();
+    } else {
+        //next(new Error('Authentication error'));                  
+    }
+    return;
+*/
+});
+
 global["notif_count"] = 0;
 
 //Socket.io: Respond with notification count on connect
