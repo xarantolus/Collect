@@ -23,7 +23,7 @@ app.use(cookieParser());
 // Display version on pages
 app.use(version_mw.globals);
 // Check authentication
-app.use(auth);
+app.use(auth.middleware);
 const backup_1 = require("./routes/backup");
 const views_1 = require("./routes/views");
 const sites_1 = require("./routes/sites");
@@ -101,16 +101,17 @@ var io = require('socket.io')(server);
 app.set('socketio', io);
 // Middleware for authorization
 io.use(function (socket, next) {
-    console.log(socket.handshake.query.session_id);
-    next();
-    /*
-    if () {
+    var session_id = ((socket.handshake || {}).query || {}).session_id;
+    console.log(session_id);
+    if (auth.isValidCookie(session_id)) {
+        console.log("Accepted");
         next();
-    } else {
-        //next(new Error('Authentication error'));
+    }
+    else {
+        console.log("Reject");
+        next(new Error('Authentication error'));
     }
     return;
-*/
 });
 global["notif_count"] = 0;
 //Socket.io: Respond with notification count on connect

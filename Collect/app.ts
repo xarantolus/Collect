@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.use(version_mw.globals)
 
 // Check authentication
-app.use(auth as express.RequestHandler);
+app.use(auth.middleware as express.RequestHandler);
 
 import backup from './routes/backup';
 import views from './routes/views';
@@ -87,7 +87,7 @@ if (global["RUN_MODE"].toUpperCase() !== 'PRODUCTION') {
         res.status(err['status']);
 
         if (err['api'] || false) {
-            res.json({ status: err.status, message: err.message});
+            res.json({ status: err.status, message: err.message });
         } else {
             res.render('error', {
                 message: err.message,
@@ -128,16 +128,16 @@ app.set('socketio', io);
 
 // Middleware for authorization
 io.use(function (socket, next) {
-    console.log(socket.handshake.query.session_id)
-    next();
-    /*
-    if () {
+    var session_id = ((socket.handshake || {}).query || {}).session_id;
+    var api_token = ((socket.handshake || {}).query || {}).api_token;
+
+    // Accept either a valid session cookie or the api_token
+    if (auth.isValidCookie(session_id) || api_token === config.api_token) {
         next();
     } else {
-        //next(new Error('Authentication error'));                  
+        next(new Error('Authentication error'));
     }
     return;
-*/
 });
 
 global["notif_count"] = 0;

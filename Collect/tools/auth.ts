@@ -21,7 +21,7 @@ class Cookie {
 const cookie_maxage = 7 * 24 * 60 * 60 * 1000;
 
 // Check if a cookie is in the cookies array
-function isValidCookie(cookie_value: string): boolean {
+export function isValidCookie(cookie_value: string): boolean {
     var index = cookies.findIndex(item => item.value === cookie_value);
 
     if (index === -1) {
@@ -72,7 +72,7 @@ function isResourceRequest(path: string): boolean {
 }
 
 // Auth middleware
-module.exports = function (req: express.Request, res: express.Response, next: express.NextFunction): any {
+export function middleware(req: express.Request, res: express.Response, next: express.NextFunction): any {
     var user = null;
     if (req.body && req.body.username && req.body.password) {
         user = { name: req.body.username, pass: req.body.password };

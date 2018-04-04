@@ -32,6 +32,7 @@ function isValidCookie(cookie_value) {
         return true;
     }
 }
+exports.isValidCookie = isValidCookie;
 // generates a 50 chars long cookie and adds it to the cookie array & file
 function generateCookie(cb) {
     crypto.randomBytes(25, function (err, buffer) {
@@ -58,7 +59,7 @@ function isResourceRequest(path) {
     return resWhitelist.some(item => path === item);
 }
 // Auth middleware
-module.exports = function (req, res, next) {
+function middleware(req, res, next) {
     var user = null;
     if (req.body && req.body.username && req.body.password) {
         user = { name: req.body.username, pass: req.body.password };
@@ -140,5 +141,7 @@ module.exports = function (req, res, next) {
             }
         }
     }
-};
+}
+exports.middleware = middleware;
+;
 //# sourceMappingURL=auth.js.map
