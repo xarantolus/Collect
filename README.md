@@ -197,7 +197,6 @@ The following extension(s) are used:
 ## Security considerations
    * The login system uses plain text. Anyone with (e.g. `SSH`) access to your server can read it.
    * Any site you download can read & set cookies. A downloaded website could send your login cookie to another server. If you host this software in your private network without outside access, everything should be fine even if a cookie gets stolen, but don't take my word for it.
-   * Any client can connect to the `Socket.IO` endpoint on the server.
    * The connection does by default not use `HTTPS`.
 
 
