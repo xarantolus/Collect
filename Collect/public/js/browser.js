@@ -13,12 +13,13 @@ var t_prevent_reload = false;
 var n_timeout = 3500;
 // The position of the notification (Docs: https://getuikit.com/docs/notification#position)
 var n_pos = "bottom-right";
-// If audio is available, we play a sound when we receive an 'download finished' event (see socket.on('url'... , step 2))
-var notif_sound = (Audio) ? new Audio("/notification_sound.ogg") : null;
 
 
 //Socket.io, but only if not logging in
 if (location.pathname !== "/login") {
+    // If audio is available, we play a sound when we receive an 'download finished' event (see socket.on('url'... , step 2))
+    var notif_sound = (Audio) ? new Audio("/notification_sound.ogg") : null;
+
 
     var sess_cookie = getCookie('session_id');
     var socket = io(location.protocol + "//" + location.host, { query: { session_id: sess_cookie } });
