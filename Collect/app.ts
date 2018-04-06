@@ -135,7 +135,7 @@ io.use(function (socket, next) {
     if (auth.isValidCookie(session_id) || api_token === config.api_token) {
         next();
     } else {
-        next(new Error('Authentication error'));
+        next(new Error('ERR_CONNECT_UNAUTHORIZED'));
     }
     return;
 });
