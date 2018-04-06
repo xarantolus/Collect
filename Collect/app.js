@@ -108,7 +108,7 @@ io.use(function (socket, next) {
         next();
     }
     else {
-        next(new Error('Authentication error'));
+        next(new Error('ERR_CONNECT_UNAUTHORIZED'));
     }
     return;
 });

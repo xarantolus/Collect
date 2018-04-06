@@ -141,6 +141,12 @@ if (location.pathname !== "/login") {
         setNotifications();
         setTitle(titleWithoutCount);
     });
+    // Reload if we aren't authenticated
+    socket.on('error', function (err_code) {
+        if (err_code === "ERR_CONNECT_UNAUTHORIZED") {
+            location.reload();
+        }
+    });
     // We are connected
     socket.on('connect', function () {
         if (needs_to_reload) {
@@ -156,7 +162,7 @@ if (location.pathname !== "/login") {
 function getCookie(name) {
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
-    if (parts.length == 2) return parts.pop().split(";").shift();
+    if (parts.length === 2) return parts.pop().split(";").shift();
 }
 
 // Source: https://stackoverflow.com/a/9716515/5728357
