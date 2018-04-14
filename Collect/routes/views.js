@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
             return next(err);
         }
         // Show all sites without filtering
-        res.render('table', { title: "All Sites", list: result });
+        res.render('table', { title: "All Sites", list: result, humanFileSize: download.humanFileSize });
     });
 });
 // Show the 'New Entry' page

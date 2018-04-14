@@ -10,7 +10,9 @@ block content
             th Domain
             th Details
         tbody
+          - var size = 0;
           each val in list
+            - size += val.size
             tr
               td
                 - var pp = (val.pagepath.endsWith("/index.html") || val.pagepath.endsWith("\index.html")) ? (val.id + "/") : val.pagepath;
@@ -21,7 +23,7 @@ block content
               td
                 a(href='/details/' + val.id)
                  | Details
-      - var count_label = "There " + (list.length === 1 ? "is":"are") + " " + list.length + " item" + (list.length === 1 ? "" : "s") + (((domain || "") === "") ? "." : " for this domain.")
+      - var count_label = "There " + (list.length === 1 ? "is" : "are") + " " + list.length + " item" + (list.length === 1 ? "" : "s") + (((domain || "") === "") ? "" : " for this domain") + " with a size of about " + humanFileSize(size, true);
       div(class='uk-text-center uk-margin-small uk-text-muted uk-text-small')=count_label
   - else
       div(class='uk-placeholder uk-text-center')

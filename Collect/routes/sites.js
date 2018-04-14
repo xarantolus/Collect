@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Site page
  */
 const express = require("express");
+const download = require("../tools/download");
 const cd = require("../tools/ContentDescription");
 const router = express.Router();
 //Show all archived pages of one domain
@@ -18,7 +19,7 @@ router.get('/:domain?', (req, res, next) => {
         }
         // Check which title we need to display ('All Sites' or domain)
         var isDomain = (domain || "").trim() === "";
-        res.render('table', { title: isDomain ? "All Sites" : domain, list: result, domain: domain });
+        res.render('table', { title: isDomain ? "All Sites" : domain, list: result, domain: domain, humanFileSize: download.humanFileSize });
     });
 });
 exports.default = router;

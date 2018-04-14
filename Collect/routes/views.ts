@@ -16,7 +16,7 @@ router.get('/', (req: express.Request, res: express.Response, next: express.Next
         }
 
         // Show all sites without filtering
-        res.render('table', { title: "All Sites", list: result });
+        res.render('table', { title: "All Sites", list: result, humanFileSize: download.humanFileSize });
     });
 });
 

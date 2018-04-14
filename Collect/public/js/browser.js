@@ -666,16 +666,18 @@ function LoadTable(domain, replace) {
                 //Create tbody
                 var tbody = document.createElement("tbody");
 
+                var size = 0;
                 //Add sites
                 for (var index in sites) {
                     tbody.appendChild(createRow(sites[index]));
+                    size += sites[index].size;
                 }
                 table.appendChild(tbody);
                 content.innerHTML = "";
                 content.appendChild(table);
 
                 // Add Counter
-                var count_label = "There " + (sites.length === 1 ? "is" : "are") + " " + sites.length + " item" + (sites.length === 1 ? "" : "s") + (((domain || "") === "") ? "." : " for this domain.");
+                var count_label = "There " + (sites.length === 1 ? "is" : "are") + " " + sites.length + " item" + (sites.length === 1 ? "" : "s") + (((domain || "") === "") ? "" : " for this domain") + " with a size of about " + humanFileSize(size, true);
 
                 var c_l = document.createElement("div");
                 c_l.className = "uk-text-center uk-margin-small uk-text-muted uk-text-small";
