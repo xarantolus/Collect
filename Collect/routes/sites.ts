@@ -23,7 +23,7 @@ router.get('/:domain?', (req: express.Request, res: express.Response, next: expr
         // Check which title we need to display ('All Sites' or domain)
         var isDomain = (domain || "").trim() === "";
 
-        res.render('table', { title: isDomain ? "All Sites" : domain, list: result, domain: domain });
+        res.render('table', { title: isDomain ? "All Sites" : domain, list: result, domain: domain, humanFileSize: download.humanFileSize });
     });
 });
 
