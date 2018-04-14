@@ -140,28 +140,15 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
                             var indexPath = mpath.join(dir,
                                 result.filename);
 
-                            // This could be refactored to only read the file if the title is not set
-                            fs.readFile(mpath.join('public', 's', indexPath), function (err, content) {
-                                // extract the title if we don't have it
-                                if ((title || "").trim() === "") {
-                                    var parser: any;
-                                    try {
-                                        parser = extractor.lazy(content, 'en');
-                                    } catch{ }
-
-                                    title = "No title";
-                                    try {
-                                        title = parser.title();
-                                    } catch{ }
-                                }
-
+                            // Get a title
+                            extractTitle(mpath.join('public', 's', indexPath), title, function (extractedTitle) {
                                 // Create the item
                                 var item = new cd.ContentDescription(result.url,
                                     indexPath,
                                     dir,
                                     murl.parse(result.url, false).hostname,
                                     new Date(),
-                                    title,
+                                    extractedTitle,
                                     size
                                 );
 
@@ -210,6 +197,30 @@ function renameDir(dir: string, originalUrl: string, newUrl: string, callback: (
     });
 }
 
+// Extracts the title from a file if we don't get one
+function extractTitle(indexFile: string, providedTitle: string, callback: (title: string) => any): void {
+    // We don't need to extract anything
+    if ((providedTitle || "").toString().trim().length > 0) {
+        return callback(providedTitle);
+    }
+
+    // Read the file
+    fs.readFile(indexFile, 'utf-8', function (err, content) {
+        if (err) {
+            return callback("No title");
+        }
+        // extract the title 
+        try {
+            var parser = extractor.lazy(content);
+            var title = parser.title();
+
+            return callback(title);
+        } catch (err) {
+            // The catched error should be ignored because the file might not have html content
+            return callback("No title");
+        }
+    });
+}
 
 //We assume that urls with these extensions return html
 const html_exts = [".asp", ".php", ".html", ".jsp", ".aspx"]
