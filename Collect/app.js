@@ -7,6 +7,7 @@ const path = require("path");
 const auth = require("./tools/auth");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
+const download_1 = require("./tools/download");
 var app = express();
 var version = require('./package.json').version || "Unspecified Version";
 global["RUN_MODE"] = (process.argv.some(arg => arg.toUpperCase() === "PRODUCTION") ? "production" : null) || app.get('env') || "development";
@@ -14,6 +15,8 @@ global["RUN_MODE"] = (process.argv.some(arg => arg.toUpperCase() === "PRODUCTION
 const version_mw = require("./tools/version-middleware");
 var config = require('./config.json');
 var bodyParser = require('body-parser');
+// We assume that some file extensions contain html 
+express.static.mime.define({ 'text/html': download_1.html_extensions.map(/* Remove dots in front of extensions */ /* Remove dots in front of extensions */ item => item.slice(1)) });
 // Compress responses
 app.use(compression());
 // parse application/x-www-form-urlencoded

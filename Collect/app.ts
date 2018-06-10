@@ -9,7 +9,7 @@ import io = require('socket.io');
 import fs = require('fs');
 import cookieParser = require('cookie-parser');
 import compression = require('compression');
-
+import { html_extensions } from './tools/download';
 var app = express()
 
 var version = require('./package.json').version || "Unspecified Version";
@@ -21,6 +21,8 @@ import version_mw = require('./tools/version-middleware');
 var config = require('./config.json')
 var bodyParser = require('body-parser')
 
+// We assume that some file extensions contain html 
+express.static.mime.define({ 'text/html': html_extensions.map(/* Remove dots in front of extensions */item => item.slice(1)) });
 
 // Compress responses
 app.use(compression());
