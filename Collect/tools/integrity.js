@@ -24,7 +24,7 @@ function checkIntegrity() {
             fs.writeFileSync('cookies.json', '[]', 'utf-8');
             console.log("Replaced invalid cookie file");
         }
-        catch (e) { }
+        catch (e) { /* there are more things wrong here */ }
     }
     // Get the index file
     try {

@@ -222,8 +222,10 @@ function extractTitle(indexFile: string, providedTitle: string, callback: (title
     });
 }
 
-//We assume that urls with these extensions return html
-const html_exts = [".asp", ".php", ".html", ".jsp", ".aspx"]
+// We assume that urls with these extensions return html, see issue #33
+// While this might not be optimal, it is better than being prompted to download when you just want to view a file
+// Note that these extensions have dots in front of them
+export const html_extensions = [".asp", ".php", ".html", ".jsp", ".aspx", ".md"]
 // This is the default name for the index page
 const INDEX_NAME = "index.html";
 
@@ -269,7 +271,7 @@ function getFileName(url: string): string {
 
     var ext = mpath.extname(base);
 
-    if (ext === null || ext === "" || html_exts.some(item => ext == item)) {
+    if (ext === null || ext === "" || html_extensions.some(item => ext == item)) {
         // it's probably a html response
         ext = "html";
     } else {
