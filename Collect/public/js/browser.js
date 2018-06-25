@@ -38,7 +38,7 @@ if (location.pathname !== "/login") {
             case 0: {
                 // Started
                 UIkit.notification({
-                    message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
+                    message: 'Started processing url <a href="' + data.url.toLowerCase().startsWith('video:') ? data.url.slice(6, data.url.length) : data.url + '" target="_blank">' + parsedurl + '</a>',
                     status: 'primary',
                     pos: n_pos,
                     timeout: n_timeout
@@ -50,7 +50,7 @@ if (location.pathname !== "/login") {
                 // Already existed
                 // Started
                 UIkit.notification({
-                    message: 'The url <a href="/s/' + data.result.pagepath + '">' + parsedurl + '</a> already exists',
+                    message: 'The entry "<a href="/s/' + data.result.pagepath + '">' + data.result.title + '</a>" already exists',
                     status: 'primary',
                     pos: n_pos,
                     timeout: n_timeout
@@ -61,7 +61,7 @@ if (location.pathname !== "/login") {
             case 2: {
                 // Finished
                 UIkit.notification({
-                    message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing url ' + parsedurl + '</a>',
+                    message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing "' + data.title + '"</a>',
                     status: 'success',
                     pos: n_pos,
                     timeout: n_timeout
@@ -514,8 +514,9 @@ function setEventListeners() {
                 // Add "video:" to the url if clicked
                 if (!urlelem.value.startsWith("video:")) {
                     urlelem.value = "video:" + urlelem.value;
-                    urlelem.focus();
                 }
+
+                urlelem.focus();
             };
 
             // onchange function for depth
