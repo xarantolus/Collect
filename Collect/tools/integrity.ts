@@ -25,11 +25,13 @@ export function checkIntegrity(): void {
             fs.writeFileSync('cookies.json', '[]', 'utf-8');
 
             console.log("Replaced invalid cookie file");
-        } catch (e) { /* there are more things wrong here */ } 
+        } catch (e) { /* there are more things wrong here */ }
     }
 
-
-
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync("public/s")) {
+        fs.mkdirSync("public/s", 0o777);
+    }
 
     // Get the index file
     try {

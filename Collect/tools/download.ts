@@ -7,6 +7,7 @@ import extractor = require('unfluff');
 import getFolderSize = require('get-folder-size');
 import async = require('async');
 import cd = require('../tools/ContentDescription');
+import ytdl = require('ytdl-run');
 
 // the id_length is used when generating an id
 var id_length: number = require('../config.json').id_length;
@@ -157,8 +158,63 @@ function website(url: string, depth: number = 0, sameDomain: boolean, title: str
 // url: the url to the video or site that contains the video
 // title: the title to give the video
 function video(url: string, title: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
-    console.log("Video download");
-    return callback(null, null, false);
+    // Let's grab an id & directory name for this url
+    findValidDir(url, async function (err: Error, dir: string) {
+        if (err) {
+            return callback(err, null, null);
+        }
+        var id = dir;
+        dir = mpath.join("public", "s", dir);
+        // create dir 
+        fs.mkdir(dir, async function (err): Promise<void> {
+            if (err) {
+                return callback(err, null, null);
+            }
+
+            // Get the info
+            const info = await ytdl.getInfo(url);
+
+            // Structure it
+            var title = info.title;
+            var filename = info._filename || "index.mp4";
+
+            // See if the object provides a better url
+            url = info.webpage_url || url;
+
+            // prepare the file
+            var fileStream = fs.createWriteStream(mpath.join(dir, filename));
+
+            var output = ytdl.stream(url).stdout;
+
+            // Stream the youtube-dl output to the file
+            output.pipe(fileStream).on('error', function (err) {
+                callback(err, null, null);
+            });
+
+            fileStream.on('close', function () {
+                // Start getting info about size
+                getFolderSize(dir, function (err, size) {
+                    if (err) {
+                        return callback(err, null, null);
+                    }
+
+                    var indexPath = mpath.join(id, filename);
+
+                    var result = new cd.ContentDescription(url, indexPath, id, murl.parse(url, false).hostname, new Date(), title, size);
+
+                    // Save 
+                    cd.ContentDescription.addContent(result, function (err) {
+                        if (err) {
+                            return callback(err, null, false);
+                        }
+
+                        // We did it!
+                        return callback(null, result, false);
+                    });
+                });
+            });
+        });
+    });
 }
 
 // Resolves what to do based on the prefix
@@ -184,8 +240,8 @@ export function resolveDownload(url: string, depth: number = 0, sameDomain: bool
 
         switch (prefix) {
             case "video": {
-                // Download the video on the website
-                return video(url, title, callback);
+                // Download the video on the website, strip the prefix
+                return video(url.slice(6, url.length), title, callback);
             }
             default: { // This will match the protocol name (http, https etc.) that should be ignored.
                 // Downloads a website

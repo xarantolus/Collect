@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const scrape = require("website-scraper");
 const crypto = require("crypto");
@@ -9,6 +17,7 @@ const extractor = require("unfluff");
 const getFolderSize = require("get-folder-size");
 const async = require("async");
 const cd = require("../tools/ContentDescription");
+const ytdl = require("ytdl-run");
 // the id_length is used when generating an id
 var id_length = require('../config.json').id_length;
 // warn, but use default
@@ -127,8 +136,56 @@ function website(url, depth = 0, sameDomain, title, cookies, useragent, callback
 // url: the url to the video or site that contains the video
 // title: the title to give the video
 function video(url, title, callback) {
-    console.log("Video download");
-    return callback(null, null, false);
+    // Let's grab an id & directory name for this url
+    findValidDir(url, function (err, dir) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (err) {
+                return callback(err, null, null);
+            }
+            var id = dir;
+            dir = mpath.join("public", "s", dir);
+            // create dir 
+            fs.mkdir(dir, function (err) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (err) {
+                        return callback(err, null, null);
+                    }
+                    // Get the info
+                    const info = yield ytdl.getInfo(url);
+                    // Structure it
+                    var title = info.title;
+                    var filename = info._filename || "index.mp4";
+                    // See if the object provides a better url
+                    url = info.webpage_url || url;
+                    // prepare the file
+                    var fileStream = fs.createWriteStream(mpath.join(dir, filename));
+                    var output = ytdl.stream(url).stdout;
+                    // Stream the youtube-dl output to the file
+                    output.pipe(fileStream).on('error', function (err) {
+                        callback(err, null, null);
+                    });
+                    fileStream.on('close', function () {
+                        // Start getting info about size
+                        getFolderSize(dir, function (err, size) {
+                            if (err) {
+                                return callback(err, null, null);
+                            }
+                            var indexPath = mpath.join(id, filename);
+                            var result = new cd.ContentDescription(url, indexPath, id, murl.parse(url, false).hostname, new Date(), title, size);
+                            // Save 
+                            cd.ContentDescription.addContent(result, function (err) {
+                                if (err) {
+                                    return callback(err, null, false);
+                                }
+                                // We did it!
+                                return callback(null, result, false);
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 }
 // Resolves what to do based on the prefix
 function resolveDownload(url, depth = 0, sameDomain, title, cookies, useragent, callback) {
@@ -149,8 +206,8 @@ function resolveDownload(url, depth = 0, sameDomain, title, cookies, useragent, 
         var prefix = url.split(':')[0].toLowerCase();
         switch (prefix) {
             case "video": {
-                // Download the video on the website
-                return video(url, title, callback);
+                // Download the video on the website, strip the prefix
+                return video(url.slice(6, url.length), title, callback);
             }
             default: { // This will match the protocol name (http, https etc.) that should be ignored.
                 // Downloads a website

@@ -11,6 +11,9 @@
   },
   "main": "app.js",
   "dependencies": {
+    "@types/express": "^4.16.0",
+    "@types/express-serve-static-core": "^4.16.0",
+    "@types/node": "^6.0.113",
     "archiver": "^2.1.1",
     "async": "^2.6.0",
     "basic-auth": "^2.0.0",
@@ -23,7 +26,8 @@
     "pug": "^2.0.0-rc.3",
     "socket.io": "^2.0.4",
     "unfluff": "^3.0.0",
-    "website-scraper": "^3.3.2"
+    "website-scraper": "^3.3.2",
+    "ytdl-run": "^0.1.2"
   },
   "devDependencies": {
     "@types/basic-auth": "^1.1.2",
