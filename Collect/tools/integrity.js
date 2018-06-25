@@ -26,6 +26,10 @@ function checkIntegrity() {
         }
         catch (e) { /* there are more things wrong here */ }
     }
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync("public/s")) {
+        fs.mkdirSync("public/s", 0o777);
+    }
     // Get the index file
     try {
         var content = fs.readFileSync(cd.ContentDescription.CONTENT_FILE, 'utf-8');
