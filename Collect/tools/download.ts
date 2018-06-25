@@ -8,7 +8,6 @@ import getFolderSize = require('get-folder-size');
 import async = require('async');
 import cd = require('../tools/ContentDescription');
 
-
 // the id_length is used when generating an id
 var id_length: number = require('../config.json').id_length;
 
@@ -44,7 +43,126 @@ try {
 // depth: how many hyperlinks to follow
 // samedomain: whether to only follow hyperlinks to the same domain (if depth > 0)
 // title: the title that should be displayed in the listing
-export function website(url: string, depth: number = 0, sameDomain: boolean, title: string, cookies: string, useragent: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
+function website(url: string, depth: number = 0, sameDomain: boolean, title: string, cookies: string, useragent: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
+    // Let's grab an id & directory name for this url
+    findValidDir(url, function (err: Error, dir: string): void {
+        if (err) {
+            return callback(err, null, null);
+        }
+
+        // Follow the same domain ?
+        var originalUrl = murl.parse(url);
+
+        // The urlFilter function passed to website-scraper
+        var urlFilterFunc = function (filterUrl) {
+            var parsed = murl.parse(filterUrl, false);
+
+            return parsed.host === originalUrl.host;
+        }
+
+        // Build request options (see https://github.com/website-scraper/node-website-scraper#request)
+        var requestOptions = {
+            headers: {}
+        }
+
+        if (useragent) {
+            requestOptions.headers["User-Agent"] = useragent;
+        }
+
+        if (cookies) {
+            requestOptions.headers["Cookie"] = cookies;
+        }
+
+        var options = {
+            urls: [
+                { url: url, filename: getFileName(url) }
+            ],
+            urlFilter: sameDomain ? urlFilterFunc : null, // don't pass anything if we should download all hyperlinks
+            directory: mpath.join("public", "s", dir), // the directory name we generated
+            recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
+            maxDepth: depth !== 0 ? depth : null, // null == No limit (only if depth === 0)
+            httpResponseHandler: usePhantom ? phantomHtml : null, // Use PhantomJS for processing if available
+            request: requestOptions // Cookies and User-Agent
+        };
+
+        // Start downloading
+        scrape(options, function (error, results) {
+            if (error) {
+                return callback(error, null, null);
+            }
+
+            var result = results[0]; // Because we only download one url (see 'urls' array in options)
+
+            if (!result.saved) {
+                // website-scraper couldn't save the file
+                return callback(new Error("Couldn't save file"), null, null);
+            }
+
+            //Check again, maybe there was a redirect 
+            cd.ContentDescription.contains(result.url, function (err, contains, item) {
+                if (err == null && contains) {
+                    return callback(null, item, true);
+                }
+
+                // Rename the directory if the domain isn't the same anymore, (e.g. http://t.co - links should not be t.co-e63f3 but actualwebsite.com-e63f3)
+                renameDir(dir, url, result.url, function (err, newId) {
+                    if (err) {
+                        return callback(err, null, null);
+                    }
+
+                    // Apply the new name
+                    dir = newId;
+
+                    // Start getting info about size
+                    getFolderSize(mpath.join("public", "s", dir), function (err, size) {
+                        if (err) {
+                            return callback(err, null, null);
+                        }
+
+                        // prepare the 'pagepath'
+                        var indexPath = mpath.join(dir,
+                            result.filename);
+
+                        // Get a title
+                        extractTitle(mpath.join('public', 's', indexPath), title, function (extractedTitle) {
+                            // Create the item
+                            var item = new cd.ContentDescription(result.url,
+                                indexPath,
+                                dir,
+                                murl.parse(result.url, false).hostname,
+                                new Date(),
+                                extractedTitle,
+                                size
+                            );
+
+                            // Save it to the index file
+                            cd.ContentDescription.addContent(item, function (err) {
+                                if (err) {
+                                    return callback(err, null, false);
+                                }
+
+                                // We did it!
+                                return callback(null, item, false);
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+}
+
+// This function downloads a video
+// Parameters:
+// url: the url to the video or site that contains the video
+// title: the title to give the video
+function video(url: string, title: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
+    console.log("Video download");
+    return callback(null, null, false);
+}
+
+// Resolves what to do based on the prefix
+export function resolveDownload(url: string, depth: number = 0, sameDomain: boolean, title: string, cookies: string, useragent: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
     // we need an url
     if (url === null) {
         return callback(new ReferenceError("url is null"), null, null);
@@ -61,112 +179,19 @@ export function website(url: string, depth: number = 0, sameDomain: boolean, tit
             return callback(null, item, true);
         }
 
-        // Let's grab an id & directory name for this url
-        findValidDir(url, function (err: Error, dir: string): void {
-            if (err) {
-                return callback(err, null, null);
+        // Check the prefix
+        var prefix = url.split(':')[0].toLowerCase();
+
+        switch (prefix) {
+            case "video": {
+                // Download the video on the website
+                return video(url, title, callback);
             }
-
-            // Follow the same domain ?
-            var originalUrl = murl.parse(url);
-
-            // The urlFilter function passed to website-scraper
-            var urlFilterFunc = function (filterUrl) {
-                var parsed = murl.parse(filterUrl, false);
-
-                return parsed.host === originalUrl.host;
+            default: { // This will match the protocol name (http, https etc.) that should be ignored.
+                // Downloads a website
+                return website(url, depth, sameDomain, title, cookies, useragent, callback);
             }
-
-            // Build request options (see https://github.com/website-scraper/node-website-scraper#request)
-            var requestOptions = {
-                headers: {}
-            }
-
-            if (useragent) {
-                requestOptions.headers["User-Agent"] = useragent;
-            }
-
-            if (cookies) {
-                requestOptions.headers["Cookie"] = cookies;
-            }
-
-            var options = {
-                urls: [
-                    { url: url, filename: getFileName(url) }
-                ],
-                urlFilter: sameDomain ? urlFilterFunc : null, // don't pass anything if we should download all hyperlinks
-                directory: mpath.join("public", "s", dir), // the directory name we generated
-                recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
-                maxDepth: depth !== 0 ? depth : null, // null == No limit (only if depth === 0)
-                httpResponseHandler: usePhantom ? phantomHtml : null, // Use PhantomJS for processing if available
-                request: requestOptions // Cookies and User-Agent
-            };
-
-            // Start downloading
-            scrape(options, function (error, results) {
-                if (error) {
-                    return callback(error, null, null);
-                }
-
-                var result = results[0]; // Because we only download one url (see 'urls' array in options)
-
-                if (!result.saved) {
-                    // website-scraper couldn't save the file
-                    return callback(new Error("Couldn't save file"), null, null);
-                }
-
-                //Check again, maybe there was a redirect 
-                cd.ContentDescription.contains(result.url, function (err, contains, item) {
-                    if (err == null && contains) {
-                        return callback(null, item, true);
-                    }
-
-                    // Rename the directory if the domain isn't the same anymore, (e.g. http://t.co - links should not be t.co-e63f3 but actualwebsite.com-e63f3)
-                    renameDir(dir, url, result.url, function (err, newId) {
-                        if (err) {
-                            return callback(err, null, null);
-                        }
-
-                        // Apply the new name
-                        dir = newId;
-
-                        // Start getting info about size
-                        getFolderSize(mpath.join("public", "s", dir), function (err, size) {
-                            if (err) {
-                                return callback(err, null, null);
-                            }
-
-                            // prepare the 'pagepath'
-                            var indexPath = mpath.join(dir,
-                                result.filename);
-
-                            // Get a title
-                            extractTitle(mpath.join('public', 's', indexPath), title, function (extractedTitle) {
-                                // Create the item
-                                var item = new cd.ContentDescription(result.url,
-                                    indexPath,
-                                    dir,
-                                    murl.parse(result.url, false).hostname,
-                                    new Date(),
-                                    extractedTitle,
-                                    size
-                                );
-
-                                // Save it to the index file
-                                cd.ContentDescription.addContent(item, function (err) {
-                                    if (err) {
-                                        return callback(err, null, false);
-                                    }
-
-                                    // We did it!
-                                    return callback(null, item, false);
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+        }
     });
 }
 
@@ -332,9 +357,9 @@ export function humanFileSize(bytes, si) {
     return bytes.toFixed(1) + ' ' + units[u];
 }
 
-// Source: https://stackoverflow.com/a/15855457/5728357
+// Source: https://stackoverflow.com/a/15855457, but i added the first part so it also accepts video:http://....
 export function isValidUrl(value): boolean {
-    return /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
+    return /(\w+?\:)(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
 }
 
 // Source: https://stackoverflow.com/a/25069828/5728357

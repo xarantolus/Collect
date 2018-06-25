@@ -156,7 +156,7 @@ router.post('/site/add', (req, res, next) => {
     // Let the clients know that we're doing something
     req.app.get('socketio').emit('url', { "message": "Started processing url", "step": 0, "url": posted_url, "result": null });
     // Now let's start the process (cookies & useragent might be null)
-    download.website(posted_url, depth, sameDomain, title, req.body.cookies, req.body.useragent, function (err, result, fromCache) {
+    download.resolveDownload(posted_url, depth, sameDomain, title, req.body.cookies, req.body.useragent, function (err, result, fromCache) {
         // decrease when we're ready
         notif.decreaseNotificationCount();
         if (err) {
