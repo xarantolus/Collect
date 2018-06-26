@@ -199,7 +199,7 @@ If successful, the [Error](#error) object has a status of 200.
 
 ---
 
-## Backup (GET)
+### Backup (GET)
 To download an archive of all sites currently saved in `Collect`, visit
 
 ```
@@ -215,6 +215,10 @@ The parameter `extension` defines the format of the archive.
 It can be either `zip`, `tar` or `tar.gz`.
 
 Use of `tar.gz` or `zip` is recommended because `tar` files are not compressed.
+
+#### Restoring
+To restore a backup from a backup file, you extract its contents in the `Collect/Collect/public/s/` directory.
+There should be a file called `content.json` at the path `Collect/Collect/public/s/content.json` and a directory for each entry.
 
 #### Common Problem
 It seems like sometimes Windows Explorer can't open these files. This is due to illegal characters in filenames.
