@@ -137,13 +137,12 @@ function website(url, depth = 0, sameDomain, title, cookies, useragent, callback
 // title: the title to give the video
 function video(url, title, callback) {
     // Let's grab an id & directory name for this url
-    findValidDir(url, function (err, dir) {
+    findValidDir(url, function (err, id) {
         return __awaiter(this, void 0, void 0, function* () {
             if (err) {
                 return callback(err, null, null);
             }
-            var id = dir;
-            dir = mpath.join("public", "s", dir);
+            var dir = mpath.join("public", "s", id);
             // create dir 
             fs.mkdir(dir, function (err) {
                 return __awaiter(this, void 0, void 0, function* () {
@@ -164,7 +163,7 @@ function video(url, title, callback) {
                     output.pipe(fileStream).on('error', function (err) {
                         callback(err, null, null);
                     });
-                    fileStream.on('close', function () {
+                    fileStream.on('finish', function () {
                         // Start getting info about size
                         getFolderSize(dir, function (err, size) {
                             if (err) {

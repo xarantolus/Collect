@@ -159,12 +159,11 @@ function website(url: string, depth: number = 0, sameDomain: boolean, title: str
 // title: the title to give the video
 function video(url: string, title: string, callback: (err: Error, result: cd.ContentDescription, fromCache: boolean) => void): void {
     // Let's grab an id & directory name for this url
-    findValidDir(url, async function (err: Error, dir: string) {
+    findValidDir(url, async function (err: Error, id: string) {
         if (err) {
             return callback(err, null, null);
         }
-        var id = dir;
-        dir = mpath.join("public", "s", dir);
+        var dir = mpath.join("public", "s", id);
         // create dir 
         fs.mkdir(dir, async function (err): Promise<void> {
             if (err) {
@@ -191,7 +190,7 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
                 callback(err, null, null);
             });
 
-            fileStream.on('close', function () {
+            fileStream.on('finish', function () {
                 // Start getting info about size
                 getFolderSize(dir, function (err, size) {
                     if (err) {
