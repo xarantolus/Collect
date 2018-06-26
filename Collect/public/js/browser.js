@@ -61,7 +61,7 @@ if (location.pathname !== "/login") {
             case 2: {
                 // Finished
                 UIkit.notification({
-                    message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing "' + data.title + '"</a>',
+                    message: '<a style="color:#32d296" href="/s/' + data.result.pagepath + '">Finished processing "' + data.result.title + '"</a>',
                     status: 'success',
                     pos: n_pos,
                     timeout: n_timeout
