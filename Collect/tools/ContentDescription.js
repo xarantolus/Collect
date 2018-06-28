@@ -117,6 +117,12 @@ class ContentDescription {
     }
     // Checks whether the index file contains an url
     static contains(url, callback) {
+        // If the url begins with a prefix, we cut it out before checking
+        for (var i in this.URL_PREFIXES) {
+            if (url.startsWith(this.URL_PREFIXES[i])) {
+                url = url.substring(this.URL_PREFIXES[i].length);
+            }
+        }
         ContentDescription.loadFile(function (err, result) {
             if (err) {
                 return callback(err, null, null);
@@ -157,5 +163,6 @@ class ContentDescription {
 }
 // This is where all information is saved
 ContentDescription.CONTENT_FILE = mpath.join("public", "s", "content.json");
+ContentDescription.URL_PREFIXES = ["video:"];
 exports.ContentDescription = ContentDescription;
 //# sourceMappingURL=ContentDescription.js.map

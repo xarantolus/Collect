@@ -26,19 +26,22 @@ if (location.pathname !== "/login") {
 
     //Url event handling
     socket.on('url', function (data) {
+        if (data.url.startsWith("video:")) {
+            data.url = data.url.substring(6);
+        }
         var url = new URL(data.url);
 
         if (!isNumber(notification_count)) {
             // In case we haven't yet received the 'notifcount' event
             notification_count = 0;
         }
-
+        
         var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
         switch (data.step) {
             case 0: {
                 // Started
                 UIkit.notification({
-                    message: 'Started processing url <a href="' + data.url.toLowerCase().startsWith('video:') ? data.url.slice(6, data.url.length) : data.url + '" target="_blank">' + parsedurl + '</a>',
+                    message: 'Started processing url <a href="' + data.url + '" target="_blank">' + parsedurl + '</a>',
                     status: 'primary',
                     pos: n_pos,
                     timeout: n_timeout

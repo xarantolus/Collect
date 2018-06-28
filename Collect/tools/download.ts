@@ -169,21 +169,38 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
             if (err) {
                 return callback(err, null, null);
             }
+            try {
+                // Get the info
+                var info = await ytdl.getInfo(url);
 
-            // Get the info
-            const info = await ytdl.getInfo(url);
+                // Structure it
+                if (title && title.trim() !== "") {
+                    title = title.trim();
+                } else {
+                    title = info.title.trim();
+                }
 
-            // Structure it
-            var title = info.title;
-            var filename = info._filename || "index.mp4";
+                var filename = info._filename || "index.mp4";
 
-            // See if the object provides a better url
-            url = info.webpage_url || url;
+                // See if the object provides a better url
+                url = info.webpage_url || url;
+            } catch (err) {
+                return callback(err, null, null);
+            }
+
 
             // prepare the file
             var fileStream = fs.createWriteStream(mpath.join(dir, filename));
 
-            var output = ytdl.stream(url).stdout;
+            try {
+                var output = ytdl.stream(url).stdout;
+            } catch (err) {
+                callback(err, null, null);
+            }
+            // Check errors
+            output.on('error', function (err) {
+                callback(err, null, null);
+            });
 
             // Stream the youtube-dl output to the file
             output.pipe(fileStream).on('error', function (err) {

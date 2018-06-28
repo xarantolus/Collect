@@ -151,8 +151,17 @@ export class ContentDescription {
         });
     }
 
+    static readonly URL_PREFIXES = ["video:"];
+
     // Checks whether the index file contains an url
     public static contains(url: string, callback: (err: Error, result: boolean, item: ContentDescription) => void): void {
+        // If the url begins with a prefix, we cut it out before checking
+        for (var i in this.URL_PREFIXES) {
+            if (url.startsWith(this.URL_PREFIXES[i])) {
+                url = url.substring(this.URL_PREFIXES[i].length);
+            }
+        }
+
         ContentDescription.loadFile(function (err, result) {
             if (err) {
                 return callback(err, null, null);
