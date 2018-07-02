@@ -172,60 +172,74 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
             try {
                 // Get the info
                 var info = await ytdl.getInfo(url);
+            } catch (err) {
+                // When we can't get info, it shouldn't terminate. We might be able to get a video without info
+                console.log(err)
+            }
 
-                // Structure it
-                if (title && title.trim() !== "") {
-                    title = title.trim();
-                } else {
-                    title = info.title.trim();
+            if (info === undefined || info === null) {
+                info = { title: "No title", _filename: "index.mp4", webpage_url: url } // Default values in case getInfo() throws
+            }
+
+            // See if the object provides a better url
+            var betterUrl = info.webpage_url || url;
+
+            // Sort out which title to use
+            if (title && title.trim() !== "") {
+                // Use the supplied one
+                title = title.trim();
+            } else {
+                // Use the one youtube-dl suggests
+                title = info.title.trim();
+            }
+
+            // Rename the directory if we got redirected
+            renameDir(id, url, betterUrl, function (err, newId) {
+                if (err) {
+                    return callback(err, null, null);
                 }
+                id = newId;
+                dir = mpath.join("public", "s", id);
 
-                var filename = info._filename || "index.mp4";
+                // prepare the output file
+                var filename = info._filename;
+                var fileStream = fs.createWriteStream(mpath.join(dir, filename));
 
-                // See if the object provides a better url
-                url = info.webpage_url || url;
-            } catch (err) {
-                return callback(err, null, null);
-            }
+                try {
+                    var output = ytdl.stream(url).stdout;
+                } catch (err) {
+                    return callback(err, null, null);
+                }
+                // Check errors
+                output.on('error', function (err) {
+                    callback(err, null, null);
+                });
 
+                // Stream the youtube-dl output to the file
+                output.pipe(fileStream).on('error', function (err) {
+                    callback(err, null, null);
+                });
 
-            // prepare the file
-            var fileStream = fs.createWriteStream(mpath.join(dir, filename));
-
-            try {
-                var output = ytdl.stream(url).stdout;
-            } catch (err) {
-                callback(err, null, null);
-            }
-            // Check errors
-            output.on('error', function (err) {
-                callback(err, null, null);
-            });
-
-            // Stream the youtube-dl output to the file
-            output.pipe(fileStream).on('error', function (err) {
-                callback(err, null, null);
-            });
-
-            fileStream.on('finish', function () {
-                // Start getting info about size
-                getFolderSize(dir, function (err, size) {
-                    if (err) {
-                        return callback(err, null, null);
-                    }
-
-                    var indexPath = mpath.join(id, filename);
-
-                    var result = new cd.ContentDescription(url, indexPath, id, murl.parse(url, false).hostname, new Date(), title, size);
-
-                    // Save 
-                    cd.ContentDescription.addContent(result, function (err) {
+                fileStream.on('finish', function () {
+                    // Start getting info about size
+                    getFolderSize(dir, function (err, size) {
                         if (err) {
-                            return callback(err, null, false);
+                            return callback(err, null, null);
                         }
 
-                        // We did it!
-                        return callback(null, result, false);
+                        var indexPath = mpath.join(id, filename);
+
+                        var result = new cd.ContentDescription(betterUrl, indexPath, id, murl.parse(betterUrl, false).hostname, new Date(), title, size);
+
+                        // Save 
+                        cd.ContentDescription.addContent(result, function (err) {
+                            if (err) {
+                                return callback(err, null, false);
+                            }
+
+                            // We did it!
+                            return callback(null, result, false);
+                        });
                     });
                 });
             });
