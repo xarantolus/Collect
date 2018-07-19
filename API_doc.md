@@ -231,6 +231,6 @@ To see these API requests in action, open your browser console and enable `XHR` 
 
 You should see something like this (Firefox): 
 
-![Console Screenshot (Firefox)](.github/screenshot-console.png?raw=true)
+![Console Screenshot (Firefox)](img/screenshot-console.png?raw=true)
 
 If you have any questions or something doesn't work the way you expect it to, feel free to open an issue.
