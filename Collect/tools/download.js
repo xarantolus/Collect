@@ -155,10 +155,10 @@ function video(url, title, callback) {
                     }
                     catch (err) {
                         // When we can't get info, it shouldn't terminate. We might be able to get a video without info
-                        console.error(err);
+                        console.log(err);
                     }
                     if (info === undefined || info === null) {
-                        info = { title: "", _filename: "index.mp4", webpage_url: url }; // Default values in case getInfo() throws
+                        info = { title: "No title", _filename: "index.mp4", webpage_url: url }; // Default values in case getInfo() throws
                     }
                     // See if the object provides a better url
                     var betterUrl = info.webpage_url || url;
