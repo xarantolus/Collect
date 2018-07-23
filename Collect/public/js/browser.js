@@ -35,7 +35,7 @@ if (location.pathname !== "/login") {
             // In case we haven't yet received the 'notifcount' event
             notification_count = 0;
         }
-        
+
         var parsedurl = url.hostname + (url.pathname === "/" ? "" : url.pathname);
         switch (data.step) {
             case 0: {
@@ -453,119 +453,142 @@ var ajax = function (url, data) {
     };
 };
 
-// setting event listeners
+// Sets event listeners
+// This method is only called when `state` is initialized
 function setEventListeners() {
-    if (location.pathname !== "/login") {
-        var str_site = location.protocol + '//' + location.host + '/site/';
-        var str_details = location.protocol + '//' + location.host + '/details/';
-        var str_new = location.protocol + '//' + location.host + '/new';
-        var elements = document.getElementsByTagName('a');
+    if (location.pathname === "/login") {
+        // We don't do anyting on the login page
+        return;
+    }
 
-        var loadTableHandler = function (evt) {
-            var domain = getLastUrlElement(this.href);
-            LoadTable(domain);
-            evt.preventDefault();
-        };
 
+    // Loads a table for a given domain
+    // This happens on listings and details
+    var loadTableHandler = function (evt) {
+        var domain = getLastUrlElement(this.href);
+        LoadTable(domain);
+        evt.preventDefault();
+    };
+
+
+    // General events that happen on every page
+
+    // All links to the home/main page
+    var homeButtons = document.querySelectorAll('a[href="/"]')
+    for (var i = 0; i < homeButtons.length; i++) {
+        homeButtons[i].onclick = loadTableHandler;
+    }
+
+    // Add title click scrolling (in header)
+    document.getElementById('title').onclick = scrollBottomTop;
+
+    // New: Loads the new page
+    // This should be used by the 'Add' button & the link that is there when you don't have any pages
+    var loadNewHandler = function (evt) {
+        LoadNew();
+        evt.preventDefault();
+    };
+
+    var newButtons = document.querySelectorAll('a[href="/new"]');
+    for (var i = 0; i < newButtons.length; i++) {
+        newButtons[i].onclick = loadNewHandler;
+    }
+
+    // Register `details` event listeners
+    if (state.isTable) {
+        // Loads the details of a page
+        // This is used in all table listings, aka when `state.isTable` === true
         var loadDetailsHandler = function (evt) {
             var id = getLastUrlElement(this.href);
             LoadDetails(id);
             evt.preventDefault();
         };
 
-        var loadNewHandler = function (evt) {
-            LoadNew();
-            evt.preventDefault();
-        };
-
-        // This code uses 'inline events' so only one event of a type can be assigned to an element
-
-        for (var i = 0; i < elements.length; i++) {
-            // Update table for list urls
-            if (elements[i].href.startsWith(str_site) || elements[i].href === location.protocol + '//' + location.host + '/' && elements[i].id !== "title") {
-                elements[i].onclick = loadTableHandler;
-                continue;
-            }
-
-            // Update details for details urls
-            if (elements[i].href.startsWith(str_details)) {
-                elements[i].onclick = loadDetailsHandler;
-                continue;
-            }
-
-            // "Add" Element in header
-            if (elements[i].href.startsWith(str_new)) {
-                elements[i].onclick = loadNewHandler;
-                continue;
-            }
-        }
-
-        // Add title click scrolling
-        document.getElementById('title').onclick = scrollBottomTop;
-
-        // Form on New Page
-        if (location.pathname === "/new") {
-            var new_form = document.getElementById("new_form")
-            if (new_form) {
-                new_form.onsubmit = SubmitNewForm;
-            }
-
-            // "video:" text
-            document.getElementById("new-video").onclick = function () {
-                var urlelem = document.getElementById("url");
-
-                // Add "video:" to the url if clicked
-                if (!urlelem.value.startsWith("video:")) {
-                    urlelem.value = "video:" + urlelem.value;
-                }
-
-                urlelem.focus();
-            };
-
-            // onchange function for depth
-            var depth_elem = document.getElementById('depth');
-            var samedomain_elem = document.getElementById('samedomain');
-
-            // Disabled element in select
-            var followNone = document.createElement("option");
-            followNone.hidden = true;
-            followNone.disabled = true;
-            followNone.value = "followNone";
-            followNone.innerText = "Don't follow any hyperlinks";
-
-            var changeDepthHandler = function () {
-                // Enable the sameDomain element if there is a depth
-
-                var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
-
-                if (is_disabled) {
-                    if (samedomain_elem.children.length === 2) {
-                        samedomain_elem.appendChild(followNone);
-                        samedomain_elem.value = "followNone";
-                    }
-                } else if (samedomain_elem.children.length === 3) {
-                    samedomain_elem.removeChild(followNone);
-                }
-
-                samedomain_elem.disabled = is_disabled;
-            };
-
-            // Run this
-            changeDepthHandler();
-
-            depth_elem.onchange = changeDepthHandler;
+        var detailButtons = document.querySelectorAll('a[href^="/details/"]');
+        for (var i = 0; i < detailButtons.length; i++) {
+            detailButtons[i].onclick = loadDetailsHandler;
         }
     }
 
+
     // Form on Details Page
-    if (location.pathname.startsWith("/details/")) {
+    if (state.isDetails) {
         var del_button = document.getElementById("delete");
         if (del_button) { del_button.onclick = SubmitDeleteEntry; }
 
         var sub_button = document.getElementById("submit");
         if (sub_button) { sub_button.onclick = SubmitChangeTitle; }
     }
+
+    // Register `table` event listeners
+    if (state.isTable || state.isDetails) {
+
+        // All links that point to a site listing (also all sites)
+        // We need to convert these NodeLists to arrays to join them
+        var siteButtons = document.querySelectorAll('a[href^="/site/"]');
+        for (var i = 0; i < siteButtons.length; i++) {
+            siteButtons[i].onclick = loadTableHandler;
+        }
+    }
+
+
+
+
+    // Register listeners for the form on the new page
+    if (state.isNew) {
+        var new_form = document.getElementById("new_form")
+        if (new_form) {
+            new_form.onsubmit = SubmitNewForm;
+        }
+
+        // Add "video:" text in front of the url if we click on it below the form
+        document.getElementById("new-video").onclick = function () {
+            var urlelem = document.getElementById("url");
+
+            // Add "video:" to the url if clicked
+            if (!urlelem.value.startsWith("video:")) {
+                urlelem.value = "video:" + urlelem.value;
+            }
+
+            urlelem.focus();
+        };
+
+        // onchange function for depth
+        var depth_elem = document.getElementById('depth');
+        var samedomain_elem = document.getElementById('samedomain');
+
+        // Disabled element in select
+        var followNone = document.createElement("option");
+        followNone.hidden = true;
+        followNone.disabled = true;
+        followNone.value = "followNone";
+        followNone.innerText = "Don't follow any hyperlinks";
+
+        var changeDepthHandler = function () {
+            // Enable the sameDomain element if there is a depth
+            // 5 is the max allowed depth
+            var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
+
+            if (is_disabled) {
+                if (samedomain_elem.children.length === 2) {
+                    samedomain_elem.appendChild(followNone);
+                    samedomain_elem.value = "followNone";
+                }
+            } else if (samedomain_elem.children.length === 3) {
+                samedomain_elem.removeChild(followNone);
+            }
+
+            samedomain_elem.disabled = is_disabled;
+        };
+
+        // Initialize the page by running the handler: Now the `samedomain` element should be disabled
+        changeDepthHandler();
+
+        depth_elem.onchange = changeDepthHandler;
+        depth_elem.oninput = changeDepthHandler;
+    }
 }
+
 // Event Methods
 function SubmitNewForm(evt) {
     // Get required data
