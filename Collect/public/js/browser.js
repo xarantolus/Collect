@@ -453,6 +453,17 @@ var ajax = function (url, data) {
     };
 };
 
+function fillVideoText() {
+    var urlelem = document.getElementById("url");
+
+    // Add "video:" to the url if clicked
+    if (!urlelem.value.startsWith("video:")) {
+        urlelem.value = "video:" + urlelem.value;
+    }
+
+    urlelem.focus();
+}
+
 // Sets event listeners
 // This method is only called when `state` is initialized
 function setEventListeners() {
@@ -542,16 +553,7 @@ function setEventListeners() {
         }
 
         // Add "video:" text in front of the url if we click on it below the form
-        document.getElementById("new-video").onclick = function () {
-            var urlelem = document.getElementById("url");
-
-            // Add "video:" to the url if clicked
-            if (!urlelem.value.startsWith("video:")) {
-                urlelem.value = "video:" + urlelem.value;
-            }
-
-            urlelem.focus();
-        };
+        document.getElementById("new-video").onclick = fillVideoText;
 
         // onchange function for depth
         var depth_elem = document.getElementById('depth');
@@ -956,7 +958,51 @@ if (window.location.pathname.startsWith("/new")) {
     state.isTable = true;
 }
 
+function registerKeyboardShortcuts() {
+    window.addEventListener('keydown', function (ev) {
+        // Shortcuts that are supposed to work in <input> elements
+        if (ev.keyCode === 27) {
+            // ESC => Return to main page if not already there
+            if (!(state.data === "" && state.isTable)) {
+                ev.preventDefault();
+                LoadTable();
+                return true;
+            }
+        }
+
+        if (ev.keyCode === 86 && ev.shiftKey && state.isNew) {
+            ev.preventDefault();
+            // Shift + V => add 'video:' text on 'new' page
+            fillVideoText();
+            return false;
+        }
+
+        // Prevent the events below this from firing if the user is focusing an input element (e.g. while typing)
+        if (ev.target.tagName === "INPUT") {
+            return false;
+        }
+
+        // Single-Key shortcuts
+
+        if (ev.keyCode === 78 && !state.isNew) {
+            ev.preventDefault();
+            // 'n' => Load new page
+            LoadNew();
+            return true;
+        }
+
+
+        if (ev.keyCode === 32) {
+            ev.preventDefault();
+            // Space => Scroll up/down
+            scrollBottomTop();
+            return true;
+        }
+    });
+}
+
 // Set the initial state of the page
 setState(state, document.title, location, true);
 
+registerKeyboardShortcuts();
 setEventListeners();
