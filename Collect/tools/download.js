@@ -149,9 +149,10 @@ function video(url, title, callback) {
                     if (err) {
                         return callback(err, null, null);
                     }
+                    var info = null;
                     try {
                         // Get the info
-                        var info = yield ytdl.getInfo(url);
+                        info = yield ytdl.getInfo(url);
                     }
                     catch (err) {
                         // When we can't get info, it shouldn't terminate. We might be able to get a video without info
@@ -169,7 +170,7 @@ function video(url, title, callback) {
                     }
                     else {
                         // Use the one youtube-dl suggests
-                        title = info.title.trim();
+                        title = (info.title || "").trim();
                     }
                     // Rename the directory if we got redirected
                     renameDir(id, url, betterUrl, function (err, newId) {

@@ -169,9 +169,10 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
             if (err) {
                 return callback(err, null, null);
             }
+            var info = null;
             try {
                 // Get the info
-                var info = await ytdl.getInfo(url);
+                info = await ytdl.getInfo(url);
             } catch (err) {
                 // When we can't get info, it shouldn't terminate. We might be able to get a video without info
                 console.log(err)
@@ -190,7 +191,7 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
                 title = title.trim();
             } else {
                 // Use the one youtube-dl suggests
-                title = info.title.trim();
+                title = (info.title || "").trim();
             }
 
             // Rename the directory if we got redirected

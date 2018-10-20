@@ -970,7 +970,8 @@ function registerKeyboardShortcuts() {
             }
         }
 
-        if (ev.keyCode === 86 && ev.shiftKey && state.isNew) {
+        // This should only work in the 'url' field, not in the title input!
+        if (ev.keyCode === 86 && ev.shiftKey && state.isNew && (ev.target || {}).id === "url") {
             ev.preventDefault();
             // Shift + V => add 'video:' text on 'new' page
             fillVideoText();
