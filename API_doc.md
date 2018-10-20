@@ -221,9 +221,8 @@ To restore a backup from a backup file, you extract its contents in the `Collect
 There should be a file called `content.json` at the path `Collect/Collect/public/s/content.json` and a directory for each entry.
 
 #### Common Problem
-It seems like sometimes Windows Explorer can't open these files. This is due to illegal characters in filenames.
-
-If you get an error that the file is corrupt, try using other programs to open zip files, e.g. [7zip](https://www.7-zip.org/) or [WinRAR](https://www.rarlab.com/).
+It seems like sometimes Windows Explorer can't open these files. This is due to the big file size. If you zip file is bigger than 4GB, some zip implementations won't be able to decode it.
+You'll get an error that the file is corrupt. You can use other programs to open these zip files, e.g. [7zip](https://www.7-zip.org/) or [WinRAR](https://www.rarlab.com/).
 
 ---
 

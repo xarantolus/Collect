@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		events.md = events.md
 		LICENSE = LICENSE
 		README.md = README.md
+		User-Guide.md = User-Guide.md
 	EndProjectSection
 EndProject
 Global

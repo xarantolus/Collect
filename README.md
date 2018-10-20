@@ -106,6 +106,8 @@ If you like to play around with the API, you can set an API token. It is impleme
 If you don't want to use the API, it is recommended to set the token to a long random string.
 </p></details>
  
+#### User Guide
+After setting up the server, you can read the [user guide](User-Guide.md) to find out more about general usage, keyboard shortcuts and download options.
 
 #### Plugins
 It is recommended to use [`PhantomJS`](http://phantomjs.org/) to process the websites after downloading.
