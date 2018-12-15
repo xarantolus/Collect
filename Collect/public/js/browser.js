@@ -334,35 +334,45 @@ function tableElement(tag, html) {
     return elem;
 }
 
+var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 function formatDate(date) {
-    return (new Date(date)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2. $1 $3')
+    date = new Date(date);
+    var day = date.getDate();
+    return (day < 10 ? '0' + day : day) + ". " + months[date.getMonth()] + " " + date.getFullYear();
 }
 
 function createRow(site) {
     var container = document.createElement("tr");
-    const fields = ["title", "saved", "domain", "details"];
-    for (var i in fields) {
-        var html = "";
-        if (fields[i] === "title") {
-            // This escapes the title
-            var t = document.createElement('a');
-            t.href = "/s/" + ((site.pagepath.endsWith("/index.html") || site.pagepath.endsWith("\index.html")) ? (site.id + "/") : site.pagepath);
-            t.innerText = site["title"];
 
-            html = t.outerHTML;
-        }
-        else if (fields[i] === "domain") {
-            html = '<a href="/site/' + site["domain"] + '">' + site["domain"] + '</a>';
-        }
-        else if (fields[i] === "details") {
-            html = '<a href="/details/' + site["id"] + '">Details</a>';
-        }
-        else if (fields[i] === "saved") {
-            html = formatDate(site["saved"]);
-        }
-        container.appendChild(tableElement("td", html));
-    }
+    // Title
+    var title = document.createElement('a');
+    title.href = "/s/" + encodeURI((site.pagepath.endsWith("/index.html") || site.pagepath.endsWith("\index.html")) ? (site.id + "/") : site.pagepath);
+    title.innerText = site["title"];
+
+    // Saved
+    var saved = document.createTextNode(formatDate(site["saved"]));
+
+    // Domain
+    var domain = document.createElement('a');
+    domain.href = "/site/" + encodeURIComponent(site["domain"]);
+    domain.innerText = site["domain"];
+
+    // Details
+    var details = document.createElement('a');
+    details.href = "/details/" + encodeURIComponent(site["id"]);
+    details.innerText = "Details";
+
+    container.appendChild(createTD(title));
+    container.appendChild(createTD(saved));
+    container.appendChild(createTD(domain));
+    container.appendChild(createTD(details));
     return container;
+}
+
+function createTD(child) {
+    var td = document.createElement('td');
+    td.appendChild(child);
+    return td;
 }
 
 function DisplayError(message) {
@@ -541,54 +551,55 @@ function setEventListeners() {
             siteButtons[i].onclick = loadTableHandler;
         }
     }
-
-
-
-
+    
     // Register listeners for the form on the new page
     if (state.isNew) {
-        var new_form = document.getElementById("new_form")
-        if (new_form) {
-            new_form.onsubmit = SubmitNewForm;
+        prepareNewPage();
+    }
+}
+
+function prepareNewPage() {
+    var new_form = document.getElementById("new_form");
+    if (new_form) {
+        new_form.onsubmit = SubmitNewForm;
+    }
+
+    // Add "video:" text in front of the url if we click on it below the form
+    document.getElementById("new-video").onclick = fillVideoText;
+
+    // onchange function for depth
+    var depth_elem = document.getElementById('depth');
+    var samedomain_elem = document.getElementById('samedomain');
+
+    // Disabled element in select
+    var followNone = document.createElement("option");
+    followNone.hidden = true;
+    followNone.disabled = true;
+    followNone.value = "followNone";
+    followNone.innerText = "Don't follow any hyperlinks";
+
+    var changeDepthHandler = function () {
+        // Enable the sameDomain element if there is a depth
+        // 5 is the max allowed depth
+        var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
+
+        if (is_disabled) {
+            if (samedomain_elem.children.length === 2) {
+                samedomain_elem.appendChild(followNone);
+                samedomain_elem.value = "followNone";
+            }
+        } else if (samedomain_elem.children.length === 3) {
+            samedomain_elem.removeChild(followNone);
         }
 
-        // Add "video:" text in front of the url if we click on it below the form
-        document.getElementById("new-video").onclick = fillVideoText;
+        samedomain_elem.disabled = is_disabled;
+    };
 
-        // onchange function for depth
-        var depth_elem = document.getElementById('depth');
-        var samedomain_elem = document.getElementById('samedomain');
+    // Initialize the page by running the handler: Now the `samedomain` element should be disabled
+    changeDepthHandler();
 
-        // Disabled element in select
-        var followNone = document.createElement("option");
-        followNone.hidden = true;
-        followNone.disabled = true;
-        followNone.value = "followNone";
-        followNone.innerText = "Don't follow any hyperlinks";
-
-        var changeDepthHandler = function () {
-            // Enable the sameDomain element if there is a depth
-            // 5 is the max allowed depth
-            var is_disabled = !(isNumber(depth_elem.value) && (depth_elem.value <= 5 && depth_elem.value > 0));
-
-            if (is_disabled) {
-                if (samedomain_elem.children.length === 2) {
-                    samedomain_elem.appendChild(followNone);
-                    samedomain_elem.value = "followNone";
-                }
-            } else if (samedomain_elem.children.length === 3) {
-                samedomain_elem.removeChild(followNone);
-            }
-
-            samedomain_elem.disabled = is_disabled;
-        };
-
-        // Initialize the page by running the handler: Now the `samedomain` element should be disabled
-        changeDepthHandler();
-
-        depth_elem.onchange = changeDepthHandler;
-        depth_elem.oninput = changeDepthHandler;
-    }
+    depth_elem.onchange = changeDepthHandler;
+    depth_elem.oninput = changeDepthHandler;
 }
 
 // Event Methods
