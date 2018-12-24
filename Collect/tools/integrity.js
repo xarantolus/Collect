@@ -30,12 +30,17 @@ function checkIntegrity() {
     if (!fs.existsSync("public/s")) {
         fs.mkdirSync("public/s", 0o777);
     }
+    // Create CONTENT_FILE if it doesn't exist - the "empty value" for this json file is an empty array
+    if (!fs.existsSync(cd.ContentDescription.CONTENT_FILE)) {
+        fs.writeFileSync(cd.ContentDescription.CONTENT_FILE, "[]", "utf-8");
+        console.log("Created empty content file");
+    }
     // Get the index file
     try {
         var content = fs.readFileSync(cd.ContentDescription.CONTENT_FILE, 'utf-8');
     }
     catch (e) {
-        console.error("Failed loading the content file. If you are starting for the first time, this is no problem.");
+        console.error("Failed loading the content file: " + e.message);
         return;
     }
     try {

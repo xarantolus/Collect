@@ -42,8 +42,9 @@ export class ContentDescription {
     private static loadFile(callback: (err: Error, result: Array<ContentDescription>) => void): void {
         fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
             if (err) {
-                //File doesn't exist, so we return an empty array
-                if (err.errno === -4058) {
+                // If the file doesn't exist, we pretend it contains an empty array
+                // Don't check err.errno as it might be platform specific
+                if (err.code === 'ENOENT') {
                     return callback(null, []);
                 } else {
                     // another error
