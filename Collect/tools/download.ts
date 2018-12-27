@@ -381,6 +381,9 @@ function getFileName(url: string): string {
         return INDEX_NAME;
     }
 
+    // If the last part of the  url contained any escape sequences (e.g. '%20') they are converted here (=> ' ')
+    base = decodeURIComponent(base); // Need to use component as we don't use the full url, but only the basename: https://stackoverflow.com/a/747700
+
     var ext = mpath.extname(base);
 
     if (ext === null || ext === "" || html_extensions.some(item => ext == item)) {
