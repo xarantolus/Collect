@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.globals = void 0;
 // This middleware enables the views to show the <meta generator...> tag
 const version = require('../package.json').version || "Unspecified Version";
 // This version string to be displayed

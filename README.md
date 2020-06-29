@@ -84,7 +84,7 @@ node app production
 When you open the website in your browser, you will notice that you need to authenticate.
 
 #### Settings
-To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password`, `id_length` and `api_token`.
+To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password`, `id_length`, `api_token`, `allow_public_view` and `allow_public_all`.
 
 <details><summary>Settings documentation</summary>
 
@@ -104,6 +104,12 @@ The length of the ids the server should generate. If you save **a lot** of websi
 If you like to play around with the API, you can set an API token. It is implemented so integrating apps like [Workflow](https://workflow.is) is easy.
 
 If you don't want to use the API, it is recommended to set the token to a long random string.
+
+###### Allow Public View
+Disable authentification for viewing sites and enable a /public/list url.
+
+###### Allow Public All
+Completly disable access control. Use at your own risk !
 </p></details>
  
 #### User Guide
