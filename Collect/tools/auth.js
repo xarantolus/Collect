@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.middleware = exports.isValidCookie = void 0;
 const crypto = require("crypto");
 const fs = require("fs");
 const api_path = "/api/v1/";

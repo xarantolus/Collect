@@ -1,0 +1,23 @@
+extends public_layout
+
+block content
+  - if(list.length > 0)
+      table(class='uk-table uk-table-striped uk-table-hover uk-table-responsive')
+        thead
+          tr
+            th Title
+            th Domain
+            th Date
+        tbody
+          each val in list
+            - var pp = (val.pagepath.endsWith("/index.html") || val.pagepath.endsWith("\index.html")) ? (val.id + "/") : val.pagepath;
+            tr
+              td
+                a(href='/s/' + pp)=val.title
+              td
+                a(href='/s/' + pp)=val.domain
+              td=(new Date(val.saved)).toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/,'$2. $1 $3')
+      - var count_label = "There " + (list.length === 1 ? "is" : "are") + " " + list.length + " item" + (list.length === 1 ? "" : "s") + (((domain || "") === "") ? "" : " for this domain.")
+  - else
+      div(class='uk-placeholder uk-text-center')
+       | There are no archived sites.

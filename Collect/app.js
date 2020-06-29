@@ -25,24 +25,35 @@ app.use(bodyParser.urlencoded({ extended: false, defer: true }));
 app.use(cookieParser());
 // Display version on pages
 app.use(version_mw.globals);
-// Check authentication
-app.use(auth.middleware);
 const backup_1 = require("./routes/backup");
 const views_1 = require("./routes/views");
 const sites_1 = require("./routes/sites");
 const details_1 = require("./routes/details");
 const api_v1_1 = require("./routes/api_v1");
+const public_1 = require("./routes/public");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('view cache', true);
-// All routes are authorized
+// Check authentication for all route depending on config
+if (!config.allow_public_view) {
+    app.use(auth.middleware);
+}
+else {
+    app.use('/public', public_1.default);
+}
+// Static routes (including archived sites)
+app.use(express.static(path.join(__dirname, 'public')));
+// Check authentication for other non public route depending on config
+if (!config.allow_public_all && config.allow_public_view) {
+    app.use(auth.middleware);
+}
+// All other routes
 app.use("/api/v1/", backup_1.default);
 app.use('/api/v1/', api_v1_1.default);
 app.use('/', views_1.default);
 app.use('/details/', details_1.default);
 app.use('/site/', sites_1.default);
-app.use(express.static(path.join(__dirname, 'public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
@@ -107,7 +118,7 @@ io.use(function (socket, next) {
     var session_id = ((socket.handshake || {}).query || {}).session_id;
     var api_token = ((socket.handshake || {}).query || {}).api_token;
     // Accept either a valid session cookie or the api_token
-    if (auth.isValidCookie(session_id) || api_token === config.api_token) {
+    if (auth.isValidCookie(session_id) || api_token === config.api_token || config.allow_public_all) {
         next();
     }
     else {

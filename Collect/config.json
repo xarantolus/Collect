@@ -3,5 +3,7 @@
   "username": "user",
   "password": "password",
   "id_length": 5,
-  "api_token": "token"
+  "api_token": "token",
+  "allow_public_view": false,
+  "allow_public_all": false
 }
