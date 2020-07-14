@@ -104,10 +104,10 @@ export function middleware(req: express.Request, res: express.Response, next: ex
             } else {
                 if (req.path === "/login") {
                     if (!user) {
-                        return res.status(401).render('login', { title: "Login", redirect: redirect });
+                        return res.status(401).render('login', { title: "Login", redirect: redirect, public_access: config.allow_public_view });
                     } else {
                         //it was wrong info
-                        return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'The username/password you provided is wrong' });
+                        return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'The username/password you provided is wrong', public_access: config.allow_public_view });
                     }
                 } else {
                     return res.redirect("/login?redirect=" + encodeURIComponent(req.url));
@@ -142,7 +142,7 @@ export function middleware(req: express.Request, res: express.Response, next: ex
                 return next();
             } else {
                 if (req.path === "/login") {
-                    return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'Your cookie expired. Please log in again.' });
+                    return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'Your cookie expired. Please log in again.', public_access: config.allow_public_view });
                 } else {
                     return res.redirect("/login?redirect=" + encodeURIComponent(req.url));
                 }
