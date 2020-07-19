@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.middleware = exports.isValidCookie = void 0;
 const crypto = require("crypto");
 const fs = require("fs");
 const api_path = "/api/v1/";
@@ -88,11 +89,11 @@ function middleware(req, res, next) {
             else {
                 if (req.path === "/login") {
                     if (!user) {
-                        return res.status(401).render('login', { title: "Login", redirect: redirect });
+                        return res.status(401).render('login', { title: "Login", redirect: redirect, public_access: config.allow_public_view });
                     }
                     else {
                         //it was wrong info
-                        return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'The username/password you provided is wrong' });
+                        return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'The username/password you provided is wrong', public_access: config.allow_public_view });
                     }
                 }
                 else {
@@ -133,7 +134,7 @@ function middleware(req, res, next) {
             }
             else {
                 if (req.path === "/login") {
-                    return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'Your cookie expired. Please log in again.' });
+                    return res.status(401).render('login', { title: "Login", redirect: redirect, error_message: 'Your cookie expired. Please log in again.', public_access: config.allow_public_view });
                 }
                 else {
                     return res.redirect("/login?redirect=" + encodeURIComponent(req.url));

@@ -1,4 +1,4 @@
-﻿// Run the integrity check before importing anything
+// Run the integrity check before importing anything
 require('./tools/integrity').checkIntegrity();
 
 import debug = require('debug');
@@ -36,32 +36,43 @@ app.use(cookieParser());
 // Display version on pages
 app.use(version_mw.globals)
 
-// Check authentication
-app.use(auth.middleware as express.RequestHandler);
-
 import backup from './routes/backup';
 import views from './routes/views';
 import site from './routes/sites';
 import details from './routes/details';
 import api from './routes/api_v1';
-
+import public_list from './routes/public';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('view cache', true);
 
+// Check authentication for all route depending on config
+if (!config.allow_public_view)
+  { 
+    app.use(auth.middleware as express.RequestHandler);
+  }
+else 
+  {
+    app.use('/public', public_list);
+  }
 
-// All routes are authorized
+// Static routes (including archived sites)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Check authentication for other non public route depending on config
+if (!config.allow_public_all && config.allow_public_view)
+  { 
+    app.use(auth.middleware as express.RequestHandler);
+  }
+
+// All other routes
 app.use("/api/v1/", backup)
 app.use('/api/v1/', api);
 app.use('/', views);
 app.use('/details/', details);
 app.use('/site/', site);
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-
 
 
 // catch 404 and forward to error handler
@@ -134,7 +145,7 @@ io.use(function (socket, next) {
     var api_token = ((socket.handshake || {}).query || {}).api_token;
 
     // Accept either a valid session cookie or the api_token
-    if (auth.isValidCookie(session_id) || api_token === config.api_token) {
+    if (auth.isValidCookie(session_id) || api_token === config.api_token || config.allow_public_all) {
         next();
     } else {
         next(new Error('ERR_CONNECT_UNAUTHORIZED'));

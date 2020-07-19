@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkIntegrity = void 0;
 const cd = require("./ContentDescription");
 const fs = require("fs");
 const path = require("path");

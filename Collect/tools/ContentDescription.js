@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ContentDescription = void 0;
 const mpath = require("path");
 const fs = require("fs");
 const download = require("../tools/download");
@@ -162,8 +163,8 @@ class ContentDescription {
         });
     }
 }
+exports.ContentDescription = ContentDescription;
 // This is where all information is saved
 ContentDescription.CONTENT_FILE = mpath.join("public", "s", "content.json");
 ContentDescription.URL_PREFIXES = ["video:"];
-exports.ContentDescription = ContentDescription;
 //# sourceMappingURL=ContentDescription.js.map
