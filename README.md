@@ -199,6 +199,10 @@ This project is being developed in Visual Studio 2017.
 The following extension(s) are used:
 * [Bundler & Minifier](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.BundlerMinifier)
 
+## Thanks to :heart:
+
+* [@TeoGoddet](https://github.com/TeoGoddet) for [#41](https://github.com/xarantolus/Collect/pull/41): Add public access 
+
 ## Security considerations
    * The login system uses plain text. Anyone with (e.g. `SSH`) access to your server can read it.
    * Any site you download can read & set cookies. A downloaded website could send your login cookie to another server. If you host this software in your private network without outside access, everything should be fine even if a cookie gets stolen, but don't take my word for it.
