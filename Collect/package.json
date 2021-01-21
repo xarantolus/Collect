@@ -25,7 +25,7 @@
     "http2": "^3.3.7",
     "nodemon": "^2.0.4",
     "pug": "^2.0.0-rc.3",
-    "socket.io": "^2.0.4",
+    "socket.io": "^2.4.0",
     "types": "^0.1.1",
     "typescript-compile": "0.0.3",
     "unfluff": "^3.0.0",
