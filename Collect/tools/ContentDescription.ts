@@ -1,9 +1,12 @@
 import mpath = require('path')
 import fs = require('fs')
+import rwlock = require('rwlock');
 import download = require('../tools/download')
 
 // This class describes a saved page
 export class ContentDescription {
+    private static mutex = new rwlock();
+
     // The url we downloaded
     public url: string;
     // The title of this item
@@ -40,30 +43,40 @@ export class ContentDescription {
 
     // Loads the content file
     private static loadFile(callback: (err: Error, result: Array<ContentDescription>) => void): void {
-        fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
-            if (err) {
-                // If the file doesn't exist, we pretend it contains an empty array
-                // Don't check err.errno as it might be platform specific
-                if (err.code === 'ENOENT') {
-                    return callback(null, []);
-                } else {
-                    // another error
-                    return callback(err, null);
-                }
-            }
+        this.mutex.readLock(function (release) {
+            fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
+                release();
 
-            try {
-                return callback(null,
-                    JSON.parse(file_content));
-            } catch (e) {
-                return callback(e, null);
-            }
+                if (err) {
+                    // If the file doesn't exist, we pretend it contains an empty array
+                    // Don't check err.errno as it might be platform specific
+                    if (err.code === 'ENOENT') {
+                        return callback(null, []);
+                    } else {
+                        // another error
+                        return callback(err, null);
+                    }
+                }
+
+                try {
+                    return callback(null,
+                        JSON.parse(file_content));
+                } catch (e) {
+                    return callback(e, null);
+                }
+            });
         });
     }
 
     // Saves the specified data in the content file
     private static saveFile(data: Array<ContentDescription>, callback: (err: Error) => void): void {
-        fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", callback);
+        this.mutex.writeLock(function (release) { 
+            fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", function (err) {
+                release();
+
+                callback(err);
+            });
+        })
     }
 
     // Returns all saved sites

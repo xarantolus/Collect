@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContentDescription = void 0;
 const mpath = require("path");
 const fs = require("fs");
+const rwlock = require("rwlock");
 const download = require("../tools/download");
 // This class describes a saved page
 class ContentDescription {
@@ -21,29 +22,37 @@ class ContentDescription {
     }
     // Loads the content file
     static loadFile(callback) {
-        fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
-            if (err) {
-                // If the file doesn't exist, we pretend it contains an empty array
-                // Don't check err.errno as it might be platform specific
-                if (err.code === 'ENOENT') {
-                    return callback(null, []);
+        this.mutex.readLock(function (release) {
+            fs.readFile(ContentDescription.CONTENT_FILE, "utf-8", function (err, file_content) {
+                release();
+                if (err) {
+                    // If the file doesn't exist, we pretend it contains an empty array
+                    // Don't check err.errno as it might be platform specific
+                    if (err.code === 'ENOENT') {
+                        return callback(null, []);
+                    }
+                    else {
+                        // another error
+                        return callback(err, null);
+                    }
                 }
-                else {
-                    // another error
-                    return callback(err, null);
+                try {
+                    return callback(null, JSON.parse(file_content));
                 }
-            }
-            try {
-                return callback(null, JSON.parse(file_content));
-            }
-            catch (e) {
-                return callback(e, null);
-            }
+                catch (e) {
+                    return callback(e, null);
+                }
+            });
         });
     }
     // Saves the specified data in the content file
     static saveFile(data, callback) {
-        fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", callback);
+        this.mutex.writeLock(function (release) {
+            fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", function (err) {
+                release();
+                callback(err);
+            });
+        });
     }
     // Returns all saved sites
     static getSaved(callback) {
@@ -164,6 +173,7 @@ class ContentDescription {
     }
 }
 exports.ContentDescription = ContentDescription;
+ContentDescription.mutex = new rwlock();
 // This is where all information is saved
 ContentDescription.CONTENT_FILE = mpath.join("public", "s", "content.json");
 ContentDescription.URL_PREFIXES = ["video:"];
