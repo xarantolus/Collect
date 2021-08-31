@@ -25,9 +25,9 @@ if (id_length < 5) {
 
 // Check if the 'PhantomJS' plugin is installed
 var usePhantom = false;
-var phantomHtml;
+var PhantomPlugin;
 try {
-    phantomHtml = require('website-scraper-phantom');
+    PhantomPlugin = require('website-scraper-phantom');
     usePhantom = true;
     // Let the user know
     console.log("PhantomJS will be used to process websites");
@@ -82,8 +82,8 @@ function website(url: string, depth: number = 0, sameDomain: boolean, title: str
             directory: mpath.join("public", "s", dir), // the directory name we generated
             recursive: depth !== 0, // Download other hyperlinks in html files if we follow any (depth)
             maxDepth: depth !== 0 ? depth : null, // null == No limit (only if depth === 0)
-            httpResponseHandler: usePhantom ? phantomHtml : null, // Use PhantomJS for processing if available
-            request: requestOptions // Cookies and User-Agent
+            request: requestOptions, // Cookies and User-Agent
+            plugins: usePhantom ? [new PhantomPlugin()] : null
         };
 
         // Start downloading

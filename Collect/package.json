@@ -30,7 +30,7 @@
     "types": "^0.1.1",
     "typescript-compile": "0.0.3",
     "unfluff": "^3.2.0",
-    "website-scraper": "^3.3.2",
+    "website-scraper": "^4.2.3",
     "ytdl-run": "^0.1.2"
   },
   "devDependencies": {
