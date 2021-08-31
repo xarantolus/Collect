@@ -1,6 +1,6 @@
 {
   "name": "collect",
-  "version": "1.17",
+  "version": "1.17.0",
   "private": true,
   "scripts": {
     "start": "node app"
