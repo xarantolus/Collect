@@ -10,7 +10,7 @@ class ContentDescription {
     // Creates a new ContentDescription object
     constructor(_url, _pagepath, _id, _domain, _date, _title, _size) {
         this.url = _url;
-        this.pagepath = _pagepath || "";
+        this.pagepath = _pagepath.replace("\\", "/") || "";
         this.id = _id;
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
         if (_domain.startsWith("www."))
