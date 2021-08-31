@@ -70,7 +70,7 @@ export class ContentDescription {
 
     // Saves the specified data in the content file
     private static saveFile(data: Array<ContentDescription>, callback: (err: Error) => void): void {
-        this.mutex.writeLock(function (release) { 
+        this.mutex.writeLock(function (release) {
             fs.writeFile(ContentDescription.CONTENT_FILE, JSON.stringify(data), "utf-8", function (err) {
                 release();
 

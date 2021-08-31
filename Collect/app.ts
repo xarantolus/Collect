@@ -49,23 +49,20 @@ app.set('view engine', 'pug');
 app.set('view cache', true);
 
 // Check authentication for all route depending on config
-if (!config.allow_public_view)
-  { 
+if (!config.allow_public_view) {
     app.use(auth.middleware as express.RequestHandler);
-  }
-else 
-  {
+}
+else {
     app.use('/public', public_list);
-  }
+}
 
 // Static routes (including archived sites)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Check authentication for other non public route depending on config
-if (!config.allow_public_all && config.allow_public_view)
-  { 
+if (!config.allow_public_all && config.allow_public_view) {
     app.use(auth.middleware as express.RequestHandler);
-  }
+}
 
 // All other routes
 app.use("/api/v1/", backup)
