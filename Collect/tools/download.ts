@@ -169,17 +169,26 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
             if (err) {
                 return callback(err, null, null);
             }
+
+            const videoDlOptions = [
+                url,
+                '-o', mpath.join(dir, '%(title)s-%(id)s.%(ext)s'),
+                // Basically try to get an mp4 video, else choose the "best" format that already
+                // contains both audio and video, so no remuxing
+                '-f', "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4/best",
+            ]
+
             var info = null;
             try {
                 // Get the info
-                info = await ytdl.getInfo(url);
+                info = await ytdl.getInfo(videoDlOptions);
             } catch (err) {
                 // When we can't get info, it shouldn't terminate. We might be able to get a video without info
                 console.log(err)
             }
 
             if (info === undefined || info === null) {
-                info = { title: "No title", _filename: "index.mp4", webpage_url: url } // Default values in case getInfo() throws
+                info = { title: "No title", webpage_url: url } // Default values in case getInfo() throws
             }
 
             // See if the object provides a better url
@@ -194,41 +203,36 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
                 title = (info.title || "").trim();
             }
 
-            // Rename the directory if we got redirected
-            renameDir(id, url, betterUrl, function (err, newId) {
+            // Rename the directory in case we got redirected
+            renameDir(id, url, betterUrl, async function (err, newId) {
                 if (err) {
                     return callback(err, null, null);
                 }
+
                 id = newId;
                 dir = mpath.join("public", "s", id);
 
-                // prepare the output file
-                var filename = info._filename;
-                var fileStream = fs.createWriteStream(mpath.join(dir, filename));
-
                 try {
-                    var output = ytdl.stream(url).stdout;
+                    await ytdl(videoDlOptions);
                 } catch (err) {
                     return callback(err, null, null);
                 }
-                // Check errors
-                output.on('error', function (err) {
-                    callback(err, null, null);
-                });
 
-                // Stream the youtube-dl output to the file
-                output.pipe(fileStream).on('error', function (err) {
-                    callback(err, null, null);
-                });
+                // Start getting info about size
+                getFolderSize(dir, function (err, size) {
+                    if (err) {
+                        return callback(err, null, null);
+                    }
 
-                fileStream.on('finish', function () {
-                    // Start getting info about size
-                    getFolderSize(dir, function (err, size) {
+                    fs.readdir(dir, function (err, files) {
                         if (err) {
                             return callback(err, null, null);
                         }
+                        if (files.length !== 1) {
+                            return callback(new Error("expected exactly one output file when downloading video, but got " + files.length), null, null);
+                        }
 
-                        var indexPath = mpath.join(id, filename);
+                        var indexPath = mpath.join(id, mpath.basename(files[0]));
 
                         var result = new cd.ContentDescription(betterUrl, indexPath, id, murl.parse(betterUrl, false).hostname, new Date(), title, size);
 
@@ -241,7 +245,7 @@ function video(url: string, title: string, callback: (err: Error, result: cd.Con
                             // We did it!
                             return callback(null, result, false);
                         });
-                    });
+                    })
                 });
             });
         });
