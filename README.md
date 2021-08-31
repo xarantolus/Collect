@@ -190,6 +190,8 @@ npm install
 
 After restarting your server, the new version should be up & running.
 
+If it doesn't start, delete the `node_modules` directory and re-run `npm install`.
+
 ## Contributing
 See the [contributing file](.github/CONTRIBUTING.md).
 
