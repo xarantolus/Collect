@@ -32,9 +32,9 @@ if (id_length < 5) {
 }
 // Check if the 'PhantomJS' plugin is installed
 var usePhantom = false;
-var phantomHtml;
+var PhantomPlugin;
 try {
-    phantomHtml = require('website-scraper-phantom');
+    PhantomPlugin = require('website-scraper-phantom');
     usePhantom = true;
     // Let the user know
     console.log("PhantomJS will be used to process websites");
@@ -82,8 +82,8 @@ function website(url, depth = 0, sameDomain, title, cookies, useragent, callback
             directory: mpath.join("public", "s", dir),
             recursive: depth !== 0,
             maxDepth: depth !== 0 ? depth : null,
-            httpResponseHandler: usePhantom ? phantomHtml : null,
-            request: requestOptions // Cookies and User-Agent
+            request: requestOptions,
+            plugins: usePhantom ? [new PhantomPlugin()] : null
         };
         // Start downloading
         scrape(options, function (error, results) {
