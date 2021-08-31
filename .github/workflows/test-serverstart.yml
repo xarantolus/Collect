@@ -14,6 +14,7 @@ jobs:
       matrix:
         node-version: [12.x, 14.x, 16.x]
         run-mode: ["development", "production"]
+        phantom: [true, false]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +24,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - run: |
+    - name: Install PhantomJS plugin
+      run: npm install website-scraper-phantom
+      if: ${{ matrix.phantom }}
+      
+
+    - name: Start server and try a request
+      run: |
        cd Collect
        npm install
       
