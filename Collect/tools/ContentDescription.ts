@@ -25,7 +25,7 @@ export class ContentDescription {
     // Creates a new ContentDescription object
     constructor(_url: string, _pagepath: string, _id: string, _domain: string, _date: Date, _title: string, _size: number) {
         this.url = _url;
-        this.pagepath = _pagepath.replace("\\", "/") || "";
+        this.pagepath = (_pagepath || "").replace("\\", "/");
         this.id = _id;
 
         // www.reddit.com == reddit.com, while test.reddit.com should be treated as subdomain/new domain
