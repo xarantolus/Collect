@@ -26,7 +26,7 @@ jobs:
        cd Collect
        npm install
       
-       npm run start &
+       sudo npm run start &
        sleep 10
        
        curl http://localhost:80
