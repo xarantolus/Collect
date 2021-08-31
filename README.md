@@ -1,11 +1,10 @@
 # Collect
 Collect is a server to collect & archive websites written for NodeJS.
 
-It is intended for anyone who wants to archive individual websites or videos.
+It does not download entire sites, but rather single pages and all content needed to display them. This means that Collect stores a static copy of the website (and its assets) on your disk. It also hosts these pages so you can access them over the network.
 
-Collect stores a static copy of the url on your disk.
+<details><summary>Table of contents</summary>
 
-## Table of contents
   * [Features](#features)
   * [Screenshots](#screenshots)
   * [Installation](#installation)
@@ -18,27 +17,25 @@ Collect stores a static copy of the url on your disk.
   * [Credits](#credits)
   * [License](#license)
 
+</details>
 
 ## Features
    * General
-      * Website archiving
-	    * Video downloading
-      * Website viewing
-   * Webinterface
-      * Add sites to the archive
+      * Archive web pages and videos
+      * View all archived pages and videos
+   * Web interface
+      * Simply add sites and videos via their URL
       * Browse your archive by domain
-      * Edit titles of saved pages
-	  * Delete sites
-	  * Updates changes on the server in real time
+  	  * Manage/Delete downloaded content
+  	  * Any change on the server side will by sent to clients in real time
    * API
-      * Get all sites / sites by domain
+      * Get all sites / list sites by domain
       * Get details of saved content
       * Add a site to the archive
-	  * Delete a site
+  	  * Delete a site
       * Edit title of a saved page
-	  * Download all saved pages as an archive (See [Backup](API_doc.md#backup-get))
-	  * For more, see [the API documentation](API_doc.md)
-
+  	  * Download all saved pages as an archive (See [Backup](API_doc.md#backup-get))
+  	  * For more, see [the API documentation](API_doc.md)
 
 ### Screenshots
 
@@ -55,24 +52,24 @@ Collect stores a static copy of the url on your disk.
 ### Installation
 Before installing Collect, please make sure that `git`, `node` and `npm` are installed.
 
-*Note*: This server is tested with Node version 12, 14 and 16. The test status can be read from the "Test" badge: [![Test](https://github.com/xarantolus/Collect/actions/workflows/test-serverstart.yml/badge.svg)](https://github.com/xarantolus/Collect/actions/workflows/test-serverstart.yml).
+*Note*: This install process is tested with Node version 12, 14 and 16. The test status can be read from the "Test" badge: [![Test](https://github.com/xarantolus/Collect/actions/workflows/test-serverstart.yml/badge.svg)](https://github.com/xarantolus/Collect/actions/workflows/test-serverstart.yml). If this is green, then everything should work!
 
 Start by cloning the repository to your computer/server:
 ```
 git clone https://github.com/xarantolus/Collect.git
 ```
 
-Go in the `Collect` directory
+Switch to the `Collect` directory:
 ```
 cd Collect/Collect
 ```
 
-Install dependencies
+Install dependencies:
 ```
 npm install
 ```
 
-To start in `production` mode (recommended), type
+Start the server in `production` mode (recommended):
 ```
 npm start production
 ```
@@ -81,10 +78,25 @@ or
 node app production
 ```
 
-When you open the website in your browser, you will notice that you need to authenticate.
+Expected output:
+
+```
+Preparing integrity check...
+Checking cookie file...
+Checking if folders for ids exist...
+All folders exist.
+Checking if ids for folders exist...
+All entrys exist.
+Finished integrity check.
+Collect-Server(1.17.0-production) listening on port 80
+```
+
+Now open the website in your browser by visiting http://localhost:80 if running on the same computer or http://yourserver:80, where `yourserver` is the network name of your server. 
+
+You will notice that you need to authenticate with a username and password. That can be set up as shown in the next section.
 
 #### Settings
-To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password`, `id_length`, `api_token`, `allow_public_view` and `allow_public_all`.
+To change settings, edit `Collect/config.json`. There, you can set a `port`, `username`, `password`, `id_length`, `api_token`, `allow_public_view` and `allow_public_all`. Note that you need to restart the server to apply changes.
 
 <details><summary>Settings documentation</summary>
 
@@ -115,10 +127,12 @@ Completly disable access control. Use at your own risk !
 #### User Guide
 After setting up the server, you can read the [user guide](User-Guide.md) to find out more about general usage, keyboard shortcuts and download options.
 
-#### Plugins
-It is recommended to use [`PhantomJS`](http://phantomjs.org/) to process the websites after downloading.
-This ensures that dynamically loaded content is also saved.
+#### Optional Plugins
+<details><summary>There is one plugin available for Collect. Open to get more info.</summary>
 
+The server can use [`PhantomJS`](http://phantomjs.org/) to process websites after downloading. This ensures that dynamically loaded content is also saved.
+
+**Note**: This is no longer recommended as [PhantomJS is not actively maintained](https://github.com/ariya/phantomjs/issues/15344). I'm not stopping you though.
 
 To use this, install the [`node-website-scraper-phantom` module](https://github.com/website-scraper/node-website-scraper-phantom).
 ```
@@ -135,6 +149,7 @@ If you cannot save any pages after installing, remove the module by running
 ```
 npm uninstall website-scraper-phantom
 ```
+</details>
 
 ### Updating
 If you already have Collect installed on your computer/server and want to update to the latest version, follow these steps.
@@ -195,27 +210,21 @@ If it doesn't start, delete the `node_modules` directory and re-run `npm install
 ## Contributing
 See the [contributing file](.github/CONTRIBUTING.md).
 
-#### Tools
-This project is being developed in Visual Studio 2017.
-
-The following extension(s) are used:
-* [Bundler & Minifier](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.BundlerMinifier)
-
 ## Thanks to :heart:
 
 * [@TeoGoddet](https://github.com/TeoGoddet) for [#41](https://github.com/xarantolus/Collect/pull/41): Add public access 
 
 ## Security considerations
-   * The login system uses plain text. Anyone with (e.g. `SSH`) access to your server can read it.
-   * Any site you download can read & set cookies. A downloaded website could send your login cookie to another server. If you host this software in your private network without outside access, everything should be fine even if a cookie gets stolen, but don't take my word for it.
-   * The connection does by default not use `HTTPS`.
+ * The login system uses plain text. Anyone with access to your server (e.g. `SSH` or any malicious program) can read your credentials.
+ * Any site you download can read & set cookies. A downloaded website could send your login cookie to another server. If you host this software in your private network without outside access, everything should be fine even if a cookie gets stolen, but don't take my word for it.
+ * The connection does by default not use `HTTPS`.
 
 
 ## Warning
 You're using this tool at your own risk. I am not responsible for any lost data like passwords or websites.
 
 ## Credits
-   [Website Scraper Module](https://github.com/website-scraper/node-website-scraper): MIT License. I really want to thank the creators. This server is mostly a user interface to this module and would never have been possible without their work.
+   [Website Scraper Module](https://github.com/website-scraper/node-website-scraper): MIT License. This server is mostly a user interface to this module and would never have been possible without their work.
    
    [Website Scraper Module PhantomJS Plugin](https://github.com/website-scraper/node-website-scraper-phantom): MIT License. Makes processing dynamic pages as easy as pie.
 
