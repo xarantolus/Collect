@@ -22,6 +22,21 @@ router.get('/:id?', (req: express.Request, res: express.Response, next: express.
     });
 });
 
+// Redirect to index page path
+router.get("/:id/index", (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    var id = req.params.id;
+
+    cd.ContentDescription.getById(id, function (err, item) {
+        if (err) {
+            err['status'] = 500;
+            err['api'] = false;
+            return next(err);
+        }
+
+        return res.redirect("/s/" + item.pagepath);
+    })
+});
+
 // this handles the 'submit' and 'delete' button on the details page (this usually happens when JavaScript is disabled)
 // We get an id and the name of the button that was pressed
 router.post('/:id?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
