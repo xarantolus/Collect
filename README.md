@@ -55,7 +55,7 @@ Collect stores a static copy of the url on your disk.
 ### Installation
 Before installing Collect, please make sure that `git`, `node` and `npm` are installed.
 
-*Note*: This server was tested on `NodeJS v7.7.3` and `NodeJS v6.13.1`.
+*Note*: This server is tested with Node version 12, 14 and 16. The test status can be read from the "Test" badge: [![Test](https://github.com/xarantolus/Collect/actions/workflows/test-serverstart.yml/badge.svg)](https://github.com/xarantolus/Collect/actions/workflows/test-serverstart.yml).
 
 Start by cloning the repository to your computer/server:
 ```
