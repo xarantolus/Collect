@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
+        run-mode: ["development", "production"]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +27,7 @@ jobs:
        cd Collect
        npm install
       
-       sudo npm run start &
+       sudo npm run start ${{ matrix.run-mode }} &
        sleep 10
        
        curl http://localhost:80
