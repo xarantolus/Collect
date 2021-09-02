@@ -11,7 +11,7 @@ const router = express.Router();
 // Get all sites by domain (if domain is null / "", we return all sites)
 router.get('/sites/:domain?', (req, res, next) => {
     var domain = req.params.domain;
-    cd.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSitesByDomain(domain, function (err, domains, result) {
         if (err) {
             err['status'] = 500;
             err['api'] = true;
@@ -19,11 +19,7 @@ router.get('/sites/:domain?', (req, res, next) => {
             delete err.stack;
             return next(err);
         }
-        // Filter by requested domain if we have one
-        if (domain && domain.trim() !== "") {
-            result = result.filter(item => item.domain === domain);
-        }
-        res.status(200).json(result);
+        return res.status(200).json(result);
     });
 });
 // Get the details for an item

@@ -95,6 +95,22 @@ export class ContentDescription {
         });
     }
 
+    public static getSitesByDomain(domain: string, callback: (err: Error, domains: string[], result: Array<ContentDescription>) => void): void {
+        var domains = domain ? domain.split("+").map(d => d.trim()) : [];
+
+        ContentDescription.loadFile(function (err, items) {
+            if (err) {
+                return callback(err, null, null);
+            }
+
+            if (domains.length > 0) {
+                items = items.filter(cd => domains.includes(cd.domain))
+            }
+
+            return callback(null, domains, items);
+        })
+    }
+
     // Removes a site from the index file
     public static removeContent(id: string, callback: (err: Error) => void): void {
         //Remove from file

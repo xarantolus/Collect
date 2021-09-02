@@ -68,6 +68,18 @@ class ContentDescription {
             ContentDescription.saveFile(result, callback);
         });
     }
+    static getSitesByDomain(domain, callback) {
+        var domains = domain ? domain.split("+").map(d => d.trim()) : [];
+        ContentDescription.loadFile(function (err, items) {
+            if (err) {
+                return callback(err, null, null);
+            }
+            if (domains.length > 0) {
+                items = items.filter(cd => domains.includes(cd.domain));
+            }
+            return callback(null, domains, items);
+        });
+    }
     // Removes a site from the index file
     static removeContent(id, callback) {
         //Remove from file

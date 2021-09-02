@@ -10,16 +10,13 @@ const router = express.Router();
 //Show all archived pages of one domain
 router.get('/:domain?', (req, res, next) => {
     var domain = req.params.domain;
-    cd.ContentDescription.getSaved(function (err, result) {
+    cd.ContentDescription.getSitesByDomain(domain, function (err, domains, result) {
         if (err) {
-            return res.render('error', { error: err });
-        }
-        if (domain && domain.trim() !== "") {
-            result = result.filter(item => item.domain === domain);
+            return next(err);
         }
         // Check which title we need to display ('All Sites' or domain)
-        var isDomain = (domain || "").trim() === "";
-        res.render('table', { title: isDomain ? "All Sites" : domain, list: result, domain: domain, humanFileSize: download.humanFileSize });
+        var isMultiple = domains.length > 1;
+        return res.render('table', { title: isMultiple ? "All Sites" : domain, list: result, domain: domain, humanFileSize: download.humanFileSize });
     });
 });
 exports.default = router;
