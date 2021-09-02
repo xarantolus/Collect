@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 //Show all archived pages of one domain
-router.get('/:domain?', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/:domain', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     var domain = req.params.domain;
 
     cd.ContentDescription.getSitesByDomain(domain, function (err, domains, result) {
@@ -17,9 +17,8 @@ router.get('/:domain?', (req: express.Request, res: express.Response, next: expr
         }
 
         // Check which title we need to display ('All Sites' or domain)
-        var isMultiple = domains.length > 1;
-
-        return res.render('table', { title: isMultiple ? "All Sites" : domain, list: result, domain: domain, humanFileSize: download.humanFileSize });
+        
+        return res.render('table', { title: domains.join("+"), list: result, domain: domain, humanFileSize: download.humanFileSize });
     });
 });
 

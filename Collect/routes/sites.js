@@ -8,15 +8,14 @@ const download = require("../tools/download");
 const cd = require("../tools/ContentDescription");
 const router = express.Router();
 //Show all archived pages of one domain
-router.get('/:domain?', (req, res, next) => {
+router.get('/:domain', (req, res, next) => {
     var domain = req.params.domain;
     cd.ContentDescription.getSitesByDomain(domain, function (err, domains, result) {
         if (err) {
             return next(err);
         }
         // Check which title we need to display ('All Sites' or domain)
-        var isMultiple = domains.length > 1;
-        return res.render('table', { title: isMultiple ? "All Sites" : domain, list: result, domain: domain, humanFileSize: download.humanFileSize });
+        return res.render('table', { title: domains.join("+"), list: result, domain: domain, humanFileSize: download.humanFileSize });
     });
 });
 exports.default = router;
