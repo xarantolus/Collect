@@ -87,7 +87,9 @@ http://yourserver:port/api/v1/sites/_domain_
 ```
 
 ###### domain(optional)
-The parameter `domain` is a domain name, eg `example.com`. If don't give this parameter, all sites from all domains will be returned.
+The parameter `domain` is a domain name, e.g. `example.com`. 
+You can also request sites from multiple domains by joining them using a `+`, e.g. `example.com+example2.com`.
+If don't give this parameter, all sites from all domains will be returned.
 
 #### Result
 This method returns a List of [Site](#site-internal-contentdescription) objects or an [Error](#error)
