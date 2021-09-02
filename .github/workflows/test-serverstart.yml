@@ -37,4 +37,4 @@ jobs:
        sudo npm run start ${{ matrix.run-mode }} &
        sleep 10
        
-       curl http://localhost:80
+       curl -L http://localhost:80
