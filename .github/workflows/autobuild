@@ -1,0 +1,60 @@
+name: Build all files
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.x
+        cache: 'npm'
+
+    - name: Set up git
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+    - name: Set up & build frontend
+      run: |
+        npm install --no-save
+        npm run build
+      working-directory: Collect/public/frontend
+
+    - name: Commit frontend files if changed
+      run: |
+        if [[ `git status --porcelain .` ]]; then
+          git add .
+          git commit -m"Automatic frontend build"
+        fi
+      working-directory: Collect/public/frontend
+
+    - name: Set up & build server
+      run: |
+        npm install --dev
+        node_modules/.bin/tsc
+      working-directory: Collect
+
+    - name: Commit backend files if changed
+      run: |
+        if [[ `git status --porcelain .` ]]; then
+          git add .
+          git commit -m"Automatic backend build"
+        fi
+      working-directory: Collect
+
+    - name: Start server and try a request
+      run: |
+       sudo npm run start production &
+       sleep 10
+       
+       curl -L http://localhost:80
+    
+    - name: Push automatically built files
+      run: git push
