@@ -25,7 +25,7 @@ jobs:
         cache: 'npm'
 
     - name: Install PhantomJS plugin
-      run: npm install website-scraper-phantom
+      run: npm install --no-save website-scraper-phantom
       if: ${{ matrix.phantom == 'phantom' }}
     
     # This makes sure that package.json and package-lock.json are synchronized correctly
