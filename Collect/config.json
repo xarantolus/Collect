@@ -5,5 +5,6 @@
   "id_length": 5,
   "api_token": "token",
   "allow_public_view": false,
-  "allow_public_all": false
+  "allow_public_all": false,
+  "frontend_version": 1
 }

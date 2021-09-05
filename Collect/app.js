@@ -31,6 +31,8 @@ const sites_1 = require("./routes/sites");
 const details_1 = require("./routes/details");
 const api_v1_1 = require("./routes/api_v1");
 const public_1 = require("./routes/public");
+const shared_1 = require("./routes/shared");
+const views_vue_1 = require("./routes/views-vue");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -48,12 +50,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (!config.allow_public_all && config.allow_public_view) {
     app.use(auth.middleware);
 }
+var frontend_version = config.frontend_version || 2;
+if (frontend_version == 1) {
+    app.use('/', views_1.default);
+    app.use('/details/', details_1.default);
+    app.use('/site/', sites_1.default);
+}
+else if (frontend_version == 2) {
+    app.use('/', views_vue_1.default);
+    app.use('/assets/', express.static(path.join(__dirname, 'public/frontend/dist/assets')));
+}
+else {
+    throw new Error("config: frontend_version must be either 1 or 2, but got unexpected " + frontend_version);
+}
+app.use('/', shared_1.default);
 // All other routes
 app.use("/api/v1/", backup_1.default);
 app.use('/api/v1/', api_v1_1.default);
-app.use('/', views_1.default);
-app.use('/details/', details_1.default);
-app.use('/site/', sites_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');

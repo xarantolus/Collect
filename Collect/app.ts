@@ -42,6 +42,8 @@ import site from './routes/sites';
 import details from './routes/details';
 import api from './routes/api_v1';
 import public_list from './routes/public';
+import shared from './routes/shared';
+import views_vue from './routes/views-vue';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -64,12 +66,25 @@ if (!config.allow_public_all && config.allow_public_view) {
     app.use(auth.middleware as express.RequestHandler);
 }
 
+var frontend_version: number = config.frontend_version || 2;
+if (frontend_version == 1) {
+    app.use('/', views);
+    app.use('/details/', details);
+    app.use('/site/', site);
+} else if (frontend_version == 2) {
+    app.use('/', views_vue);
+
+    app.use('/assets/', express.static(path.join(__dirname, 'public/frontend/dist/assets')));
+
+} else {
+    throw new Error("config: frontend_version must be either 1 or 2, but got unexpected " + frontend_version);
+}
+
+app.use('/', shared);
+
 // All other routes
 app.use("/api/v1/", backup)
 app.use('/api/v1/', api);
-app.use('/', views);
-app.use('/details/', details);
-app.use('/site/', site);
 
 
 // catch 404 and forward to error handler

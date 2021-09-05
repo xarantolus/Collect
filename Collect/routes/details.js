@@ -20,18 +20,6 @@ router.get('/:id?', (req, res, next) => {
         return res.render('details', { title: "Details", item: item, file_size: download.humanFileSize(item.size, true) });
     });
 });
-// Redirect to index page path
-router.get("/:id/index", (req, res, next) => {
-    var id = req.params.id;
-    cd.ContentDescription.getById(id, function (err, item) {
-        if (err) {
-            err['status'] = 500;
-            err['api'] = false;
-            return next(err);
-        }
-        return res.redirect("/s/" + item.pagepath);
-    });
-});
 // this handles the 'submit' and 'delete' button on the details page (this usually happens when JavaScript is disabled)
 // We get an id and the name of the button that was pressed
 router.post('/:id?', (req, res, next) => {

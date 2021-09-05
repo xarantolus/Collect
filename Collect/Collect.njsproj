@@ -39,6 +39,10 @@
     <TypeScriptCompile Include="routes\backup.ts" />
     <TypeScriptCompile Include="routes\public.ts" />
     <TypeScriptCompile Include="routes\sites.ts" />
+    <TypeScriptCompile Include="routes\shared.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="routes\views-vue.ts" />
     <TypeScriptCompile Include="tools\auth.ts" />
     <TypeScriptCompile Include="tools\download.ts" />
     <TypeScriptCompile Include="routes\views.ts" />

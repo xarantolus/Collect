@@ -38,6 +38,13 @@ jobs:
             exit 1
         fi
 
+    - name: Set up & build frontend
+      run: |
+        npm install
+        npm run build
+      working-directory: Collect/public/frontend
+
+
     - name: Start server and try a request
       run: |
        cd Collect
