@@ -27,7 +27,15 @@ jobs:
     - name: Install PhantomJS plugin
       run: npm install website-scraper-phantom
       if: ${{ matrix.phantom == 'phantom' }}
-      
+    
+    # This makes sure that package.json and package-lock.json are synchronized correctly
+    - name: Make sure no files changed
+      run: |
+        if [[ `git status --porcelain` ]]; then
+            echo "::error::Tracked files changed after installing dependencies. This usually happens when package.json and package-lock.json are not in sync (run npm install and commit to fix)"
+            git status
+            exit 1
+        fi
 
     - name: Start server and try a request
       run: |
