@@ -63,14 +63,14 @@
 #*.RTF   diff=astextplain
 
 # Uikit files
-Collect/public/css/* linguist-vendored
+Collect/public/old/css/* linguist-vendored
 
 # Generated/Compiled Javascript Files
 *.js linguist-vendored
 *.js.map linguist-vendored
 
 # browser.js is not generated
-Collect/public/js/browser.js linguist-vendored=false
+Collect/public/old/js/browser.js linguist-vendored=false
 
 # main.css not extern
-Collect/public/css/main.css
+Collect/public/old/css/main.css linguist-vendored=false

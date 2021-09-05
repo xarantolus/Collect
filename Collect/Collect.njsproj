@@ -46,14 +46,14 @@
     <None Include="bundleconfig.json" />
     <Content Include="config.json" />
     <Content Include="cookies.json" />
-    <Content Include="public\css\main.min.css">
+    <Content Include="public\old\css\main.min.css">
       <SubType>Content</SubType>
-      <DependentUpon>public\css\main.css</DependentUpon>
+      <DependentUpon>public\old\css\main.css</DependentUpon>
     </Content>
-    <Content Include="public\css\uikit-rtl.css" />
-    <Content Include="public\css\uikit-rtl.min.css" />
-    <Content Include="public\css\uikit.css" />
-    <Content Include="public\css\uikit.min.css" />
+    <Content Include="public\old\css\uikit-rtl.css" />
+    <Content Include="public\old\css\uikit-rtl.min.css" />
+    <Content Include="public\old\css\uikit.css" />
+    <Content Include="public\old\css\uikit.min.css" />
     <Content Include="public\android-icon-144x144.png" />
     <Content Include="public\android-icon-192x192.png" />
     <Content Include="public\android-icon-36x36.png" />
@@ -77,7 +77,7 @@
     <Content Include="public\favicon-96x96.png" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\icon.svg" />
-    <Content Include="public\js\socket.io.js.map" />
+    <Content Include="public\old\js\socket.io.js.map" />
     <Content Include="public\manifest.json" />
     <Content Include="public\ms-icon-144x144.png" />
     <Content Include="public\ms-icon-150x150.png" />
@@ -88,7 +88,7 @@
     <Content Include="tools\ContentDescription.ts" />
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
-    <Content Include="public\css\main.css" />
+    <Content Include="public\old\css\main.css" />
     <Content Include="views\details.pug">
       <SubType>Code</SubType>
     </Content>
@@ -102,25 +102,26 @@
     <TypeScriptCompile Include="tools\version-middleware.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="public\old\" />
     <Folder Include="public\s\" />
     <Folder Include="tools\" />
     <Folder Include="public\" />
-    <Folder Include="public\js\" />
-    <Folder Include="public\css\" />
+    <Folder Include="public\old\js\" />
+    <Folder Include="public\old\css\" />
     <Folder Include="routes\" />
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="public\js\browser.js" />
-    <Compile Include="public\js\browser.min.js">
+    <Compile Include="public\old\js\browser.js" />
+    <Compile Include="public\old\js\browser.min.js">
       <SubType>Code</SubType>
-      <DependentUpon>public\js\browser.js</DependentUpon>
+      <DependentUpon>public\old\js\browser.js</DependentUpon>
     </Compile>
-    <Compile Include="public\js\socket.io.js" />
-    <Compile Include="public\js\uikit-icons.js" />
-    <Compile Include="public\js\uikit-icons.min.js" />
-    <Compile Include="public\js\uikit.js" />
-    <Compile Include="public\js\uikit.min.js" />
+    <Compile Include="public\old\js\socket.io.js" />
+    <Compile Include="public\old\js\uikit-icons.js" />
+    <Compile Include="public\old\js\uikit-icons.min.js" />
+    <Compile Include="public\old\js\uikit.js" />
+    <Compile Include="public\old\js\uikit.min.js" />
     <Compile Include="routes\details.ts">
       <SubType>Code</SubType>
     </Compile>
