@@ -30,7 +30,7 @@ jobs:
     
     - name: Set up & build frontend
       run: |
-        npm install
+        npm install --no-save
         npm run build
       working-directory: Collect/public/frontend
 
