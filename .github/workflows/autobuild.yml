@@ -37,7 +37,7 @@ jobs:
 
     - name: Set up & build server
       run: |
-        npm install --dev
+        npm install --include=dev
         node_modules/.bin/tsc
       working-directory: Collect
 
@@ -55,6 +55,7 @@ jobs:
        sleep 10
        
        curl -L http://localhost:80
+      working-directory: Collect
     
     - name: Push automatically built files
       run: git push
