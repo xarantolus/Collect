@@ -33,6 +33,7 @@ jobs:
       run: |
         if [[ `git status --porcelain` ]]; then
             git status
+            git diff .
             echo "::error::Tracked files changed after installing dependencies. This usually happens when package.json and package-lock.json are not in sync (run npm install and commit to fix)"
             exit 1
         fi
