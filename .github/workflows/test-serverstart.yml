@@ -28,21 +28,22 @@ jobs:
       run: npm install --no-save website-scraper-phantom
       if: ${{ matrix.phantom == 'phantom' }}
     
-    # This makes sure that package.json and package-lock.json are synchronized correctly
-    - name: Make sure no files changed
-      run: |
-        if [[ `git status --porcelain` ]]; then
-            git status
-            git diff .
-            echo "::error::Tracked files changed after installing dependencies. This usually happens when package.json and package-lock.json are not in sync (run npm install and commit to fix)"
-            exit 1
-        fi
-
     - name: Set up & build frontend
       run: |
         npm install
         npm run build
       working-directory: Collect/public/frontend
+
+    # This makes sure that package.json and package-lock.json are synchronized correctly
+    # It also makes sure that the latest build of the frontend is committed
+    - name: Make sure no files changed
+      run: |
+        if [[ `git status --porcelain` ]]; then
+            git status
+            git diff .
+            echo "::error::Tracked files changed after installing dependencies and building the frontend. This usually happens when package.json and package-lock.json are not in sync (run npm install and commit to fix OR build the frontend)"
+            exit 1
+        fi
 
 
     - name: Start server and try a request
