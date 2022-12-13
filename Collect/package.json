@@ -20,7 +20,7 @@
     "compression": "^1.7.1",
     "cookie-parser": "^1.4.3",
     "debug": "^2.2.0",
-    "express": "^4.14.0",
+    "express": "^4.17.3",
     "get-folder-size": "^1.0.0",
     "http2": "^3.3.7",
     "nodemon": "^2.0.4",
